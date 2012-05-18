@@ -34,8 +34,6 @@ from configobj import ConfigObj
 from help import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
-# TODO: replace "compare.py" with "exquires-compare"
-# TODO: replace "aggregate.py" with "exquires-aggregate"
 
 def _magick(method, **kwargs):
     # Setup keyword arguments.
@@ -66,8 +64,8 @@ def _magick(method, **kwargs):
     return ' '.join([cmd, '-strip {1}'])
 
 def _metric(method, aggregator, desc):
-    return [' '.join(['compare.py', method, '{0} {1}']),
-            ' '.join(['aggregate.py', aggregator, '{0}']), desc]
+    return [' '.join(['exquires-compare', method, '{0} {1}']),
+            ' '.join(['exquires-aggregate', aggregator, '{0}']), desc]
     
 
 def main():
