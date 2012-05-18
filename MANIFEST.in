@@ -1,0 +1,7 @@
+include setup.py
+include requirements.txt
+include wave.txt
+include LICENSE.txt
+include README.rst
+include MANIFEST.in
+recursive-include exquires *.py *.tif

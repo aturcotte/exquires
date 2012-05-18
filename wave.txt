@@ -1,0 +1,127 @@
+====================
+wave.tif test image
+====================
+
+Summary:
+
+Description: print of Kanagawa oki nami ura (The great wave off shore
+             of Kanagawa)
+
+Author: Katsushika, Hokusai
+
+----------------------------------------------------------------------
+
+License information for the original Library of Congress scan
+02018u.tif:
+
+Rights advisory: No known restrictions on publication.
+
+Details:
+
+LC control no. 2008660568
+
+Type of material Photograph, Print, Drawing
+
+Personal name Katsushika, Hokusai, 1760-1849, artist.
+
+Main title Kanagawa oki nami ura.
+
+Title translation The great wave off shore of Kanagawa. eng
+
+Published/Created [between 1826 and 1833, printed later]
+
+Description 1 print : woodcut, color.
+
+Rights advisory	No known restrictions on publication.
+
+Access advisory Restricted access; material extremely fragile; please
+use online digital image.
+
+Summary Print shows a huge wave bearing down on boats with a view of
+Mount Fuji in the background.
+
+Notes Title and other descriptive information compiled by
+Nichibunken-sponsored Edo print specialists in 2005-06.
+
+From the series: Fugaku sanjūrokkei : 36 views of Mount Fuji.
+
+Format: horizontal Oban Nishikie.
+
+Adachi modern reprint (Showa).
+
+Forms part of: the H. Irving Olds collection.
+
+Forms part of: Japanese prints and drawings (Library of Congress).
+
+Acquisition source Purchase; H. Irving Olds; 1938.
+
+Subjects Seas--Japan--1820-1840.
+
+Boats--Japan--1820-1840.
+
+Fuji, Mount (Japan)
+
+Form/Genre Ukiyo-e--Japanese--Color--1820-1840.
+
+Woodcuts--Japanese--Color--1820-1840--Reproductions--1890-1940.
+
+LC classification FP 2 - JPD, no. 1682
+
+Other system no. (DLC)jpd2005001683
+
+Reproduction no./Source LC-DIG-jpd-02018 DLC (digital file from
+original print)
+
+Repository Library of Congress Prints and Photographs Division
+Washington, D.C. 20540 USA dcu URL:
+<http://hdl.loc.gov/loc.pnp/pp.print>
+
+Links digital file from original print: URL:
+<http://hdl.loc.gov/loc.pnp/jpd.02018>
+
+----------------------------------------------------------------------
+
+Creation of the test image from the Library of Congress scan, using NIP2:
+-Crop left 1000, top 400, width 4200, height 4200
+-Import with built-in sRGB Perceptual
+-Convert to XYZ
+-im_shrink 5 5 (5x5 box downsampling to 840x840)
+-Export with sRGB_IEC61966-2-1_black_scaled.icc (downloaded from
+ http://www.color.org/srgbprofiles.xalter)
+-Save as TIFF with Zip (deflate) with Horizontal difference predictor
+
+Finally, the file was stripped with exiftool -overwrite_original -all=
+
+----------------------------------------------------------------------
+
+Abbreviated Exif data
+
+FileName = 02018u.tif
+FileSize = 155072850
+FileModifyDate = 1333044677
+FilePermissions = 33204
+FileType = TIFF
+MIMEType = image/tiff
+ExifByteOrder = II
++ [IFD0 directory with 21 entries]
+| 0) ImageWidth = 8561
+| 1) ImageHeight = 6037
+| 2) BitsPerSample = 8 8 8
+| 3) Compression = 1
+| 4) PhotometricInterpretation = 2
+| 5) DocumentName = hidmd/02000\02018u.tif
+| 6) Make = Sinar
+| 7) Model = 54H
+| 8) StripOffsets = 8 51374 102740 154106 205472 256838 308204 359570 410936 462302 [snip]
+| 9) Orientation = 1
+| 10) SamplesPerPixel = 3
+| 11) RowsPerStrip = 2
+| 12) StripByteCounts = 51366 51366 51366 51366 51366 51366 51366 51366 51366 51366 5[snip]
+| 13) XResolution = 600 (1258291200/2097152)
+| 14) YResolution = 600 (1258291200/2097152)
+| 15) PlanarConfiguration = 1
+| 16) ResolutionUnit = 2
+| 17) Software = Stokes Software Inc. IWS - Version 02.04.01.01
+| 18) ModifyDate = 2007:07:19 11:37:38
+| 19) Artist = Library of Congress
+| 20) HostComputer = Windows_NT - SERVER
