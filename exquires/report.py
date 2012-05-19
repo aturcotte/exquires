@@ -362,17 +362,25 @@ def main():
     # Pre-parse the command-line arguments.
     preparsed_args = sys.argv[1:]
 
-    # Deal with the --proj option.
-    found = False
-    for i in range(0, len(preparsed_args) - 1):
-        if preparsed_args[i] == '--proj':
-            preparsed_args.insert(0, preparsed_args.pop(i + 1))
-            preparsed_args.insert(0, preparsed_args.pop(i + 1))
-            found = True
+    # Deal with the -h/--help  and -v/--version options.
+    help_or_version = False
+    for arg in preparsed_args:
+        if arg == '-h' or arg == '--help' or arg == '-v' or arg =='--version':
+            help_or_version = True
             break
-    if not found:
-        preparsed_args.insert(0, 'project1')
-        preparsed_args.insert(0, '--proj')
+
+    # Deal with the -p/--proj option.
+    if not help_or_version:
+        proj = False
+        for i in range(0, len(preparsed_args) - 1):
+            if preparsed_args[i] == '-p' or preparsed_args[i] == '--proj':
+                preparsed_args.insert(0, preparsed_args.pop(i + 1))
+                preparsed_args.insert(0, preparsed_args.pop(i + 1))
+                proj = True
+                break
+        if not proj:
+            preparsed_args.insert(0, 'project1')
+            preparsed_args.insert(0, '--proj')
 
     # Make --sort the rightmost option.
     for i in range(2, len(preparsed_args) - 1):

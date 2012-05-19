@@ -36,13 +36,14 @@ from subprocess import call, check_output
 from configobj import ConfigObj
 
 from database import Database
-from help import ExquiresHelp
+from help import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 
 def main():
     # Define the command-line argument parser.
-    parser = argparse.ArgumentParser(version=VERSION, description=__doc__,
+    parser = argparse.ArgumentParser(version=VERSION,
+                                     description=format_doc(__doc__),
                                      formatter_class=ExquiresHelp)
     parser.add_argument('-s', '--silent', action='store_true',
                         help='do not display progress information')
