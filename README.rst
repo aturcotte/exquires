@@ -2,7 +2,7 @@
 EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ===========================================================================
 
-* Copyright: (c) 2012 Adam Turcotte (adam.turcotte@gmail.com) and Nicolas Robidoux (nicolas.robidoux@gmail.com)
+* Copyright: (c) 2012 `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
 * License: BSD 2-Clause License
 * Requires: Python 2.7 or 3
 
@@ -18,7 +18,7 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 Docs / Instructions
 *******************
 
-please visit: http://exquires.rivetsforbreakfast.com
+Please visit: http://exquires.rivetsforbreakfast.com
 
 ***************
 Install / Setup
@@ -28,11 +28,11 @@ EXQUIRES can be installed from `PyPI <http://pypi.python.org/pypi/exquires>`_ us
     
     pip install -U exquires
 
-... or download the `source distribution from PyPI <http://pypi.python.org/pypi/exquires#downloads>`_, unarchive, and run::
+or download the `source distribution from PyPI <http://pypi.python.org/pypi/exquires#downloads>`_, unarchive, and run::
 
     python setup.py install
 
-... then use ``exquires-new`` to create a new project file, modify it to suit
+then use ``exquires-new`` to create a new project file, modify it to suit
 your needs, then use ``exquires-run`` to compute the image difference data, and
 ``exquires-report`` to print tables of aggregated data. If you make changes to
 the project file and wish to only compute the new data as opposed to the entire
@@ -61,7 +61,8 @@ is generally the same, with the exception of installing system dependencies.
 * configure, compile and install ImageMagick::
 
     $ cd ImageMagick-7.0.0-0
-    $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" CXXFLAGS="-O2 -pthread"
+    $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
+                  CXXFLAGS="-O2 -pthread"
     $ make
     $ sudo make install
 
@@ -73,6 +74,7 @@ is generally the same, with the exception of installing system dependencies.
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
+
 
 -----------------------------------
     installing exquires system-wide
@@ -95,27 +97,58 @@ Basic Usage
 
     $ exquires-new -p my_project -I my_images
 
-... where ``my_project`` is a name to identify your project and ``my_images`` is
+or::
+
+    $ exquires-new --proj my_project -image my_images
+
+where ``my_project`` is a name to identify your project and ``my_images`` is
 a list (wildcards are supported) of 840x840 TIFF images with the following
 properties:
 
-    * *File Format:* TIFF
-    * *Colour Space:* sRGB
-    * *Depth:* 16 bits/sample (48 bits/pixel)
-    * *Size:* 840x840 pixels
+----
 
-If you do not include the **-p** or **-I** options, like so::
+:File Format: TIFF
+:Colour Space: sRGB
+:Bit Depth: 16 bits/sample (48 bits/pixel)
+:Size: 840x840 pixels
+
+----
+
+If you do not include the ``-p``/``--proj`` or ``-I``/``--image`` options,
+like so::
 
     $ exquires-new
 
-... the project name **project1** and the image
+the project name **project1** and the image
 `wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_
 will be used to generate the project file ``project1.ini``.
 
-* compute the image similarity data::
+* compute the image difference data::
 
-    $ exquires-compute my_test
+    $ exquires-run -p my_project
+
+or::
+
+    $ exquires-run --proj my_project
+
+Once again, if you leave out the ``-p``/``--proj`` option, ``exquires-run`` will
+look for a project called **project1**.
+
+By default, ``exquires-run`` displays progress information as it computes the
+image difference data. If you wish do disable this feature, use the
+``-s``/``--silent`` option::
+
+    $ exquires-run -p my_project -s
+
+or::
+
+    $ exquires-run --proj my_project --silent
+
+**Note:** If you make changes to the project file after calling ``exquires-run``
+and you wish to compute only the new data rather than recomputing the entire
+data set, use ``exquires-update``, which supports the same options as
+``exquires-run``.
 
 * print a table of the aggregate error data:
 
-    $ exquires-print my_test
+    $ exquires-report -p my_project
