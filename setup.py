@@ -17,12 +17,13 @@ import os
 
 from setuptools import setup, find_packages
 
-from exquires import __version__ as VERSION
+from exquires import __version__
 
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
+VERSION = __version__
 PACKAGES = find_packages(exclude=['ez_setup']),
 DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
