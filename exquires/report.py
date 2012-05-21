@@ -17,6 +17,13 @@ represents a difference metric. By default, the data across all rows and
 columns of all tables is aggregated. Use the appropriate option flags to
 aggregate across a subset of the database.
 
+--------
+Features
+--------
+
+ * -R/--ratio supports hyphenated ranges (ex. '1-3 5' gives '1 2 3 5')
+ * -I/--image, -D/--downsampler, -U/--upsampler & -M/--metric support wildcards
+
 """
 
 import argparse

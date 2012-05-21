@@ -17,11 +17,11 @@ your project.
 
 The project file is used to specify the following components of the suite:
 
-    * Images (sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels)
-    * Downsamplers
-    * Resampling Ratios
-    * Upsamplers
-    * Difference Metrics
+ * Images (sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels)
+ * Downsamplers
+ * Resampling Ratios
+ * Upsamplers
+ * Difference Metrics
 
 """
 
