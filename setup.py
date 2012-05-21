@@ -17,12 +17,13 @@ import os
 
 from setuptools import setup, find_packages
 
-from exquires import __version__ as VERSION
+from exquires import __version__
 
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
+VERSION = str(__version__)
 PACKAGES = find_packages(exclude=['ez_setup']),
 DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
@@ -30,8 +31,6 @@ LICENSE = 'BSD 2-Clause License'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
 requirements_file = open(os.path.join(this_dir, 'requirements.txt'))
 REQUIREMENTS = filter(None, requirements_file.read().splitlines())
-print VERSION
-print REQUIREMENTS
 AUTHOR = 'Adam Turcotte'
 AUTHOR_EMAIL = 'adam.turcotte@gmail.com'
 KEYWORDS = ('image', 'reconstruction', 'enlargement', 'upsampling', 'test', 'testing')
