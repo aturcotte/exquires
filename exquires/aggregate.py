@@ -31,7 +31,7 @@ import inspect
 
 from numpy import average, power
 
-from help import format_doc, ExquiresHelp
+from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 class Aggregate(object):
@@ -47,19 +47,35 @@ class Aggregate(object):
         self.values = values
 
     def l_1(self):
-        """Return the average."""
+        """Return the average.
+
+        :return: The average.
+
+        """
         return average(self.values)
 
     def l_2(self):
-        """Average the squares and return the square root."""
+        """Average the squares and return the square root.
+
+        :return: The square root of the average of the squares.
+
+        """
         return average(power(self.values, 2)) ** 0.5
 
     def l_4(self):
-        """Average the quads and return the fourth root."""
+        """Average the quads and return the fourth root.
+
+        :return: The fourth root of the average of the quads.
+
+        """
         return average(power(self.values, 4)) ** 0.25
 
     def l_inf(self):
-        """Return the maximum."""
+        """Return the maximum.
+
+        :return: The maximum.
+
+        """
         return max(self.values)
 
 
