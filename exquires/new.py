@@ -75,6 +75,7 @@ def _magick(method, **kwargs):
         cmd = ' '.join([cmd, '-colorspace sRGB'])
     return ' '.join([cmd, '-strip {1}'])
 
+
 def _metric(method, aggregator, sort):
     """Return 3-element list defining a metric, an aggregator and a sort order.
 

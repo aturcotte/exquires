@@ -304,7 +304,7 @@ def main():
                         type=str, nargs='+', action=ListParser,
                         help='downsamplers to consider (default: all)')
     parser.add_argument('-R', '--ratio', metavar='RATIO',
-                        type=str, nargs='+',
+                        type=str, nargs='+', action=RatioParser,
                         help='ratios to consider (default: all)')
     parser.add_argument('-U', '--up', metavar='METHOD',
                         type=str, nargs='+', action=ListParser,

@@ -52,6 +52,7 @@ def _subtract(d1, d2):
             result[key] = d1[key]
     return result
 
+
 def main():
     # Define the command-line argument parser.
     parser = argparse.ArgumentParser(version=VERSION,
@@ -144,10 +145,13 @@ def main():
     if not args.silent:
         from progress import Progress
         p = Progress(os.path.basename(__file__), args.proj, ops)
+
         def prog(image, downsampler, ratio, upsampler=None, metric=None):
             p.do_op(image, downsampler, ratio, upsampler, metric)
+
         def cleanup():
             p.cleanup()
+
         def complete():
             p.complete()
     else:

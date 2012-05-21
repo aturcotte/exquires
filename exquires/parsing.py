@@ -15,6 +15,7 @@ import argparse
 import fnmatch
 import re
 
+
 def format_doc(docstring):
     """Parse the module docstring and re-format all reST markup.
 
@@ -45,6 +46,7 @@ def format_doc(docstring):
     e4 = re.sub(r'\*,', r'\033[0m,', e3)
     e5 = re.sub(r'\*.', r'\033[0m.', e4)
     return re.sub(r'\*$', r'\033[0m$', e5)
+
 
 class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
 
@@ -81,6 +83,7 @@ class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
     def _fill_text(self, text, width, indent):
         return ''.join([indent + line for line in text.splitlines(True)])
 
+
 class ProjectParser(argparse.Action):
 
     """Parser action to read a project file based on the specified name."""
@@ -109,6 +112,7 @@ class ProjectParser(argparse.Action):
         setattr(args, 'sort', None)
         setattr(args, 'show_sort', True)
 
+
 class ListParser(argparse.Action):
 
     """Parser action to handle wildcards for options that support them.
@@ -134,6 +138,39 @@ class ListParser(argparse.Action):
                 raise argparse.ArgumentError(self, msg)
             matches.update(results)
         setattr(args, self.dest, [x for x in value_list if x in matches])
+
+
+class RatioParser(argparse.Action):
+
+    """Parser action to deal with ratio ranges."""
+
+    def __call__(self, parser, args, values, option_string=None):
+        #value_list = getattr(args, self.dest)
+        value_list = range(0, 20)
+        matches = set()
+        for value in values:
+            # first, figure out if it's a range
+            # if so, replace with ' '.join(range(start, end+1))
+            nums = value.split('-')
+            if len(nums) == 1:
+                if int(nums[0]) not in value_list:
+                    tup = value, ', '.join(map(repr, value_list))
+                    msg = 'invalid choice: %r (choose from %s)' % tup
+                    raise argparse.ArgumentError(self, msg)
+                matches.add(int(nums[0]))
+            elif len(nums) == 2:
+                value_range = range(int(nums[0]), int(nums[1]) + 1)
+                for num in value_range:
+                    if int(num) not in value_range:
+                        tup = value, ', '.join(map(repr, value_list))
+                        msg = 'invalid choice: %r (choose from %s)' % tup
+                        raise argparse.ArgumentError(self, msg)
+                matches.update(value_range)
+            else:
+                msg = 'format error in {}'.format(value)
+                raise argparse.ArgumentError(self, msg)
+        setattr(args, self.dest, [x for x in value_list if x in matches])
+
 
 class SortParser(argparse.Action):
 

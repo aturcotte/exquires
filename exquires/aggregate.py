@@ -34,6 +34,7 @@ from numpy import average, power
 from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
+
 class Aggregate(object):
 
     """This class provide various ways of aggregating error data."""
