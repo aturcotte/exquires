@@ -1,25 +1,29 @@
 .. _setup-label:
 
-==================================
+**********************************
 Detailed Installation Instructions
-==================================
+**********************************
 
-The following instructions are for Debian/Ubuntu Linux. 
-For other platforms, the setup is generally the same, with the 
-exeption of installing system dependencies.  
+The following instructions are for Debian/Ubuntu Linux. For other platforms,
+the setup is generally the same, with the exeption of installing system
+dependencies.  
 
-------------
+============
 Requirements
-------------
+============
 
-EXQUIRES requires `Python <http://python.org>`_ **2.7** or **3**
+**EXQUIRES** requires ImageMagick **7**, VIPS **7.24** or newer,
+`Python <http://python.org>`_ **2.7** or newer, and the Python packages
+`ConfigObj <http://www.voidspace.org.uk/python/configobj.html>` and
+`NumPy <http://numpy.scipy.org/>`.
 
-These instructions are for Debian/Ubuntu Linux.  For other platforms, the setup
-is generally the same, with the exception of installing system dependencies.  
+The following installaton instructions are for Debian/Ubuntu Linux. For other
+platforms, the setup is generally the same, with the exception of installing
+system dependencies.  
 
-------------------------------------------
+==========================================
 Installing ImageMagick 7 alpha from source
-------------------------------------------
+==========================================
 
 * Install dependencies on Debian/Ubuntu::
 
@@ -47,9 +51,9 @@ Installing ImageMagick 7 alpha from source
     $ identify -version
     $ pkg-config --modversion ImageMagick
 
--------------------
+===================
 Installing EXQUIRES
--------------------
+===================
 
 * Install remaining dependencies::
 
@@ -59,9 +63,9 @@ Installing EXQUIRES
 
     $ sudo pip install -U exquires
 
----------------------------------------------------
+===================================================
 Installing latest EXQUIRES dev branch from git repo
----------------------------------------------------
+===================================================
 
 ::
 

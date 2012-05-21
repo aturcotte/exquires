@@ -27,7 +27,7 @@ PACKAGES = find_packages(exclude=['ez_setup', 'examples', 'tests']),
 DESCRIPTION = 'EXQUIRES - EXtensible QUantitative Image REconstruction Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
 LICENSE = 'BSD 2-Clause License'
-LONG_DESCRIPTION = open(os.path.join(this_dir, 'README')).read()
+LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
 requirements_file = open(os.path.join(this_dir, 'requirements.txt'))
 REQUIREMENTS = filter(None, requirements_file.read().splitlines())
 AUTHOR = 'Adam Turcotte'

@@ -1,12 +1,12 @@
 .. _usage-label:
 
-==================
+******************
 Usage Instructions
-==================
+******************
 
--------------------------
+=========================
 Create a new project file
--------------------------
+=========================
 
 A project file is an *ini* file that tells EXQUIRES which of the following
 to use:
@@ -42,9 +42,9 @@ the project name **project1** and the image
 `wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_
 will be used to generate the project file ``project1.ini``.
 
---------------------------
+==========================
 Customize the project file
---------------------------
+==========================
 
 Once a project file has been generated, you can manually edit it to suit your
 needs. If you called your project ``my_project``, as we did in the example, the
@@ -124,9 +124,9 @@ We will look at each section of the project file using a simple example.
     l_inf = compare.py l_inf {0} {1}, aggregate.py l_inf {0}, 0
     mssim = compare.py mssim {0} {1}, aggregate.py l_1 {0}, 1
 
----------------------------------
+=================================
 Compute the image difference data
----------------------------------
+=================================
 
 Once the project file contains the desired configuration, you can compute the
 image difference data using::
@@ -150,17 +150,17 @@ or::
 
     $ exquires-run --proj my_project --silent
 
---------------------------------
+================================
 Update the image difference data
---------------------------------
+================================
 
 If you make changes to the project file after calling ``exquires-run`` and you
 wish to compute only the new data rather than recomputing the entire data set,
 use ``exquires-update``, which supports the same options as ``exquires-run``.
 
-----------------------------------------
+========================================
 Generate a table of aggregate error data
-----------------------------------------
+========================================
 
 Once the image difference data has been computed, you can generate various
 aggreagations of the data and either display it in the terminal or write it to
