@@ -57,7 +57,7 @@ params = dict(
     name=NAME,
 #    version=VERSION,
     packages=PACKAGES,
-    install_requires=REQUIREMENTS,
+#    install_requires=REQUIREMENTS,
 
     # Metadata for PyPI.
     author=AUTHOR,
