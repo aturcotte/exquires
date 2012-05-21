@@ -14,13 +14,12 @@
 Each database table in the current project contains data for a single image,
 downsampler, and ratio. Each row represents an upsampler and each column
 represents a difference metric. By default, the data across all rows and
-columns of all tables is aggregated. Use the appropriate flags to aggregate
-across a subset of the database.
+columns of all tables is aggregated. Use the appropriate option flags to
+aggregate across a subset of the database.
 
 """
 
 import argparse
-import fnmatch
 import os
 import sys
 from collections import OrderedDict
@@ -31,15 +30,16 @@ from subprocess import check_output
 from configobj import ConfigObj
 
 from database import Database
-from help import format_doc, ExquiresHelp
+from parsing import *
 from __init__ import __version__ as VERSION
 
 
 def _prune_metrics(keys, metrics_d):
-    """A private method to prune a dictionary of metrics via a list of keys.
+    """Prune a dictionary of metrics using a list of keys.
 
     :param keys: A list of keys to retain.
     :param metrics_d: A dictionary of metric names to prune.
+    :return: The pruned dictionary.
 
     """
     result = OrderedDict()
@@ -49,10 +49,11 @@ def _prune_metrics(keys, metrics_d):
 
 
 def _format_cell(cell, digits):
-    """Private method to format cells of the printed error table.
+    """Return a formatted version of this cell of the data table.
 
     :param cell: The cell to format.
     :param digits: The number of digits to display.
+    :return: The formatted cell.
 
     """
     try:
@@ -61,15 +62,17 @@ def _format_cell(cell, digits):
             return str(cell)[1:digits + 2]
         return str(cell)[:digits + 1]
     except ValueError:
+        # Cell is not a float.
         return cell
 
 
 def _get_max_width(printdata, index, digits):
-    """Private method to determine the width of a column.
+    """Return the width of a column.
 
     :param printdata: A list of lists, defining the table to print.
     :param index: The cell index.
     :param digits: The number of digits to display.
+    :return: The width of this column.
 
     """
     if digits is 0:
@@ -78,11 +81,12 @@ def _get_max_width(printdata, index, digits):
 
 
 def _get_ranks(printdata, metrics_desc, sort_index):
-    """Private method to return a rank table based on a data table.
+    """Return a rank table based on a data table.
 
     :param printdata: A list of lists, defining the table to print.
     :param metrics_desc: A list of 0s and 1s (where 1 is 'descending').
     :param sort_index: Index of the column to sort by.
+    :return: A table of ranks.
 
     """
     l1 = [x[:] for x in printdata]
@@ -99,7 +103,7 @@ def _get_ranks(printdata, metrics_desc, sort_index):
 
 
 def _print_normal(printdata, outfile, digits):
-    """Private method to print the error table with normal formatting.
+    """Print the processed data table with normal formatting.
 
     :param printdata: A list of lists, defining the table to print.
     :param outfile: The path to write the aggregated error table.
@@ -123,10 +127,10 @@ def _print_normal(printdata, outfile, digits):
 
 
 def _print_latex(printdata, outfile, digits):
-    """Private method to print the error table with LaTeX formatting.
+    """Print the processed data table with LaTeX formatting.
 
     :param printdata: A list of lists, defining the table to print.
-    :param outfile: The path to write the aggregated error table.
+    :param outfile: The path to write the aggregated data table.
     :param digits: The number of digits to display.
 
     """
@@ -161,9 +165,9 @@ def _print_latex(printdata, outfile, digits):
     print >> outfile, '\\end{{table}}'
 
 
-def print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
-                outfile, digits, latex, rank, sort, show_sort):
-    """Print a table of aggregate error data.
+def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
+                 outfile, digits, latex, rank, sort, show_sort):
+    """Print a table of aggregate image comparison data.
 
     Since the database contains error data for several images, downsamplers,
     ratios, upsamplers, and metrics, it is convenient to be able to specify
@@ -172,13 +176,14 @@ def print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
 
     :param db: The database file.
     :param images: The list of image names.
-    :param downsamplers: The list of downsampler names:
+    :param downsamplers: The list of downsampler names.
     :param ratios: The list of ratios in string form.
     :param upsamplers: The list of upsampler names.
     :param metrics_d: The dictionary of metrics.
     :param outfile: The name of the output file.
     :param digits: The number of digits to print.
     :param latex: If true, print a LaTeX-formatted table.
+    :param rank: If true, print ranks instead of data.
     :param sort: The metric to sort by.
     :param show_sort: True if the sort column should be displayed.
 
@@ -264,57 +269,6 @@ def print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
     else:
         _print_normal(printdata, outfile, digits)
 
-class ProjectParser(argparse.Action):
-    def __call__(self, parser, args, value, option_string=None):
-        # Construct the path to the configuation and database files.
-        proj_file = '.'.join([value, 'cfg', 'bak'])
-        db_file = '.'.join([value, 'db'])
-        setattr(args, 'db_file', db_file)
-
-        # Exit with an error if one of these files is missing.
-        if not (os.path.isfile(proj_file) and os.path.isfile(db_file)):
-            msg = ' '.join(['do \'exquires-run -p', value, '\' first'])
-            raise argparse.ArgumentTypeError(msg)
-
-        # Read the configuration file last used to update the database.
-        config = ConfigObj(proj_file)
-        setattr(args, 'proj', proj_file)
-        setattr(args, 'image', config['Images'].keys())
-        setattr(args, 'down', config['Downsamplers'].keys())
-        setattr(args, 'ratio', config['Ratios'].keys())
-        setattr(args, 'up', config['Upsamplers'].keys())
-        setattr(args, 'metrics_d', config['Metrics'])
-        setattr(args, 'metrics', getattr(args, 'metrics_d').keys())
-        setattr(args, 'metric', getattr(args, 'metrics'))
-        setattr(args, 'sort', None)
-        setattr(args, 'show_sort', True)
-
-class ListParser(argparse.Action):
-    def __call__(self, parser, args, values, option_string=None):
-        value_list = getattr(args, self.dest)
-        matches = set()
-        for value in values:
-            results = fnmatch.filter(value_list, value)
-            if not results:
-                tup = value, ', '.join(map(repr, value_list))
-                msg = 'invalid choice: %r (choose from %s)' % tup
-                raise argparse.ArgumentError(self, msg)
-            matches.update(results)
-        setattr(args, self.dest, [x for x in value_list if x in matches])
-
-class SortParser(argparse.Action):
-    def __call__(self, parser, args, value, option_string=None):
-        value_list = getattr(args, 'metrics')
-        if value not in value_list:
-            tup = value, ', '.join(map(repr, value_list))
-            msg = 'invalid choice: %r (choose from %s)' % tup
-            raise argparse.ArgumentError(self, msg)
-        metric = getattr(args, 'metric')
-        if value not in metric:
-            metric.insert(0, value)
-            setattr(args, 'metric', metric)
-            setattr(args, 'show_sort', False)
-        setattr(args, self.dest, value)
 
 def main():
     # Define the command-line argument parser.
@@ -365,7 +319,7 @@ def main():
     # Deal with the -h/--help  and -v/--version options.
     help_or_version = False
     for arg in preparsed_args:
-        if arg == '-h' or arg == '--help' or arg == '-v' or arg =='--version':
+        if arg == '-h' or arg == '--help' or arg == '-v' or arg == '--version':
             help_or_version = True
             break
 
@@ -406,8 +360,8 @@ def main():
     db = Database(args.db_file)
 
     # Print the aggregate data table.
-    print_table(db, args.image, args.down, args.ratio, args.up, m, args.file,
-                args.digits, args.latex, args.rank, args.sort, args.show_sort)
+    _print_table(db, args.image, args.down, args.ratio, args.up, m, args.file,
+                 args.digits, args.latex, args.rank, args.sort, args.show_sort)
 
     # Close the database connection.
     db.close()

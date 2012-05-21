@@ -34,7 +34,7 @@ from configobj import ConfigObj
 
 from database import Database
 from progress import Progress
-from help import format_doc, ExquiresHelp
+from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 
@@ -43,11 +43,12 @@ def _subtract(d1, d2):
 
     :param d1: The dictionary to subtract from.
     :param d2: The dictionary to subtract.
+    :return: The resulting dictionary.
 
     """
     result = {}
     for key in d1.keys():
-        if not d2.has_key(key) or d1[key] != d2[key]:
+        if not key in d2 or d1[key] != d2[key]:
             result[key] = d1[key]
     return result
 
@@ -71,8 +72,8 @@ def main():
     # Construct the path to the configuration and database files.
     db_file = '.'.join([args.proj, 'db'])
     db_backup_file = '.'.join([args.proj, 'db', 'bak'])
-    config_file = '.'.join([args.proj, 'cfg'])
-    config_backup_file = '.'.join([args.proj, 'cfg', 'bak'])
+    config_file = '.'.join([args.proj, 'ini'])
+    config_backup_file = '.'.join([args.proj, 'ini', 'bak'])
 
     # Construct the path to the generated image files.
     gen_images_path = args.proj

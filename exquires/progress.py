@@ -24,12 +24,19 @@ import time
 
 class Progress(object):
 
-    """This class contains methods for displaying progress in exquires."""
+    """This class contains methods for displaying progress in exquires.
+
+    When **exquires-run** and **exquires-update** are used without silent
+    mode enabled, this class is responsible for displaying information about
+    the downsampling, upsampling, and comparison steps and the total progress.
+
+    """
 
     def __init__(self, prg, proj, num_operations):
         """This constructor creates a new Progress object.
 
         :param prg: The name of the program that is running.
+        :param proj: The name of the project being used.
         :param num_operations: The total number of operations.
 
         """
@@ -128,7 +135,7 @@ class Progress(object):
         self.scr.clear()
         self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)
-        self.__table_top(6, 'PROGRESS', '0%')
+        self.__table_middle(6, 'PROGRESS', '0%')
         self.__table_bottom(8, 'STATUS', 'DELETING OLD FILES')
         self.scr.refresh()
 
@@ -151,7 +158,7 @@ class Progress(object):
         self.scr.clear()
         self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)
-        self.__table_top(6, 'PROGRESS', '{}%'.format(percent))
+        self.__table_middle(6, 'PROGRESS', '{}%'.format(percent))
 
         if metric:
             self.__table_middle(8, 'STATUS', 'COMPARING')

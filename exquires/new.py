@@ -31,11 +31,23 @@ from subprocess import check_output
 
 from configobj import ConfigObj
 
-from help import format_doc, ExquiresHelp
+from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 
 def _magick(method, **kwargs):
+    """Return an ImageMagick resize command as a string.
+
+    :param method: The method to use with -resize or -distort Resize.
+    :param lin: True if using a linear method.
+    :param dist: True if using a -distort Resize method.
+    :param lobes: Number of lobes.
+    :param blur: Blur value.
+    :param beta: Beta value for Kaiser method.
+    :return: The command string.
+
+    """
+
     # Setup keyword arguments.
     lin = kwargs.get('lin', False)
     dist = kwargs.get('dist', False)
@@ -63,10 +75,19 @@ def _magick(method, **kwargs):
         cmd = ' '.join([cmd, '-colorspace sRGB'])
     return ' '.join([cmd, '-strip {1}'])
 
-def _metric(method, aggregator, desc):
+def _metric(method, aggregator, sort):
+    """Return 3-element list defining a metric, an aggregator and a sort order.
+
+    :param method: The exquires-compare image comparison metric.
+    :param aggregator: The exquires-aggregate data aggregator.
+    :param sort: Best-to-worst ordering: 0 if ascending, 1 if descending.
+    :return: A 3-element list.
+
+    """
+
     return [' '.join(['exquires-compare', method, '{0} {1}']),
-            ' '.join(['exquires-aggregate', aggregator, '{0}']), desc]
-    
+            ' '.join(['exquires-aggregate', aggregator, '{0}']), sort]
+
 
 def main():
     # Construct the path to the default test image.

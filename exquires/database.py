@@ -73,6 +73,7 @@ class Database:
         :param ratio: The ratio in string form.
         :param metrics: The list of metric names.
         :return: The table name.
+
         """
         #create table
         name = '_'.join([image, downsampler, ratio])

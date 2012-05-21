@@ -14,15 +14,15 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 
 ----
 
-===================
-Docs / Instructions
-===================
+============================
+Documentation & Instructions
+============================
 
 Please visit: http://exquires.rivetsforbreakfast.com
 
-===============
-Install / Setup
-===============
+===============================
+Basic Installation Instructions
+===============================
 
 EXQUIRES can be installed from `PyPI <http://pypi.python.org/pypi/exquires>`_
 using `pip <http://www.pip-installer.org>`_::
@@ -33,15 +33,9 @@ or download the `source distribution from PyPI <http://pypi.python.org/pypi/exqu
 
     python setup.py install
 
-then use ``exquires-new`` to create a new project file, modify it to suit
-your needs, then use ``exquires-run`` to compute the image difference data, and
-``exquires-report`` to print tables of aggregated data. If you make changes to
-the project file and wish to only compute the new data as opposed to the entire
-data set, use ``exquires-update``.
-
-========================
-Detailed Install / Setup
-========================
+==================================
+Detailed Installation Instructions
+==================================
 
 These instructions are for Debian/Ubuntu Linux.  For other platforms, the setup
 is generally the same, with the exception of installing system dependencies.  
@@ -76,7 +70,6 @@ Installing ImageMagick 7 alpha from source
     $ identify -version
     $ pkg-config --modversion ImageMagick
 
-
 -------------------
 Installing EXQUIRES
 -------------------
@@ -88,3 +81,21 @@ Installing EXQUIRES
 * install EXQUIRES from PyPI using pip::
 
     $ sudo pip install -U exquires
+
+---------------------------------------------------
+Installing latest EXQUIRES dev branch from git repo
+---------------------------------------------------
+
+::
+
+    pip install -e git+http://github.com/aturcotte/exquires.git#egg=exquires
+
+==============
+Usage Overview
+==============
+
+* Use ``exquires-new`` to create a new project file
+* Modify the project file to suit your needs
+* Use ``exquires-run`` to compute the image difference data
+* Use ``exquires-update`` to compute only the new data after editing the project file
+* Use ``exquires-report`` to print tables of aggregated data

@@ -44,7 +44,7 @@ import inspect
 import os
 import sys
 
-from help import format_doc, ExquiresHelp
+from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 
@@ -95,6 +95,9 @@ class Metrics(object):
             AAE(x,y) = \\frac{1}{N} \sum_{i=1}^{N} |x_i - y_i|
 
         where :math:`x` and :math:`y` are the images to compare.
+
+        :return: :math:`\ell_1` error
+
         """
         from vipsCC import VImage
         return (self.i1.subtract(self.i2).abs().avg() / self.L) * 100
@@ -109,6 +112,9 @@ class Metrics(object):
             RMSE(x,y) = \sqrt{\\frac{1}{N} \sum_{i=1}^{N} (x_i - y_i)^2}
 
         where :math:`x` and :math:`y` are the images to compare.
+
+        :return: :math:`\ell_2` error
+
         """
         from vipsCC import VImage
         return (self.i1.subtract(self.i2).pow(2).avg() ** 0.5 / self.L) * 100
@@ -123,6 +129,9 @@ class Metrics(object):
             \ell_4(x,y) = \sqrt[4]{\\frac{1}{N} \sum_{i=1}^{N} (x_i - y_i)^4}
 
         where :math:`x` and :math:`y` are the images to compare.
+
+        :return: :math:`\ell_4` error
+
         """
         from vipsCC import VImage
         return (self.i1.subtract(self.i2).pow(4).avg() ** 0.25 / self.L) * 100
@@ -137,6 +146,9 @@ class Metrics(object):
             MAE(x,y) = \max_{1 \le i \le N} |x_i - y_i|
 
         where :math:`x` and :math:`y` are the images to compare.
+
+        :return: :math:`\ell_\infty` error
+
         """
         from vipsCC import VImage
         return (self.i1.subtract(self.i2).abs().max() / self.L) * 100
@@ -164,6 +176,9 @@ class Metrics(object):
         This version is slightly more efficient than the method proposed by
         Wang et. al. because it reduces the number of Gaussian blurs from 5 to
         4.
+
+        :return: Mean SSIM
+
         """
         from vipsCC import VImage, VMask
 
@@ -203,6 +218,9 @@ class Metrics(object):
         This method performs the same greyscale conversion, Gaussian blur, and
         cropping as MSSIM, but returns the :math:`\ell_1` error of the cropped
         image.
+
+        :return: MSSIM-inspired :math:`\ell_1` error.
+
         """
         from vipsCC import VImage, VMask
 
@@ -231,6 +249,9 @@ class Metrics(object):
         This method performs the same greyscale conversion, Gaussian blur, and
         cropping as MSSIM, but returns the :math:`\ell_2` error of the cropped
         image.
+
+        :return: MSSIM-inspired :math:`\ell_2` error.
+
         """
         from vipsCC import VImage, VMask
 
@@ -259,6 +280,9 @@ class Metrics(object):
         This method performs the same greyscale conversion, Gaussian blur, and
         cropping as MSSIM, but returns the :math:`\ell_4` error of the cropped
         image.
+
+        :return: MSSIM-inspired :math:`\ell_4` error.
+
         """
         from vipsCC import VImage, VMask
 
@@ -287,6 +311,9 @@ class Metrics(object):
         This method performs the same greyscale conversion, Gaussian blur, and
         cropping as MSSIM, but returns the :math:`\ell_\infty` error of the
         cropped image.
+
+        :return: MSSIM-inspired :math:`\ell_\infty` error.
+
         """
         from vipsCC import VImage, VMask
 
@@ -314,6 +341,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the average.
+
+        :return: :math:`\ell_1` error in Uniform Colour Space (UCS).
+
         """
         from vipsCC import VImage
         lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
@@ -325,6 +355,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_2` norm.
+
+        :return: :math:`\ell_2` error in Uniform Colour Space (UCS).
+
         """
         from vipsCC import VImage
         lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
@@ -336,6 +369,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_4` norm.
+
+        :return: :math:`\ell_4` error in Uniform Colour Space (UCS).
+
         """
         from vipsCC import VImage
         lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
@@ -347,6 +383,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_\infty` norm.
+
+        :return: :math:`\ell_\infty` error in Uniform Colour Space (UCS).
+
         """
         from vipsCC import VImage
         lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
@@ -358,6 +397,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_1` error.
+
+        :return: :math:`\ell_1` error in XYZ Colour Space.
+
         """
         from vipsCC import VImage
         xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
@@ -369,6 +411,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_2` error.
+
+        :return: :math:`\ell_2` error in XYZ Colour Space.
+
         """
         from vipsCC import VImage
         xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
@@ -380,6 +425,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_4` error.
+
+        :return: :math:`\ell_4` error in XYZ Colour Space.
+
         """
         from vipsCC import VImage
         xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
@@ -391,6 +439,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_\infty` error.
+
+        :return: :math:`\ell_\infty` error in XYZ Colour Space.
+
         """
         from vipsCC import VImage
         xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
@@ -399,6 +450,7 @@ class Metrics(object):
 
 
 def _get_blurlist():
+    """Private method to return a Gaussian blur mask."""
     from math import exp
 
     # Compute the raw Gaussian blur coefficients.

@@ -36,7 +36,7 @@ from subprocess import call, check_output
 from configobj import ConfigObj
 
 from database import Database
-from help import format_doc, ExquiresHelp
+from parsing import format_doc, ExquiresHelp
 from __init__ import __version__ as VERSION
 
 
@@ -60,8 +60,8 @@ def main():
     # Construct the path to the configuration and database files.
     db_file = '.'.join([args.proj, 'db'])
     db_backup_file = '.'.join([args.proj, 'db', 'bak'])
-    config_file = '.'.join([args.proj, 'cfg'])
-    config_backup_file = '.'.join([args.proj, 'cfg', 'bak'])
+    config_file = '.'.join([args.proj, 'ini'])
+    config_backup_file = '.'.join([args.proj, 'ini', 'bak'])
 
     # Construct the path to the generated image files.
     gen_images_path = args.proj
@@ -94,8 +94,10 @@ def main():
     if not args.silent:
         from progress import Progress
         p = Progress(os.path.basename(__file__), args.proj, ops)
+
         def prog(image, downsampler, ratio, upsampler=None, metric=None):
             p.do_op(image, downsampler, ratio, upsampler, metric)
+
         def complete():
             p.complete()
     else:
