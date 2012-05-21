@@ -55,7 +55,7 @@ CONSOLE_SCRIPTS = [
 
 params = dict(
     name=NAME,
-    version=VERSION,
+#    version=VERSION,
     packages=PACKAGES,
     install_requires=REQUIREMENTS,
 
