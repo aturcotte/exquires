@@ -24,7 +24,7 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup', 'examples', 'tests']),
-DESCRIPTION = 'EXQUIRES - EXtensible QUantitative Image REconstruction Suite'
+DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
 LICENSE = 'BSD 2-Clause License'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
@@ -32,8 +32,7 @@ requirements_file = open(os.path.join(this_dir, 'requirements.txt'))
 REQUIREMENTS = filter(None, requirements_file.read().splitlines())
 AUTHOR = 'Adam Turcotte'
 AUTHOR_EMAIL = 'adam.turcotte@gmail.com'
-KEYWORDS = ('image', 'reconstruction', 'enlargement',
-            'upsampling', 'test', 'testing')
+KEYWORDS = ('image', 'reconstruction', 'enlargement', 'upsampling', 'test', 'testing')
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
     'License :: OSI Approved :: BSD License',
@@ -42,7 +41,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
     'Topic :: Multimedia :: Graphics',
-    'Topic :: Software Development :: Testing',
+    'Topic :: Software Development :: Testing'
 ]
 CONSOLE_SCRIPTS = [
     'exquires-aggregate = exquires.aggregate:main',
@@ -50,14 +49,14 @@ CONSOLE_SCRIPTS = [
     'exquires-new = exquires.new:main',
     'exquires-report = exquires.report:main',
     'exquires-run = exquires.run:main',
-    'exquires-update = exquires.update:main',
+    'exquires-update = exquires.update:main'
 ]
 
 params = dict(
     name=NAME,
     version=VERSION,
     packages=PACKAGES,
-    install_requires = REQUIREMENTS,
+    install_requires=REQUIREMENTS,
 
     # Metadata for PyPI.
     author=AUTHOR,
