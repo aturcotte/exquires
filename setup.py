@@ -23,7 +23,7 @@ from exquires import __version__ as VERSION
 this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
-PACKAGES = find_packages(exclude=['ez_setup', 'examples', 'tests']),
+PACKAGES = find_packages(exclude=['ez_setup']),
 DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
 LICENSE = 'BSD 2-Clause License'
