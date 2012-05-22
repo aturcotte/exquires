@@ -4,20 +4,42 @@
 Usage Instructions
 ******************
 
+===========================
+Obtain suitable test images
+===========================
+
+**EXQUIRES** is designed to use sRGB TIFF images with 16 bits per sample
+(48 bits per pixel) and a width and height of 840 pixels. One image
+(`wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_)
+is included as a default selection.
+
+A separate distribution of test images converted from RAW is available
+`here <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`.
+The examples in this section make use of several images from this collection.
+
 =========================
 Create a new project file
 =========================
 
-A project file is an *ini* file that tells EXQUIRES which of the following
+A project file is a *.ini* file that tells **EXQUIRES** which of the following
 to use:
 
 * Images
-* Downsamplers
 * Resampling Ratios
+* Downsamplers
 * Upsamplers
 * Difference Metrics
 
-In order to create a default project file for a specific set of images, type::
+The basic syntax to create a new project is::
+
+    $ exquires-new
+
+which will create the project file ``project1.ini`` and include the image
+`wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_
+along with a default collection of ratios, downsamplers, upsamplers, and
+metrics.
+
+In order to specify a project name and a set of test images, type::
 
     $ exquires-new -p my_project -I my_images
 
@@ -33,36 +55,45 @@ a list (wildcards are supported) of images with the following properties:
 :Bit Depth: 16 bits/sample (48 bits/pixel)
 :Size: 840x840 pixels
 
-If you do not include the ``-p``/``--proj`` or ``-I``/``--image`` options,
-like so::
+To demonstrate, we will create a new project ``example_proj`` using the
+`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`
+collection.
 
-    $ exquires-new
-
-the project name **project1** and the image
-`wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_
-will be used to generate the project file ``project1.ini``.
+    $ exquires-new -p example_proj -I 840x840images/images/*
 
 ==========================
 Customize the project file
 ==========================
 
 Once a project file has been generated, you can manually edit it to suit your
-needs. If you called your project ``my_project``, as we did in the example, the
-project file is called **my_project.ini** and you can use your favourite editor
-to customize it to suit your needs.
+needs. For our example project ``example_proj``, we have a project file
+**example_proj.ini** and we will look at each section in detail.
 
-We will look at each section of the project file using a simple example.
+------
+Images
+------
 
-* Images::
+This section lists the paths to the test images that will be used. We will keep
+this example project small by removing all but two of the
+`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`,
+**apartments.tif** and **cabins.tif**::
 
     # TEST IMAGES
     # Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.
     # Any images that are added must conform to this standard.
     [Images]
-    apartments = /home/me/840x840images/apartments.tif
-    cabins = /home/me/840x840images/cabins.tif
+    apartments = /home/user/840x840images/images/apartments.tif
+    cabins = /home/user/840x840images/images/cabins.tif
 
-* Ratios::
+Notice that **EXQUIRES** has also assigned default names for these images,
+which you can also modify.
+
+------
+Ratios
+------
+
+This section lists the resampling ratios and specifies the width and
+height of the downsampled image for each ratio. Here are the default ratios::
 
     # RESAMPLING RATIOS
     # The test images are downsampled to the specified sizes.
@@ -71,8 +102,18 @@ We will look at each section of the project file using a simple example.
     2 = 420
     3 = 280
     4 = 240
+    5 = 168
+    6 = 140
+    7 = 120
+    8 = 105
 
-* Downsamplers::
+------------
+Downsamplers
+------------
+
+This section lists the downsampling methods that will be used to reduce each of
+the test images. We have edited our example project to include a small subset
+of the defaults::
 
     # DOWNSAMPLING COMMANDS
     # To add a downsampler, provide the command to execute it.
@@ -88,7 +129,31 @@ We will look at each section of the project file using a simple example.
     nearest_srgb = magick {0} -filter Point -resize {3}x{3} -strip {1}
     nearest_linear = magick {0} -colorspace RGB -filter Point -resize {3}x{3} -colorspace sRGB -strip {1}
 
-* Upsamplers::
+Note that the **ImageMagick** commands in this example make use of numbered
+replacement fields to denote the command-line arguments. If you wish to add
+your own downsampling method, you must use ``{0}`` and ``{1}`` to specify the
+input and output images, and either ``{2}`` or ``{3}`` (or both) to specify
+the size of the reduced image.
+
+Also note that the methods suffixed with ``_srgb`` do not apply gamma
+correction, meaning that the sRGB images are downsampled using linear averaging
+even though sRGB is a non-linear colour space.
+The methods suffixed with ``_linear`` convert the input image to linear RGB
+before downsampling, then convert the result back to sRGB.
+
+----------
+Upsamplers
+----------
+
+This section lists the upsampling methods that will be used to re-enlarge
+each of the downsampled images, and makes use of the same replacement fields as
+the Downsamplers section.
+
+Since the purpose of **EXQUIRES** is to assess the accuracy of upsampling
+methods, you may wish to add your own method to see how it ranks alongside
+pre-existing methods. For example, we can compare our own implementation of
+the EANBQH (Exact Area image upsizing with Natural BiQuadratic Histosplines)
+method with several Lanczos variations::
 
     # UPSAMPLING COMMANDS
     # To add an upsampler, provide the command to execute it.
@@ -104,8 +169,19 @@ We will look at each section of the project file using a simple example.
     lanczos3_linear = magick {0} -colorspace RGB -filter Lanczos -resize {3}x{3} -colorspace sRGB -strip {1}
     lanczos4_srgb = magick {0} -filter Lanczos -define filter:lobes=4 -resize {3}x{3} -strip {1}
     lanczos4_linear = magick {0} -colorspace RGB -filter Lanczos -define filter:lobes=4 -resize {3}x{3} -colorspace sRGB -strip {1}
+    eanbqh = python eanbqh.py {0} {1} {3}
 
-* Metrics::
+Your upsampling program may not be equipped to handle the TIFF formatted images
+used by **EXQUIRES**. Likewise, the ``eanbqh16`` program is only compatible
+with binary-mode PPM images. An example of bridging this gap is found in
+``eanbqh.py``, which uses ImageMagick to manage the conversions between the two
+image formats.
+
+-------
+Metrics
+-------
+
+::
 
     # IMAGE DIFFERENCE METRICS AND AGGREGATORS
     # Each metric must be associated with a data aggregation method.

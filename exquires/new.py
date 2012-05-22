@@ -17,7 +17,7 @@ your project.
 
 The project file is used to specify the following components of the suite:
 
- * Images (sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels)
+ * Images ( sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels )
  * Downsamplers
  * Resampling Ratios
  * Upsamplers
@@ -374,11 +374,6 @@ def main():
     ini[M]['l_2'] = _metric('l_2', 'l_2', 0)
     ini[M]['l_4'] = _metric('l_4', 'l_4', 0)
     ini[M]['l_inf'] = _metric('l_inf', 'l_inf', 0)
-    ini[M]['mssim'] = _metric('mssim', 'l_1', 1)
-    ini[M]['blur_1'] = _metric('blur_1', 'l_1', 0)
-    ini[M]['blur_2'] = _metric('blur_2', 'l_2', 0)
-    ini[M]['blur_4'] = _metric('blur_4', 'l_4', 0)
-    ini[M]['blur_inf'] = _metric('blur_inf', 'l_inf', 0)
     ini[M]['cmc_1'] = _metric('cmc_1', 'l_1', 0)
     ini[M]['cmc_2'] = _metric('cmc_2', 'l_2', 0)
     ini[M]['cmc_4'] = _metric('cmc_4', 'l_4', 0)
@@ -387,6 +382,11 @@ def main():
     ini[M]['xyz_2'] = _metric('xyz_2', 'l_2', 0)
     ini[M]['xyz_4'] = _metric('xyz_4', 'l_4', 0)
     ini[M]['xyz_inf'] = _metric('xyz_inf', 'l_inf', 0)
+    ini[M]['blur_1'] = _metric('blur_1', 'l_1', 0)
+    ini[M]['blur_2'] = _metric('blur_2', 'l_2', 0)
+    ini[M]['blur_4'] = _metric('blur_4', 'l_4', 0)
+    ini[M]['blur_inf'] = _metric('blur_inf', 'l_inf', 0)
+    ini[M]['mssim'] = _metric('mssim', 'l_1', 1)
 
     # Write the project file.
     ini.write()
