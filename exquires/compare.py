@@ -22,11 +22,6 @@
      l_2          :math:`\ell_2` norm, aka Root Mean Squared Error (RMSE)
      l_4          :math:`\ell_4` norm
      l_inf        :math:`\ell_\infty` norm, aka Maximum Absolute Error (MAE)
-     mssim        Mean Structural Similarity Index (MSSIM)
-     blur_1       MSSIM-inspired :math:`\ell_1` norm
-     blur_2       MSSIM-inspired :math:`\ell_2` norm
-     blur_4       MSSIM-inspired :math:`\ell_4` norm
-     blur_inf     MSSIM-inspired :math:`\ell_\infty` norm
      cmc_1        :math:`\ell_1` norm in CMC(1:1) colour space
      cmc_2        :math:`\ell_2` norm in CMC(1:1) colour space
      cmc_4        :math:`\ell_4` norm in CMC(1:1) colour space
@@ -35,6 +30,11 @@
      xyz_2        :math:`\ell_2` norm in XYZ colour space
      xyz_4        :math:`\ell_4` norm in XYZ colour space
      xyz_inf      :math:`\ell_\infty` norm in XYZ colour space
+     blur_1       MSSIM-inspired :math:`\ell_1` norm
+     blur_2       MSSIM-inspired :math:`\ell_2` norm
+     blur_4       MSSIM-inspired :math:`\ell_4` norm
+     blur_inf     MSSIM-inspired :math:`\ell_\infty` norm
+     mssim        Mean Structural Similarity Index (MSSIM)
     ==========   =====================================================
 
 """
