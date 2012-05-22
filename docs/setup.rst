@@ -13,7 +13,7 @@ Requirements
 ============
 
 **EXQUIRES** requires ImageMagick **7**, VIPS **7.24** or newer,
-`Python <http://python.org>`_ **2.7** or newer, and the Python packages
+`Python <http://python.org>`_ **2.7**, and the Python packages
 `ConfigObj <http://www.voidspace.org.uk/python/configobj.html>` and
 `NumPy <http://numpy.scipy.org/>`.
 
