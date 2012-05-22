@@ -113,7 +113,7 @@ We will look at each section of the project file using a simple example.
     #     1. Error metric command, using the following replacement fields:
     #         {0} = reference image
     #         {1} = test image
-    #     2. Aggragator command, using the following replacement field:
+    #     2. Aggregator command, using the following replacement field:
     #         {0} = list of error data to aggregate
     #     3. Best-to-worst ordering, given as a 0 or 1:
     #         0 = ascending

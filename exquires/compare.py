@@ -52,7 +52,7 @@ class Metrics(object):
 
     """This class contains error metrics to be used on sRGB images.
 
-    The :math:`\ell_1`, :math:`\ell_2`, :math:`\ell_4`, and :math:`\ell_inf`
+    The :math:`\ell_1`, :math:`\ell_2`, :math:`\ell_4`, and :math:`\ell_\infty`
     metrics are normalized by L, the largest possible pixel value of the input
     images (the lowest is assumed to be 0). The range of output for these
     metrics is [0, 100].
