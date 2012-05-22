@@ -17,14 +17,13 @@ import os
 
 from setuptools import setup, find_packages
 
-from exquires import __version__
+from exquires import __version__ as VERSION
 
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
-VERSION = str(__version__)
-PACKAGES = find_packages(exclude=['ez_setup']),
+PACKAGES = find_packages(exclude=['ez_setup'])
 DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.rivetsforbreakfast.com'
 LICENSE = 'BSD 2-Clause License'
@@ -55,9 +54,9 @@ CONSOLE_SCRIPTS = [
 
 params = dict(
     name=NAME,
-#    version=VERSION,
+    version=VERSION,
     packages=PACKAGES,
-#    install_requires=REQUIREMENTS,
+    install_requires=REQUIREMENTS,
 
     # Metadata for PyPI.
     author=AUTHOR,
@@ -67,7 +66,7 @@ params = dict(
     keywords=KEYWORDS,
     url=URL,
     classifiers=CLASSIFIERS,
-    entry_points = { 'console_scripts': CONSOLE_SCRIPTS }
+    entry_points={'console_scripts': CONSOLE_SCRIPTS}
 )
 
 setup(**params)
