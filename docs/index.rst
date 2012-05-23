@@ -47,7 +47,7 @@ several modules, including the following:
 * `fnmatch <http://docs.python.org/library/fnmatch.html>`_ (handle wildcard characters)
 * `inspect <http://docs.python.org/library/inspect.html>`_ (get a list of methods for a class)
 * `numpy <http://numpy.scipy.org/>`_ (apply operations to lists of numbers)
-* `re <http://docs.python.org/library/re.html`_ (handle arguments with hypenated ranges)
+* `re <http://docs.python.org/library/re.html>`_ (handle arguments with hypenated ranges)
 * `sqlite3 <http://docs.python.org/library/sqlite3.html>`_ (database to store image comparison data)
 * `subprocess <http://docs.python.org/library/subprocess.html>`_ (call external applications)
 * `vipsCC <http://www.vips.ecs.soton.ac.uk/index.php?title=Python>`_ (Python interface to VIPS <http://www.vips.ecs.soton.ac.uk/>`_)
