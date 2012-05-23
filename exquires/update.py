@@ -26,7 +26,6 @@ To view aggregated error data, use **exquires-report**.
 
 import argparse
 import os
-import re
 import shutil
 from subprocess import call, check_output
 

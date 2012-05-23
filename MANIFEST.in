@@ -5,3 +5,4 @@ include LICENSE.txt
 include README.rst
 include MANIFEST.in
 recursive-include exquires *.py *.icc *.tif
+recursive-include examples *.h *.c *.py *.rst

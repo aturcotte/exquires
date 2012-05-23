@@ -4,22 +4,20 @@
 Detailed Installation Instructions
 **********************************
 
-The following instructions are for Debian/Ubuntu Linux. For other platforms,
-the setup is generally the same, with the exeption of installing system
-dependencies.  
+The following instructions are for Debian/Ubuntu/Mint Linux. For other
+platforms, the setup is generally the same, with the exeption of installing
+system dependencies.  
 
 ============
 Requirements
 ============
 
-**EXQUIRES** requires ImageMagick **7**, VIPS **7.24** or newer,
+**EXQUIRES** requires `ImageMagick <http://www.imagemagick.org>`_ **7** from
+May 13, 2012 or later (due to changes to the Kaiser filter),
+`VIPS <http://www.vips.ecs.soton.ac.uk/>`_ **7.24** or newer,
 `Python <http://python.org>`_ **2.7**, and the Python packages
-`ConfigObj <http://www.voidspace.org.uk/python/configobj.html>` and
-`NumPy <http://numpy.scipy.org/>`.
-
-The following installaton instructions are for Debian/Ubuntu Linux. For other
-platforms, the setup is generally the same, with the exception of installing
-system dependencies.  
+`ConfigObj <http://www.voidspace.org.uk/python/configobj.html>`_ and
+`NumPy <http://numpy.scipy.org/>`_.
 
 ==========================================
 Installing ImageMagick 7 alpha from source
@@ -59,7 +57,7 @@ Installing EXQUIRES
 
     $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
     
-* Install EXQUIRES from PyPI using pip::
+* Install **EXQUIRES** from PyPI using pip::
 
     $ sudo pip install -U exquires
 

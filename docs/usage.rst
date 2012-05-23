@@ -4,6 +4,25 @@
 Usage Instructions
 ******************
 
+**EXQUIRES** comes with four programs to create and maintain a project:
+
+* **exquires-new**
+* **exquires-run**
+* **exquires-update**
+* **exquires-report**
+
+as well as two programs that are responsible for computing image differences
+and aggregating the results:
+
+* **exquires-compare**
+* **exquires-aggregate**
+
+Each of these programs include a ``-h``/``--help`` option to display usage
+information and a ``-v``/``--version`` option to display the version number.
+
+The following sections will explain how to make use of these programs to
+compute data and view aggregated results.
+
 ===========================
 Obtain suitable test images
 ===========================
@@ -14,7 +33,7 @@ Obtain suitable test images
 is included as a default selection.
 
 A separate distribution of test images converted from RAW is available
-`here <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`.
+`here <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_.
 The examples in this section make use of several images from this collection.
 
 =========================
@@ -56,8 +75,8 @@ a list (wildcards are supported) of images with the following properties:
 :Size: 840x840 pixels
 
 To demonstrate, we will create a new project ``example_proj`` using the
-`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`
-collection.
+`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_
+collection::
 
     $ exquires-new -p example_proj -I 840x840images/images/*
 
@@ -75,8 +94,10 @@ Images
 
 This section lists the paths to the test images that will be used. We will keep
 this example project small by removing all but two of the
-`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`,
-**apartments.tif** and **cabins.tif**::
+`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_,
+**apartments.tif** and **cabins.tif**
+
+.. code-block:: ini
 
     # TEST IMAGES
     # Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.
@@ -93,7 +114,9 @@ Ratios
 ------
 
 This section lists the resampling ratios and specifies the width and
-height of the downsampled image for each ratio. Here are the default ratios::
+height of the downsampled image for each ratio. Here are the default ratios
+
+.. code-block:: ini
 
     # RESAMPLING RATIOS
     # The test images are downsampled to the specified sizes.
@@ -113,7 +136,9 @@ Downsamplers
 
 This section lists the downsampling methods that will be used to reduce each of
 the test images. We have edited our example project to include a small subset
-of the defaults::
+of the defaults
+
+.. code-block:: ini
 
     # DOWNSAMPLING COMMANDS
     # To add a downsampler, provide the command to execute it.
@@ -139,7 +164,15 @@ Also note that the methods suffixed with ``_srgb`` do not apply gamma
 correction, meaning that the sRGB images are downsampled using linear averaging
 even though sRGB is a non-linear colour space.
 The methods suffixed with ``_linear`` convert the input image to linear RGB
-before downsampling, then convert the result back to sRGB.
+with sRGB primaries before downsampling, then convert the result back to sRGB,
+using the **ImageMagick** command ``-colorspace``. Such suffixes are useful
+because they allow one to separately aggregate the
+results of only downsampling or upsampling using the two main "tracks" without
+having to list the methods individually. In the same spirit if, for example,
+you were to program downsamplers or upsamplers that convert into and out of
+sRGB using ICC profiles, we would suggest that you use something like the
+``_icc`` suffix; if you were to go through the XYZ colourspace, we would
+suggest ``_xyz``.
 
 ----------
 Upsamplers
@@ -153,7 +186,9 @@ Since the purpose of **EXQUIRES** is to assess the accuracy of upsampling
 methods, you may wish to add your own method to see how it ranks alongside
 pre-existing methods. For example, we can compare our own implementation of
 the EANBQH (Exact Area image upsizing with Natural BiQuadratic Histosplines)
-method with several Lanczos variations::
+method with several Lanczos variations
+
+.. code-block:: ini
 
     # UPSAMPLING COMMANDS
     # To add an upsampler, provide the command to execute it.
@@ -181,7 +216,11 @@ image formats.
 Metrics
 -------
 
-::
+This section lists the image comparison metrics that will be used to assess
+the accuracy of the re-enlarged images. Each metric is associated with an
+aggregator and a best-to-worst ordering, as seen in the default settings
+
+.. code-block:: ini
 
     # IMAGE DIFFERENCE METRICS AND AGGREGATORS
     # Each metric must be associated with a data aggregation method.
@@ -195,17 +234,46 @@ Metrics
     #         0 = ascending
     #         1 = descending
     [Metrics]
-    l_1 = compare.py l_1 {0} {1}, aggregate.py l_1 {0}, 0
-    l_2 = compare.py l_2 {0} {1}, aggregate.py l_2 {0}, 0
-    l_inf = compare.py l_inf {0} {1}, aggregate.py l_inf {0}, 0
-    mssim = compare.py mssim {0} {1}, aggregate.py l_1 {0}, 1
+    l_1 = exquires-compare l_1 {0} {1}, exquires-aggregate l_1 {0}, 0
+    l_2 = exquires-compare l_2 {0} {1}, exquires-aggregate l_2 {0}, 0
+    l_4 = exquires-compare l_4 {0} {1}, exquires-aggregate l_4 {0}, 0
+    l_inf = exquires-compare l_inf {0} {1}, exquires-aggregate l_inf {0}, 0
+    cmc_1 = exquires-compare cmc_1 {0} {1}, exquires-aggregate l_1 {0}, 0
+    cmc_2 = exquires-compare cmc_2 {0} {1}, exquires-aggregate l_2 {0}, 0
+    cmc_4 = exquires-compare cmc_4 {0} {1}, exquires-aggregate l_4 {0}, 0
+    cmc_inf = exquires-compare cmc_inf {0} {1}, exquires-aggregate l_inf {0}, 0
+    xyz_1 = exquires-compare xyz_1 {0} {1}, exquires-aggregate l_1 {0}, 0
+    xyz_2 = exquires-compare xyz_2 {0} {1}, exquires-aggregate l_2 {0}, 0
+    xyz_4 = exquires-compare xyz_4 {0} {1}, exquires-aggregate l_4 {0}, 0
+    xyz_inf = exquires-compare xyz_inf {0} {1}, exquires-aggregate l_inf {0}, 0
+    blur_1 = exquires-compare blur_1 {0} {1}, exquires-aggregate l_1 {0}, 0
+    blur_2 = exquires-compare blur_2 {0} {1}, exquires-aggregate l_2 {0}, 0
+    blur_4 = exquires-compare blur_4 {0} {1}, exquires-aggregate l_4 {0}, 0
+    blur_inf = exquires-compare blur_inf {0} {1}, exquires-aggregate l_inf {0}, 0
+    mssim = exquires-compare mssim {0} {1}, exquires-aggregate l_1 {0}, 1
+
+Note that these default metric definitions make use of ``exquires-compare``
+and ``exquires-aggregate``. Also note that most of the metrics return an error
+measure, meaning that a lower result is better. MSSIM, on the other hand, is
+a similarity index, meaning that a higher result is better.
+
+For more information on the default metrics, see :ref:`Metrics-class`.
+
+For more information on the aggregation methods, see :ref:`Aggregate-class`.
 
 =================================
 Compute the image difference data
 =================================
 
-Once the project file contains the desired configuration, you can compute the
-image difference data using::
+The basic syntax to run a project is::
+
+    $ exquires-run
+
+which will read the project file ``project1.ini``, downsample the images
+by each ratio using each downsampler, re-enlarge the downsampled images using
+each upsampler, and compute the difference using each metric.
+
+You can specify the project name using::
 
     $ exquires-run -p my_project
 
@@ -213,35 +281,99 @@ or::
 
     $ exquires-run --proj my_project
 
-Once again, if you leave out the ``-p``/``--proj`` option, ``exquires-run`` will
-look for a project called **project1**.
+By default, ``exquires-run`` displays progress information. You can disable
+this output using::
 
-By default, ``exquires-run`` displays progress information as it computes the
-image difference data. If you wish do disable this feature, use the
-``-s``/``--silent`` option::
-
-    $ exquires-run -p my_project -s
+    $ exquires-run -s
 
 or::
 
-    $ exquires-run --proj my_project --silent
+    $ exquires-run --silent
+
+.. warning::
+
+    With large project files, this program can take an *extremely* long time to
+    run. For slower machines, it is recommended to start with a small set of
+    test images. You can add additional images later and call
+    ``exquires-update`` to compute the new data.
 
 ================================
 Update the image difference data
 ================================
 
-If you make changes to the project file after calling ``exquires-run`` and you
-wish to compute only the new data rather than recomputing the entire data set,
-use ``exquires-update``, which supports the same options as ``exquires-run``.
+If you make changes to the project file after calling ``exquires-run``,
+running it again will compute all data, including data for unchanged entries
+in the project file. To compute only the new data rather than recomputing the
+entire data set, use ``exquires-update``, which supports the same options as
+``exquires-run``.
 
 ========================================
 Generate a table of aggregate error data
 ========================================
 
 Once the image difference data has been computed, you can generate various
-aggreagations of the data and either display it in the terminal or write it to
+aggregations of the data and either display it in the terminal or write it to
 a file.
 
-::
+The basic syntax to print aggregated data is::
+
+    $ exquires-report
+
+which will read a backup of the project file ``project1.ini`` that was created
+the last time ``exquires-run`` or ``exquires-update`` was called, select the
+appropriate values from the database, aggregate the data, and print the
+results in tabular format to standard output.
+
+As with the other programs, you can specify the project name using::
 
     $ exquires-report -p my_project
+
+or::
+
+    $ exquires-report --proj my_project
+
+
+There are three components that determine which database tables to aggregate
+across: images, ratios, and downsamplers. You can specify the images using::
+
+    $ exquires-report -I my_images
+
+or::
+
+    $ exquires-report --image my_images
+
+
+TALK ABOUT DOWNSAMPLERS::
+
+    $ exquires-report -D my_downsamplers
+
+or::
+
+    $ exquires-report --down my_downsamplers
+
+
+TALK ABOUT RATIOS::
+
+    $ exquires-report -R my_ratios
+
+or::
+
+    $ exquires-report --ratio my_ratios
+
+
+TALK ABOUT UPSAMPLERS::
+
+    $ exquires-report -U my_upsamplers
+
+or::
+
+    $ exquires-report --up my_upsamplers
+
+
+TALK ABOUT METRICS::
+
+    $ exquires-report -M my_metrics
+
+or::
+
+    $ exquires-report --metric my_metrics

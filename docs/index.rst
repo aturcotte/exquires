@@ -2,7 +2,7 @@
 EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ***************************************************************************
 
-.. image:: assets/exquires-420.png
+.. image:: assets/exquires-400.png
 
 ----
 
@@ -28,13 +28,34 @@ and the orginal images is determined by using image comparison metrics. When
 viewing the comparison data, it is possible to aggregate across any combination
 of test images, downsamplers, and resampling ratios.
 
-The following components of **EXQUIRES** are fully configurable:
+**EXQUIRES** is fully extensible: External applications can be used alongside
+its own to compute downsampled and upsampled images as well as image
+difference metrics. The following components of **EXQUIRES** are configurable:
 
 * Test Images
 * Resampling Ratios
 * Downsampling Methods
 * Upsampling Methods
 * Difference Metrics
+
+**EXQUIRES** is written in `Python <http://python.org>`_ and makes use of
+several modules, including the following:
+
+* `argparse <http://code.google.com/p/argparse/>`_ (handle command-line arguments)
+* `configobj <http://www.voidspace.org.uk/python/configobj.html>`_ (create and read *.ini* files)
+* `curses <http://docs.python.org/library/curses.html>`_ (display progress information)
+* `fnmatch <http://docs.python.org/library/fnmatch.html>`_ (handle wildcard characters)
+* `inspect <http://docs.python.org/library/inspect.html>`_ (get a list of methods for a class)
+* `numpy <http://numpy.scipy.org/>`_ (apply operations to lists of numbers)
+* `re <http://docs.python.org/library/re.html`_ (handle arguments with hypenated ranges)
+* `sqlite3 <http://docs.python.org/library/sqlite3.html>`_ (database to store image comparison data)
+* `subprocess <http://docs.python.org/library/subprocess.html>`_ (call external applications)
+* `vipsCC <http://www.vips.ecs.soton.ac.uk/index.php?title=Python>`_ (Python interface to VIPS <http://www.vips.ecs.soton.ac.uk/>`_)
+
+The following image processing applications are also used:
+
+* `ImageMagick <http://www.imagemagick.org>`_ (resample images)
+* `VIPS <http://www.vips.ecs.soton.ac.uk/>`_ (compute image difference metrics)
 
 =========
 Resources

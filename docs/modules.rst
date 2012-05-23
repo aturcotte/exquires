@@ -2,10 +2,14 @@
 Modules & Classes
 *****************
 
+.. _aggregate-module:
+
 ===========================
 The :mod:`aggregate` Module
 ===========================
 .. automodule:: aggregate
+
+.. _Aggregate-class:
 
 ----------------------------
 The :class:`Aggregate` Class
@@ -13,10 +17,14 @@ The :class:`Aggregate` Class
 .. autoclass:: aggregate.Aggregate
     :members:
 
+.. _compare-module:
+
 =========================
 The :mod:`compare` Module
 =========================
 .. automodule:: compare
+
+.. _Metrics-class:
 
 ----------------------------
 The :class:`Metrics` Class
