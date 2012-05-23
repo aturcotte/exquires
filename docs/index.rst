@@ -2,7 +2,7 @@
 EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ***************************************************************************
 
-.. image:: assets/exquires-400.png
+.. image:: assets/exquires-final-733.png
 
 ----
 
