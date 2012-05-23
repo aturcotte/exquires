@@ -23,16 +23,22 @@ May 13, 2012 or later (due to changes to the Kaiser filter),
 Installing ImageMagick 7 alpha from source
 ==========================================
 
-* Install dependencies on Debian/Ubuntu::
+* Install dependencies on Debian/Ubuntu/Mint:
+
+.. code-block:: console
 
     $ sudo apt-get install imagemagick libmagick++-dev
 
-* Download and untar the ImageMagick 7 alpha source::
+* Download and untar the ImageMagick 7 alpha source:
+
+.. code-block:: console
 
     $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
     $ tar xvfz ImageMagick.tar.gz
 
-* Configure, compile and install ImageMagick::
+* Configure, compile and install ImageMagick:
+
+.. code-block:: console
 
     $ cd ImageMagick-7.0.0-0
     $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
@@ -40,11 +46,15 @@ Installing ImageMagick 7 alpha from source
     $ make
     $ sudo make install
 
-* Configure the dynamic linker run-time bindings::
+* Configure the dynamic linker run-time bindings:
+
+.. code-block:: console
 
     $ sudo ldconfig /usr/local/lib
 
-* (Optional) Ensure that the correct version is now installed::
+* (Optional) Ensure that the correct version is now installed:
+
+.. code-block:: console
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
@@ -53,11 +63,15 @@ Installing ImageMagick 7 alpha from source
 Installing EXQUIRES
 ===================
 
-* Install remaining dependencies::
+* Install remaining dependencies:
+
+.. code-block:: console
 
     $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
     
-* Install **EXQUIRES** from PyPI using pip::
+* Install **EXQUIRES** from PyPI using pip:
+
+.. code-block:: console
 
     $ sudo pip install -U exquires
 
@@ -65,6 +79,6 @@ Installing EXQUIRES
 Installing latest EXQUIRES dev branch from git repo
 ===================================================
 
-::
+.. code-block:: console
 
-    pip install -e git+http://github.com/aturcotte/exquires.git#egg=exquires
+    sudo pip install -e git+http://github.com/aturcotte/exquires.git#egg=exquires

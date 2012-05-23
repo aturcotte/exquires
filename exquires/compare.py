@@ -11,9 +11,9 @@
 
 """Print the result of calling a difference metric on two image files.
 
-    -------------
-    Error Metrics
-    -------------
+    ------------------
+    Difference Metrics
+    ------------------
 
     ==========   =====================================================
      NAME         DESCRIPTION

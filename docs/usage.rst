@@ -6,22 +6,23 @@ Usage Instructions
 
 **EXQUIRES** comes with four programs to create and maintain a project:
 
-* **exquires-new**
-* **exquires-run**
-* **exquires-update**
-* **exquires-report**
+* ``exquires-new`` (see :ref:`exquires-new-label`)
+* ``exquires-run`` (see :ref:`exquires-run-label`)
+* ``exquires-update`` (see :ref:`exquires-update-label`)
+* ``exquires-report`` (see :ref:`exquires-report-label`)
 
 as well as two programs that are responsible for computing image differences
 and aggregating the results:
 
-* **exquires-compare**
-* **exquires-aggregate**
+* ``exquires-compare`` (see :ref:`exquires-compare-label`)
+* ``exquires-aggregate`` (see :ref:`exquires-aggregate-label`)
 
 Each of these programs include a ``-h``/``--help`` option to display usage
 information and a ``-v``/``--version`` option to display the version number.
 
 The following sections will explain how to make use of these programs to
 compute data and view aggregated results.
+
 
 ===========================
 Obtain suitable test images
@@ -36,6 +37,9 @@ A separate distribution of test images converted from RAW is available
 `here <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_.
 The examples in this section make use of several images from this collection.
 
+
+.. _exquires-new-label:
+
 =========================
 Create a new project file
 =========================
@@ -49,7 +53,9 @@ to use:
 * Upsamplers
 * Difference Metrics
 
-The basic syntax to create a new project is::
+The basic syntax to create a new project is:
+
+.. code-block:: console
 
     $ exquires-new
 
@@ -58,11 +64,15 @@ which will create the project file ``project1.ini`` and include the image
 along with a default collection of ratios, downsamplers, upsamplers, and
 metrics.
 
-In order to specify a project name and a set of test images, type::
+In order to specify a project name and a set of test images, type:
+
+.. code-block:: console
 
     $ exquires-new -p my_project -I my_images
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-new --proj my_project --image my_images
 
@@ -76,7 +86,9 @@ a list (wildcards are supported) of images with the following properties:
 
 To demonstrate, we will create a new project ``example_proj`` using the
 `840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_
-collection::
+collection:
+
+.. code-block:: console
 
     $ exquires-new -p example_proj -I 840x840images/images/*
 
@@ -95,7 +107,7 @@ Images
 This section lists the paths to the test images that will be used. We will keep
 this example project small by removing all but two of the
 `840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_,
-**apartments.tif** and **cabins.tif**
+**apartments.tif** and **cabins.tif**.
 
 .. code-block:: ini
 
@@ -114,7 +126,7 @@ Ratios
 ------
 
 This section lists the resampling ratios and specifies the width and
-height of the downsampled image for each ratio. Here are the default ratios
+height of the downsampled image for each ratio. Here are the default ratios:
 
 .. code-block:: ini
 
@@ -136,7 +148,7 @@ Downsamplers
 
 This section lists the downsampling methods that will be used to reduce each of
 the test images. We have edited our example project to include a small subset
-of the defaults
+of the defaults.
 
 .. code-block:: ini
 
@@ -186,7 +198,7 @@ Since the purpose of **EXQUIRES** is to assess the accuracy of upsampling
 methods, you may wish to add your own method to see how it ranks alongside
 pre-existing methods. For example, we can compare our own implementation of
 the EANBQH (Exact Area image upsizing with Natural BiQuadratic Histosplines)
-method with several Lanczos variations
+method with several Lanczos variations.
 
 .. code-block:: ini
 
@@ -218,7 +230,7 @@ Metrics
 
 This section lists the image comparison metrics that will be used to assess
 the accuracy of the re-enlarged images. Each metric is associated with an
-aggregator and a best-to-worst ordering, as seen in the default settings
+aggregator and a best-to-worst ordering, as seen in the default settings.
 
 .. code-block:: ini
 
@@ -261,11 +273,16 @@ For more information on the default metrics, see :ref:`Metrics-class`.
 
 For more information on the aggregation methods, see :ref:`Aggregate-class`.
 
+
+.. _exquires-run-label:
+
 =================================
 Compute the image difference data
 =================================
 
-The basic syntax to run a project is::
+The basic syntax to run a project is:
+
+.. code-block:: console
 
     $ exquires-run
 
@@ -273,20 +290,28 @@ which will read the project file ``project1.ini``, downsample the images
 by each ratio using each downsampler, re-enlarge the downsampled images using
 each upsampler, and compute the difference using each metric.
 
-You can specify the project name using::
+You can specify the project name using:
+
+.. code-block:: console
 
     $ exquires-run -p my_project
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-run --proj my_project
 
 By default, ``exquires-run`` displays progress information. You can disable
-this output using::
+this output using:
+
+.. code-block:: console
 
     $ exquires-run -s
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-run --silent
 
@@ -296,6 +321,9 @@ or::
     run. For slower machines, it is recommended to start with a small set of
     test images. You can add additional images later and call
     ``exquires-update`` to compute the new data.
+
+
+.. _exquires-update-label:
 
 ================================
 Update the image difference data
@@ -307,6 +335,9 @@ in the project file. To compute only the new data rather than recomputing the
 entire data set, use ``exquires-update``, which supports the same options as
 ``exquires-run``.
 
+
+.. _exquires-report-label:
+
 ========================================
 Generate a table of aggregate error data
 ========================================
@@ -315,7 +346,9 @@ Once the image difference data has been computed, you can generate various
 aggregations of the data and either display it in the terminal or write it to
 a file.
 
-The basic syntax to print aggregated data is::
+The basic syntax to print aggregated data is:
+
+.. code-block:: console
 
     $ exquires-report
 
@@ -324,56 +357,286 @@ the last time ``exquires-run`` or ``exquires-update`` was called, select the
 appropriate values from the database, aggregate the data, and print the
 results in tabular format to standard output.
 
-As with the other programs, you can specify the project name using::
+As with the other programs, you can specify the project name using:
+
+.. code-block:: console
 
     $ exquires-report -p my_project
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --proj my_project
 
 
+Normally, ``exquires-report`` prints the data as a plaintext table. You may
+wish to include the results in a LaTeX document instead, which can be done
+using:
+
+.. code-block:: console
+
+    $ exquires-report -l
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --latex
+
+Likewise, ``exquires-report`` normally shows the aggregated data when it prints
+the table. You can instead show the rankings for each upsampling method by
+using:
+
+.. code-block:: console
+
+    $ exquires-report -r
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --rank
+
+If you do decide to display the aggregated data instead of the rankings,
+``exquires-report`` will display 4 digits by default. You can select
+any number of digits between 1 and 16. For example, you can change the number
+of digits to to 6 using:
+
+.. code-block:: console
+
+    $ exquires-report -d 6
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --digits 6
+
+Whether you display aggregated data or ranks, by default the upsamplers in the
+printed table will be sorted from best-to-worst according to the first metric
+specified. If you wish to sort according to a different metric (including
+those that are not selected to be displayed), use:
+
+.. code-block:: console
+
+    $ exquires-report -s my_metric
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --sort my_metric
+
+where ``my_metric`` is one of the metrics defined in the project file.
+
+
+By default, ``exquires-report`` prints the aggregated data to standard output.
+You can write the aggregated data to a file by using:
+
+.. code-block:: console
+
+    $ exquires-report -f my_file
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --file my_file
+
+where ``my_file`` is the file you wish to write the data to.
+
+
 There are three components that determine which database tables to aggregate
-across: images, ratios, and downsamplers. You can specify the images using::
+across: images, ratios, and downsamplers. By default, the image comparison data
+is aggregated across all images, ratios, and downsampler. If you wish to
+aggregate over a subset of the database, use the following options.
+
+You can specify the images to aggregate across by using:
+
+.. code-block:: console
 
     $ exquires-report -I my_images
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --image my_images
 
+where ``my_images`` is a list of images defined in the project file.
 
-TALK ABOUT DOWNSAMPLERS::
+.. note::
+
+    The arguments passed to the ``-I``/``--image`` option support wildcard
+    characters.
+
+You can specify the downsamplers to aggregate across by using:
+
+.. code-block:: console
 
     $ exquires-report -D my_downsamplers
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --down my_downsamplers
 
+where ``my_downsamplers`` is a list of downsamplers defined in the project file.
 
-TALK ABOUT RATIOS::
+.. note::
+
+    The arguments passed to the ``-D``/``--down`` option support wildcard
+    characters.
+
+You can specify the ratios to aggregate across by using:
+
+.. code-block:: console
 
     $ exquires-report -R my_ratios
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --ratio my_ratios
 
 
-TALK ABOUT UPSAMPLERS::
+where ``my_ratios`` is a list of images defined in the project file.
+
+.. note::
+
+    The arguments passed to the ``-R``/``--ratio`` option support hyphenated
+    ranges.
+
+For example, to aggregate over the ratios **1**, **2**, **3**, **4**, and **6**,
+type:
+
+.. code-block:: console
+
+    $ exquires-report -R 1-4 6
+
+Regardless of which images, downsamplers, and ratios the data is aggregated
+across, the default behaviour is to display data for each upsampler and
+metric, with each row representing an upsampler and each column representing
+a metric. If you wish to display only certain rows and columns, use the
+following options.
+
+You can specify the upsamplers (rows) to display by using:
+
+.. code-block:: console
 
     $ exquires-report -U my_upsamplers
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --up my_upsamplers
 
+where ``my_upsamplers`` is a list of upsamplers defined in the project file.
 
-TALK ABOUT METRICS::
+.. note::
+
+    The arguments passed to the ``-U``/``--up`` option support wildcard
+    characters.
+
+For example, to only display data for the upsamplers suffixed with
+``_srgb``, type:
+
+.. code-block:: console
+
+    $ exquires-report -U *_srgb
+
+You can specify the metrics (columns) to display by using:
+
+.. code-block:: console
 
     $ exquires-report -M my_metrics
 
-or::
+or:
+
+.. code-block:: console
 
     $ exquires-report --metric my_metrics
+
+where ``my_metrics`` is a list of metrics defined in the project file.
+
+.. note::
+
+    The arguments passed to the ``-M``/``--metric`` option support wildcard
+    characters.
+
+For example, to only display data for the metrics prefixed with ``xyz_``,
+type:
+
+.. code-block:: console
+
+    $ exquires-report -M xyz_*
+
+
+.. _exquires-compare-label:
+
+=========================
+Manually comparing images
+=========================
+
+The ``exquires-run`` and ``exquires-update`` programs compute data to be
+inserted into the database by calling ``exquires-compare``
+(see :ref:`compare-module`), which provides an
+interface to :ref:`Metrics-class`.
+
+You can call ``exquires-compare`` directly on any pair of images with the
+same dimensions by using:
+
+.. code-block:: console
+
+    $ exquires-compare my_metric my_image1 my_image2
+
+where ``my_image1`` and ``my_image2`` are the images to compare and
+``my_metric`` is one of the metrics described in :ref:`compare-module`.
+
+By default, ``exquires-compare`` expects images with 16 bits per sample: each
+value is between 0 and 65535. You can change the maximum value from 65535 to
+anything you like. For example, to support images with 8 bits per sample
+(values between 0 and 255), type:
+
+.. code-block:: console
+
+    $ exquires-compare my_metric my_image1 my_image2 -L 255
+
+
+.. _exquires-aggregate-label:
+
+=========================
+Manually aggregating data
+=========================
+
+The ``exquires-report`` program aggregates the image comparison data before
+printing it to standard output or writing it to a file by calling
+``exquires-aggregate`` (see :ref:`aggregate-module`), which provides an
+interface to :ref:`Aggregate-class`.
+
+You can call ``exquires-aggregate`` directly on any list of numbers by using:
+
+.. code-block:: console
+
+    $ exquires-aggregate my_method my_numbers
+
+where ``my_numbers`` is a list of numbers separated by spaces and ``my_method``
+is one of the aggregation methods described in :ref:`aggregate-module`.
+
+For example, to return the average of a list of numbers, type:
+
+.. code-block:: console
+
+    $ exquires-aggregate l_1 1.2 2.4 3.6 4.8
+    3.000000000000000
+
+and to find the maximum, type:
+
+.. code-block:: console
+
+    $ exquires-aggregate l_inf 1.2 2.4 3.6 4.8
+    4.800000000000000
