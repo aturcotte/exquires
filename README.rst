@@ -37,23 +37,30 @@ or download the `source distribution from PyPI <http://pypi.python.org/pypi/exqu
 Detailed Installation Instructions
 ==================================
 
-These instructions are for Debian/Ubuntu Linux.  For other platforms, the setup
-is generally the same, with the exception of installing system dependencies.  
+These instructions are for Debian/Ubuntu/Mint Linux.  For other platforms, the
+setup is generally the same, with the exception of installing system
+dependencies.  
 
 ------------------------------------------
 Installing ImageMagick 7 alpha from source
 ------------------------------------------
 
-* install dependencies on Debian/Ubuntu::
+* Install dependencies on Debian/Ubuntu/Mint:
+
+.. code-block:: console
 
     $ sudo apt-get install imagemagick libmagick++-dev
 
-* download and untar the ImageMagick 7 alpha source::
+* download and untar the ImageMagick 7 alpha source:
+
+.. code-block:: console
 
     $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
     $ tar xvfz ImageMagick.tar.gz
 
-* configure, compile and install ImageMagick::
+* configure, compile and install ImageMagick:
+
+.. code-block:: console
 
     $ cd ImageMagick-7.0.0-0
     $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
@@ -61,11 +68,15 @@ Installing ImageMagick 7 alpha from source
     $ make
     $ sudo make install
 
-* configure the dynamic linker run-time bindings::
+* configure the dynamic linker run-time bindings:
+
+.. code-block:: console
 
     $ sudo ldconfig /usr/local/lib
 
-* (optional) ensure that the correct version is now installed::
+* (optional) ensure that the correct version is now installed:
+
+.. code-block:: console
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
@@ -74,11 +85,15 @@ Installing ImageMagick 7 alpha from source
 Installing EXQUIRES
 -------------------
 
-* install dependencies::
+* install dependencies:
+
+.. code-block:: console
 
     $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
     
-* install EXQUIRES from PyPI using pip::
+* install EXQUIRES from PyPI using pip:
+
+.. code-block:: console
 
     $ sudo pip install -U exquires
 
