@@ -52,7 +52,7 @@ def _magick(method, **kwargs):
     lin = kwargs.get('lin', False)
     dist = kwargs.get('dist', False)
     lobes = kwargs.get('lobes', 0)
-    blur = kwargs.get('blur', 0)
+    blur = kwargs.get('blur', -1)
     beta = kwargs.get('beta', 0)
 
     # Create and return command string.
@@ -63,7 +63,7 @@ def _magick(method, **kwargs):
         cmd = ' '.join([cmd, '-filter', method])
     if lobes:
         cmd = ''.join([cmd, ' -define filter:lobes=', str(lobes)])
-    if blur:
+    if blur >= 0:
         cmd = ''.join([cmd, ' -define filter:blur=', str(blur)])
     if beta:
         cmd = ''.join([cmd, ' -define filter:kaiser-beta=', str(beta)])
@@ -172,8 +172,8 @@ def main():
     ini[D]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
     ini[D]['lanczos3_srgb'] = _magick('Lanczos')
     ini[D]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[D]['nearest_srgb'] = _magick('Point')
-    ini[D]['nearest_linear'] = _magick('Point', lin=True)
+    ini[D]['nearest_srgb'] = _magick('Box', dist=True, blur=0)
+    ini[D]['nearest_linear'] = _magick('Box', dist=True, blur=0, lin=True)
 
     # Define the list of upsamplers to use.
     ini[U] = {}
