@@ -12,9 +12,11 @@
 """Classes and methods used for parsing arguments and formatting help text."""
 
 import argparse
+import os
 import fnmatch
 import re
 
+from configobj import ConfigObj
 
 def format_doc(docstring):
     """Parse the module docstring and re-format all reST markup.
@@ -23,29 +25,24 @@ def format_doc(docstring):
 
     """
     # Deal with LaTeX math symbols.
-    l1 = re.sub(r':\S+:', '', docstring)
-    l2 = re.sub('`', '', l1)
-    l3 = re.sub(r'\\ell', 'L', l2)
-    l4 = re.sub(r'\\infty', 'infinity', l3)
+    latex1 = re.sub('`', '', re.sub(r':\S+:', '', docstring))
+    latex2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', latex1))
 
     # Deal with list items.
-    i1 = re.sub(r' \* ', u' \u2022 ', l4)
+    item1 = re.sub(r' \* ', u' \u2022 ', latex2)
 
     # Deal with Sphinx bold formatting.
-    b1 = re.sub(r' \*{2}', r' \033[1m', i1)
-    b2 = re.sub(r'^\*{2}', r'^\033[1m', b1)
-    b3 = re.sub(r'\*{2} ', r'\033[0m ', b2)
-    b4 = re.sub(r'\*{2},', r'\033[0m,', b3)
-    b5 = re.sub(r'\*{2}.', r'\033[0m.', b4)
-    b6 = re.sub(r'\*{2}$', r'\033[0m$', b5)
+    bold1 = re.sub(r' \*{2}', r' \033[1m', item1)
+    bold2 = re.sub(r'^\*{2}', r'^\033[1m', bold1)
+    bold3 = re.sub(r'\*{2} ', r'\033[0m ', bold2)
+    bold4 = re.sub(r'\*{2},', r'\033[0m,', bold3)
+    bold5 = re.sub(r'\*{2}.', r'\033[0m.', bold4)
+    bold6 = re.sub(r'\*{2}$', r'\033[0m$', bold5)
 
     # Deal with Sphinx emphasis formatting.
-    e1 = re.sub(r' \*', r' \033[4m', b6)
-    e2 = re.sub(r'^\*', r'^\033[4m', e1)
-    e3 = re.sub(r'\* ', r'\033[0m ', e2)
-    e4 = re.sub(r'\*,', r'\033[0m,', e3)
-    e5 = re.sub(r'\*.', r'\033[0m.', e4)
-    return re.sub(r'\*$', r'\033[0m$', e5)
+    emph1 = re.sub(r'^\*', r'^\033[4m', re.sub(r' \*', r' \033[4m', bold6))
+    emph2 = re.sub(r'\*,', r'\033[0m,', re.sub(r'\* ', r'\033[0m ', emph1))
+    return re.sub(r'\*$', r'\033[0m$', re.sub(r'\*.', r'\033[0m.', emph2))
 
 
 class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
@@ -133,7 +130,7 @@ class ListParser(argparse.Action):
         for value in values:
             results = fnmatch.filter(value_list, value)
             if not results:
-                tup = value, ', '.join(map(repr, value_list))
+                tup = value, ', '.join([repr(val) for val in value_list])
                 msg = 'invalid choice: %r (choose from %s)' % tup
                 raise argparse.ArgumentError(self, msg)
             matches.update(results)
@@ -154,7 +151,7 @@ class RatioParser(argparse.Action):
             nums = value.split('-')
             if len(nums) == 1:
                 if int(nums[0]) not in value_list:
-                    tup = value, ', '.join(map(repr, value_list))
+                    tup = value, ', '.join([repr(val) for val in value_list])
                     msg = 'invalid choice: %r (choose from %s)' % tup
                     raise argparse.ArgumentError(self, msg)
                 matches.add(int(nums[0]))
@@ -162,7 +159,9 @@ class RatioParser(argparse.Action):
                 value_range = range(int(nums[0]), int(nums[1]) + 1)
                 for num in value_range:
                     if int(num) not in value_range:
-                        tup = value, ', '.join(map(repr, value_list))
+                        tup = value, ', '.join([
+                            repr(val) for val in value_list
+                        ])
                         msg = 'invalid choice: %r (choose from %s)' % tup
                         raise argparse.ArgumentError(self, msg)
                 matches.update(value_range)
@@ -179,7 +178,7 @@ class SortParser(argparse.Action):
     def __call__(self, parser, args, value, option_string=None):
         value_list = getattr(args, 'metrics')
         if value not in value_list:
-            tup = value, ', '.join(map(repr, value_list))
+            tup = value, ', '.join([repr(val) for val in value_list])
             msg = 'invalid choice: %r (choose from %s)' % tup
             raise argparse.ArgumentError(self, msg)
         metric = getattr(args, 'metric')

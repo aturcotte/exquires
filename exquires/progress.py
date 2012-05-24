@@ -18,10 +18,10 @@ information.
 """
 
 import curses
-import os
 import time
 
 
+# pylint: disable-msg=E1101
 class Progress(object):
 
     """This class contains methods for displaying progress in exquires.
@@ -32,12 +32,12 @@ class Progress(object):
 
     """
 
-    def __init__(self, prg, proj, num_operations):
+    def __init__(self, prg, proj, total_ops):
         """This constructor creates a new Progress object.
 
         :param prg: The name of the program that is running.
         :param proj: The name of the project being used.
-        :param num_operations: The total number of operations.
+        :param total_ops: The total number of operations.
 
         """
         self.scr = curses.initscr()
@@ -46,89 +46,89 @@ class Progress(object):
         curses.curs_set(0)
         self.prg = prg
         self.proj = proj
-        self.num_operations = num_operations
-        self.op = 0
+        self.total_ops = total_ops
+        self.num_ops = 0
 
-    def __table_top(self, y, label, content):
+    def __table_top(self, line, label, content):
         """Private method to create the top row of a table.
 
-        :param y: The line number to start drawing.
+        :param line: The line number to start drawing.
         :param label: The label for this table entry.
         :param content: The content for this table entry.
 
         """
         # Top line.
-        self.scr.addch(y, 1, curses.ACS_ULCORNER)
-        for x in range(2, 14):
-            self.scr.addch(y, x, curses.ACS_HLINE)
-        self.scr.addch(y, 14, curses.ACS_TTEE)
-        for x in range(15, 56):
-            self.scr.addch(y, x, curses.ACS_HLINE)
-        self.scr.addch(y, 56, curses.ACS_URCORNER)
+        self.scr.addch(line, 1, curses.ACS_ULCORNER)
+        for column in range(2, 14):
+            self.scr.addch(line, column, curses.ACS_HLINE)
+        self.scr.addch(line, 14, curses.ACS_TTEE)
+        for column in range(15, 56):
+            self.scr.addch(line, column, curses.ACS_HLINE)
+        self.scr.addch(line, 56, curses.ACS_URCORNER)
 
         # Content line.
-        self.scr.addch(y + 1, 1, curses.ACS_VLINE)
-        self.scr.addstr(y + 1, 2, label)
-        self.scr.addch(y + 1, 14, curses.ACS_VLINE)
-        self.scr.addstr(y + 1, 16, content)
-        self.scr.addch(y + 1, 56, curses.ACS_VLINE)
+        self.scr.addch(line + 1, 1, curses.ACS_VLINE)
+        self.scr.addstr(line + 1, 2, label)
+        self.scr.addch(line + 1, 14, curses.ACS_VLINE)
+        self.scr.addstr(line + 1, 16, content)
+        self.scr.addch(line + 1, 56, curses.ACS_VLINE)
 
         # Bottom line.
-        self.scr.addch(y + 2, 1, curses.ACS_LTEE)
-        for x in range(2, 14):
-            self.scr.addch(y + 2, x, curses.ACS_HLINE)
-        self.scr.addch(y + 2, 14, curses.ACS_PLUS)
-        for x in range(15, 56):
-            self.scr.addch(y + 2, x, curses.ACS_HLINE)
-        self.scr.addch(y + 2, 56, curses.ACS_RTEE)
+        self.scr.addch(line + 2, 1, curses.ACS_LTEE)
+        for column in range(2, 14):
+            self.scr.addch(line + 2, column, curses.ACS_HLINE)
+        self.scr.addch(line + 2, 14, curses.ACS_PLUS)
+        for column in range(15, 56):
+            self.scr.addch(line + 2, column, curses.ACS_HLINE)
+        self.scr.addch(line + 2, 56, curses.ACS_RTEE)
 
-    def __table_middle(self, y, label, content):
+    def __table_middle(self, line, label, content):
         """Private method to create the middle row of a table.
 
-        :param y: The line number to start drawing.
+        :param line: The line number to start drawing.
         :param label: The label for this table entry.
         :param content: The content for this table entry.
 
         """
         # Content line.
-        self.scr.addch(y, 1, curses.ACS_VLINE)
-        self.scr.addstr(y, 2, label)
-        self.scr.addch(y, 14, curses.ACS_VLINE)
-        self.scr.addstr(y, 16, content)
-        self.scr.addch(y, 56, curses.ACS_VLINE)
+        self.scr.addch(line, 1, curses.ACS_VLINE)
+        self.scr.addstr(line, 2, label)
+        self.scr.addch(line, 14, curses.ACS_VLINE)
+        self.scr.addstr(line, 16, content)
+        self.scr.addch(line, 56, curses.ACS_VLINE)
 
         # Bottom line.
-        self.scr.addch(y + 1, 1, curses.ACS_LTEE)
-        for x in range(2, 14):
-            self.scr.addch(y + 1, x, curses.ACS_HLINE)
-        self.scr.addch(y + 1, 14, curses.ACS_PLUS)
-        for x in range(15, 56):
-            self.scr.addch(y + 1, x, curses.ACS_HLINE)
-        self.scr.addch(y + 1, 56, curses.ACS_RTEE)
+        self.scr.addch(line + 1, 1, curses.ACS_LTEE)
+        for column in range(2, 14):
+            self.scr.addch(line + 1, column, curses.ACS_HLINE)
+        self.scr.addch(line + 1, 14, curses.ACS_PLUS)
+        for column in range(15, 56):
+            self.scr.addch(line + 1, column, curses.ACS_HLINE)
+        self.scr.addch(line + 1, 56, curses.ACS_RTEE)
 
-    def __table_bottom(self, y, label, content):
+    def __table_bottom(self, line, label, content):
         """Private method to create the bottom row of a table.
 
-        :param y: The line number to start drawing.
+        :param line: The line number to start drawing.
         :param label: The label for this table entry.
         :param content: The content for this table entry.
 
         """
         # Content line.
-        self.scr.addch(y, 1, curses.ACS_VLINE)
-        self.scr.addstr(y, 2, label)
-        self.scr.addch(y, 14, curses.ACS_VLINE)
-        self.scr.addstr(y, 16, content)
-        self.scr.addch(y, 56, curses.ACS_VLINE)
+        self.scr.addch(line, 1, curses.ACS_VLINE)
+        self.scr.addstr(line, 2, label)
+        self.scr.addch(line, 14, curses.ACS_VLINE)
+        self.scr.addstr(line, 16, content)
+        self.scr.addch(line, 56, curses.ACS_VLINE)
 
         #Bottom line.
-        self.scr.addch(y + 1, 1, curses.ACS_LLCORNER)
-        for x in range(2, 14):
-            self.scr.addch(y + 1, x, curses.ACS_HLINE)
-        self.scr.addch(y + 1, 14, curses.ACS_BTEE)
-        for x in range(15, 56):
-            self.scr.addch(y + 1, x, curses.ACS_HLINE)
-        self.scr.addch(y + 1, 56, curses.ACS_LRCORNER)
+        self.scr.addch(line + 1, 1, curses.ACS_LLCORNER)
+        for column in range(2, 14):
+            self.scr.addch(line + 1, column, curses.ACS_HLINE)
+        self.scr.addch(line + 1, 14, curses.ACS_BTEE)
+        for column in range(15, 56):
+            self.scr.addch(line + 1, column, curses.ACS_HLINE)
+        self.scr.addch(line + 1, 56, curses.ACS_LRCORNER)
 
     def cleanup(self):
         """Indicate that files are being deleted."""
@@ -139,7 +139,7 @@ class Progress(object):
         self.__table_bottom(8, 'STATUS', 'DELETING OLD FILES')
         self.scr.refresh()
 
-    def do_op(self, image, downsampler, ratio, upsampler=None, metric=None):
+    def do_op(self, image, downsampler, ratio, **kwargs):
         """Update the progress indicator.
 
         If no upsampler is specified, operation=downsampling.
@@ -153,8 +153,11 @@ class Progress(object):
         :param metric: The metric being used.
 
         """
-        percent = int(self.op * 100 / self.num_operations)
-        self.op += 1
+        upsampler = kwargs.get('upsampler', None)
+        metric = kwargs.get('metric', None)
+
+        percent = int(self.num_ops * 100 / self.total_ops)
+        self.num_ops += 1
         self.scr.clear()
         self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)

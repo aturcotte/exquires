@@ -27,11 +27,10 @@ The project file is used to specify the following components of the suite:
 
 import argparse
 import os
-from subprocess import check_output
 
 from configobj import ConfigObj
 
-from parsing import format_doc, ExquiresHelp
+import parsing
 from __init__ import __version__ as VERSION
 
 
@@ -91,6 +90,8 @@ def _metric(method, aggregator, sort):
 
 
 def main():
+    """Run exquires-new."""
+
     # Construct the path to the default test image.
     this_dir = os.path.abspath(os.path.dirname(__file__))
     wave = os.path.join(this_dir, 'wave.tif')
@@ -98,8 +99,9 @@ def main():
     # Define the command-line argument parser.
     parser = argparse.ArgumentParser(
         version=VERSION,
-        description=format_doc(__doc__),
-        formatter_class=lambda prog: ExquiresHelp(prog, max_help_position=34)
+        description=parsing.format_doc(__doc__),
+        formatter_class=lambda prog: parsing.ExquiresHelp(prog,
+                                                          max_help_position=34)
     )
     parser.add_argument('-p', '--proj', metavar='PROJECT', type=str,
                         help='name of the project (default: project1)',
@@ -111,23 +113,23 @@ def main():
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args()
-    except Exception, e:
-        parser.error(str(e))
+    except argparse.ArgumentTypeError, error:
+        parser.error(str(error))
 
     # Convenience strings for indexing.
-    I = 'Images'
-    R = 'Ratios'
-    D = 'Downsamplers'
-    U = 'Upsamplers'
-    M = 'Metrics'
+    images = 'Images'
+    ratios = 'Ratios'
+    downs = 'Downsamplers'
+    ups = 'Upsamplers'
+    metrics = 'Metrics'
 
     # Create a new project file.
     ini = ConfigObj()
     ini.filename = '.'.join([args.proj, 'ini'])
 
     # Define the list of images to be resampled.
-    ini[I] = {}
-    ini.comments[I] = [
+    ini[images] = {}
+    ini.comments[images] = [
         'TEST IMAGES',
         'Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.',
         'Any images that are added must conform to this standard.'
@@ -135,26 +137,26 @@ def main():
     for image in args.image:
         image_path = os.path.abspath(image)
         name = os.path.splitext(os.path.basename(image))[0]
-        ini[I][name] = image_path
+        ini[images][name] = image_path
 
     # Define the list of resampling ratios to use.
-    ini[R] = {}
-    ini.comments[R] = [
+    ini[ratios] = {}
+    ini.comments[ratios] = [
         '', 'RESAMPLING RATIOS',
         'The test images are downsampled to the specified sizes.',
         'Each size is obtained by dividing 840 by the ratio.'
     ]
-    ini[R]['2'] = '420'
-    ini[R]['3'] = '280'
-    ini[R]['4'] = '240'
-    ini[R]['5'] = '168'
-    ini[R]['6'] = '140'
-    ini[R]['7'] = '120'
-    ini[R]['8'] = '105'
+    ini[ratios]['2'] = '420'
+    ini[ratios]['3'] = '280'
+    ini[ratios]['4'] = '240'
+    ini[ratios]['5'] = '168'
+    ini[ratios]['6'] = '140'
+    ini[ratios]['7'] = '120'
+    ini[ratios]['8'] = '105'
 
     # Define the list of downsamplers to use.
-    ini[D] = {}
-    ini.comments[D] = [
+    ini[downs] = {}
+    ini.comments[downs] = [
         '', 'DOWNSAMPLING COMMANDS',
         'To add a downsampler, provide the command to execute it.',
         'The command can make use of the following replacement fields:',
@@ -164,20 +166,20 @@ def main():
         '    {3} = downsampled size (width or height)',
         'WARNING: Be sure to use a unique name for each downsampler.'
     ]
-    ini[D]['box_srgb'] = _magick('Box')
-    ini[D]['box_linear'] = _magick('Box', lin=True)
-    ini[D]['gaussian_srgb'] = _magick('Gaussian')
-    ini[D]['gaussian_linear'] = _magick('Gaussian', lin=True)
-    ini[D]['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
-    ini[D]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
-    ini[D]['lanczos3_srgb'] = _magick('Lanczos')
-    ini[D]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[D]['nearest_srgb'] = _magick('Box', dist=True, blur=0)
-    ini[D]['nearest_linear'] = _magick('Box', dist=True, blur=0, lin=True)
+    ini[downs]['box_srgb'] = _magick('Box')
+    ini[downs]['box_linear'] = _magick('Box', lin=True)
+    ini[downs]['gaussian_srgb'] = _magick('Gaussian')
+    ini[downs]['gaussian_linear'] = _magick('Gaussian', lin=True)
+    ini[downs]['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
+    ini[downs]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
+    ini[downs]['lanczos3_srgb'] = _magick('Lanczos')
+    ini[downs]['lanczos3_linear'] = _magick('Lanczos', lin=True)
+    ini[downs]['nearest_srgb'] = _magick('Box', dist=True, blur=0)
+    ini[downs]['nearest_linear'] = _magick('Box', dist=True, blur=0, lin=True)
 
     # Define the list of upsamplers to use.
-    ini[U] = {}
-    ini.comments[U] = [
+    ini[ups] = {}
+    ini.comments[ups] = [
         '', 'UPSAMPLING COMMANDS',
         'To add an upsampler, provide the command to execute it.',
         'The command can make use of the following replacement fields:',
@@ -186,178 +188,182 @@ def main():
         '    {2} = upsampling ratio',
         '    {3} = upsampled size (always 840)'
     ]
-    ini[U]['nearest_srgb'] = _magick('Point')
-    ini[U]['nearest_linear'] = _magick('Point', lin=True)
-    ini[U]['bilinear_srgb'] = _magick('Triangle')
-    ini[U]['bilinear_linear'] = _magick('Triangle', lin=True)
-    ini[U]['cubic_hermite_srgb'] = _magick('Hermite')
-    ini[U]['cubic_hermite_linear'] = _magick('Hermite', lin=True)
-    ini[U]['catmull_rom_srgb'] = _magick('Catrom')
-    ini[U]['catmull_rom_linear'] = _magick('Catrom', lin=True)
-    ini[U]['lanczos2_srgb'] = _magick('Lanczos2')
-    ini[U]['lanczos2_linear'] = _magick('Lanczos2', lin=True)
-    ini[U]['lanczos3_srgb'] = _magick('Lanczos')
-    ini[U]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[U]['lanczos4_srgb'] = _magick('Lanczos', lobes=4)
-    ini[U]['lanczos4_linear'] = _magick('Lanczos', lobes=4, lin=True)
-    ini[U]['bartlett2_srgb'] = _magick('Bartlett', lobes=2)
-    ini[U]['bartlett2_linear'] = _magick('Bartlett', lobes=2, lin=True)
-    ini[U]['bartlett3_srgb'] = _magick('Bartlett', lobes=3)
-    ini[U]['bartlett3_linear'] = _magick('Bartlett', lobes=3, lin=True)
-    ini[U]['bartlett4_srgb'] = _magick('Bartlett')
-    ini[U]['bartlett4_linear'] = _magick('Bartlett', lin=True)
-    ini[U]['blackman2_srgb'] = _magick('Blackman', lobes=2)
-    ini[U]['blackman2_linear'] = _magick('Blackman', lobes=2, lin=True)
-    ini[U]['blackman3_srgb'] = _magick('Blackman', lobes=3)
-    ini[U]['blackman3_linear'] = _magick('Blackman', lobes=3, lin=True)
-    ini[U]['blackman4_srgb'] = _magick('Blackman')
-    ini[U]['blackman4_linear'] = _magick('Blackman', lin=True)
-    ini[U]['bohman2_srgb'] = _magick('Bohman', lobes=2)
-    ini[U]['bohman2_linear'] = _magick('Bohman', lobes=2, lin=True)
-    ini[U]['bohman3_srgb'] = _magick('Bohman', lobes=3)
-    ini[U]['bohman3_linear'] = _magick('Bohman', lobes=3, lin=True)
-    ini[U]['bohman4_srgb'] = _magick('Bohman')
-    ini[U]['bohman4_linear'] = _magick('Bohman', lin=True)
-    ini[U]['cosine2_srgb'] = _magick('Cosine', lobes=2)
-    ini[U]['cosine2_linear'] = _magick('Cosine', lobes=2, lin=True)
-    ini[U]['cosine3_srgb'] = _magick('Cosine', lobes=3)
-    ini[U]['cosine3_linear'] = _magick('Cosine', lobes=3, lin=True)
-    ini[U]['cosine4_srgb'] = _magick('Cosine')
-    ini[U]['cosine4_linear'] = _magick('Cosine', lin=True)
-    ini[U]['hamming2_srgb'] = _magick('Hamming', lobes=2)
-    ini[U]['hamming2_linear'] = _magick('Hamming', lobes=2, lin=True)
-    ini[U]['hamming3_srgb'] = _magick('Hamming', lobes=3)
-    ini[U]['hamming3_linear'] = _magick('Hamming', lobes=3, lin=True)
-    ini[U]['hamming4_srgb'] = _magick('Hamming')
-    ini[U]['hamming4_linear'] = _magick('Hamming', lin=True)
-    ini[U]['parzen2_srgb'] = _magick('Parzen', lobes=2)
-    ini[U]['parzen2_linear'] = _magick('Parzen', lobes=2, lin=True)
-    ini[U]['parzen3_srgb'] = _magick('Parzen', lobes=3)
-    ini[U]['parzen3_linear'] = _magick('Parzen', lobes=3, lin=True)
-    ini[U]['parzen4_srgb'] = _magick('Parzen')
-    ini[U]['parzen4_linear'] = _magick('Parzen', lin=True)
-    ini[U]['welsh2_srgb'] = _magick('Welsh', lobes=2)
-    ini[U]['welsh2_linear'] = _magick('Welsh', lobes=2, lin=True)
-    ini[U]['welsh3_srgb'] = _magick('Welsh', lobes=3)
-    ini[U]['welsh3_linear'] = _magick('Welsh', lobes=3, lin=True)
-    ini[U]['welsh4_srgb'] = _magick('Welsh')
-    ini[U]['welsh4_linear'] = _magick('Welsh', lin=True)
-    ini[U]['hann2_srgb'] = _magick('Hanning', lobes=2)
-    ini[U]['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
-    ini[U]['hann3_srgb'] = _magick('Hanning', lobes=3)
-    ini[U]['hann3_linear'] = _magick('Hanning', lobes=3, lin=True)
-    ini[U]['hann4_srgb'] = _magick('Hanning')
-    ini[U]['hann4_linear'] = _magick('Hanning', lin=True)
-    ini[U]['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
-    ini[U]['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta=5.36, lin=True)
-    ini[U]['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta=8.93)
-    ini[U]['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta=8.93, lin=True)
-    ini[U]['kaiser4_srgb'] = _magick('Kaiser', beta=12.15)
-    ini[U]['kaiser4_linear'] = _magick('Kaiser', beta=12.15, lin=True)
-    ini[U]['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
-                                         beta=4.7123889803846899)
-    ini[U]['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                           beta=4.7123889803846899)
-    ini[U]['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
-                                         beta=7.853981633974483)
-    ini[U]['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                           beta=7.853981633974483)
-    ini[U]['kaisersoft4_srgb'] = _magick('Kaiser', beta=10.995574287564276)
-    ini[U]['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
-                                           beta=10.995574287564276)
-    ini[U]['kaisersharp2_srgb'] = _magick('Kaiser', lobes=2,
-                                          beta=6.2831853071795865)
-    ini[U]['kaisersharp2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                            beta=6.2831853071795865)
-    ini[U]['kaisersharp3_srgb'] = _magick('Kaiser', lobes=3,
-                                          beta=9.4247779607693797)
-    ini[U]['kaisersharp3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                            beta=9.4247779607693797)
-    ini[U]['kaisersharp4_srgb'] = _magick('Kaiser', beta=12.566370614359173)
-    ini[U]['kaisersharp4_linear'] = _magick('Kaiser', lin=True,
-                                            beta=12.566370614359173)
-    ini[U]['quadratic_b_spline_srgb'] = _magick('Quadratic')
-    ini[U]['quadratic_b_spline_linear'] = _magick('Quadratic', lin=True)
-    ini[U]['cubic_b_spline_srgb'] = _magick('Cubic')
-    ini[U]['cubic_b_spline_linear'] = _magick('Cubic', lin=True)
-    ini[U]['mitchell_netravali_srgb'] = _magick(None)
-    ini[U]['mitchell_netravali_linear'] = _magick(None, lin=True)
-    ini[U]['ewa_teepee_srgb'] = _magick('Triangle', dist=True)
-    ini[U]['ewa_teepee_linear'] = _magick('Triangle', dist=True, lin=True)
-    ini[U]['ewa_hermite_srgb'] = _magick('Hermite', dist=True)
-    ini[U]['ewa_hermite_linear'] = _magick('Hermite', dist=True, lin=True)
-    ini[U]['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
-    ini[U]['ewa_quadratic_b_spline_linear'] = _magick('Quadratic', dist=True,
-                                                      lin=True)
-    ini[U]['ewa_cubic_b_spline_srgb'] = _magick('Cubic', dist=True)
-    ini[U]['ewa_cubic_b_spline_linear'] = _magick('Cubic', dist=True, lin=True)
-    ini[U]['ewa_lanczos2_srgb'] = _magick('Lanczos2', dist=True)
-    ini[U]['ewa_lanczos2_linear'] = _magick('Lanczos2', dist=True, lin=True)
-    ini[U]['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
-    ini[U]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
-    ini[U]['ewa_lanczos4_srgb'] = _magick('Lanczos', lobes=4, dist=True)
-    ini[U]['ewa_lanczos4_linear'] = _magick('Lanczos', lobes=4, dist=True,
-                                            lin=True)
-    ini[U]['ewa_robidoux_srgb'] = _magick(None, dist=True)
-    ini[U]['ewa_robidoux_linear'] = _magick(None, dist=True, lin=True)
-    ini[U]['ewa_mitchell_netravali_srgb'] = _magick('Mitchell', dist=True)
-    ini[U]['ewa_mitchell_netravali_linear'] = _magick('Mitchell', dist=True,
-                                                      lin=True)
-    ini[U]['ewa_robidoux_sharp_srgb'] = _magick('RobidouxSharp', dist=True)
-    ini[U]['ewa_robidoux_sharp_linear'] = _magick('RobidouxSharp', dist=True,
+    ini[ups]['nearest_srgb'] = _magick('Point')
+    ini[ups]['nearest_linear'] = _magick('Point', lin=True)
+    ini[ups]['bilinear_srgb'] = _magick('Triangle')
+    ini[ups]['bilinear_linear'] = _magick('Triangle', lin=True)
+    ini[ups]['cubic_hermite_srgb'] = _magick('Hermite')
+    ini[ups]['cubic_hermite_linear'] = _magick('Hermite', lin=True)
+    ini[ups]['catmull_rom_srgb'] = _magick('Catrom')
+    ini[ups]['catmull_rom_linear'] = _magick('Catrom', lin=True)
+    ini[ups]['lanczos2_srgb'] = _magick('Lanczos2')
+    ini[ups]['lanczos2_linear'] = _magick('Lanczos2', lin=True)
+    ini[ups]['lanczos3_srgb'] = _magick('Lanczos')
+    ini[ups]['lanczos3_linear'] = _magick('Lanczos', lin=True)
+    ini[ups]['lanczos4_srgb'] = _magick('Lanczos', lobes=4)
+    ini[ups]['lanczos4_linear'] = _magick('Lanczos', lobes=4, lin=True)
+    ini[ups]['bartlett2_srgb'] = _magick('Bartlett', lobes=2)
+    ini[ups]['bartlett2_linear'] = _magick('Bartlett', lobes=2, lin=True)
+    ini[ups]['bartlett3_srgb'] = _magick('Bartlett', lobes=3)
+    ini[ups]['bartlett3_linear'] = _magick('Bartlett', lobes=3, lin=True)
+    ini[ups]['bartlett4_srgb'] = _magick('Bartlett')
+    ini[ups]['bartlett4_linear'] = _magick('Bartlett', lin=True)
+    ini[ups]['blackman2_srgb'] = _magick('Blackman', lobes=2)
+    ini[ups]['blackman2_linear'] = _magick('Blackman', lobes=2, lin=True)
+    ini[ups]['blackman3_srgb'] = _magick('Blackman', lobes=3)
+    ini[ups]['blackman3_linear'] = _magick('Blackman', lobes=3, lin=True)
+    ini[ups]['blackman4_srgb'] = _magick('Blackman')
+    ini[ups]['blackman4_linear'] = _magick('Blackman', lin=True)
+    ini[ups]['bohman2_srgb'] = _magick('Bohman', lobes=2)
+    ini[ups]['bohman2_linear'] = _magick('Bohman', lobes=2, lin=True)
+    ini[ups]['bohman3_srgb'] = _magick('Bohman', lobes=3)
+    ini[ups]['bohman3_linear'] = _magick('Bohman', lobes=3, lin=True)
+    ini[ups]['bohman4_srgb'] = _magick('Bohman')
+    ini[ups]['bohman4_linear'] = _magick('Bohman', lin=True)
+    ini[ups]['cosine2_srgb'] = _magick('Cosine', lobes=2)
+    ini[ups]['cosine2_linear'] = _magick('Cosine', lobes=2, lin=True)
+    ini[ups]['cosine3_srgb'] = _magick('Cosine', lobes=3)
+    ini[ups]['cosine3_linear'] = _magick('Cosine', lobes=3, lin=True)
+    ini[ups]['cosine4_srgb'] = _magick('Cosine')
+    ini[ups]['cosine4_linear'] = _magick('Cosine', lin=True)
+    ini[ups]['hamming2_srgb'] = _magick('Hamming', lobes=2)
+    ini[ups]['hamming2_linear'] = _magick('Hamming', lobes=2, lin=True)
+    ini[ups]['hamming3_srgb'] = _magick('Hamming', lobes=3)
+    ini[ups]['hamming3_linear'] = _magick('Hamming', lobes=3, lin=True)
+    ini[ups]['hamming4_srgb'] = _magick('Hamming')
+    ini[ups]['hamming4_linear'] = _magick('Hamming', lin=True)
+    ini[ups]['parzen2_srgb'] = _magick('Parzen', lobes=2)
+    ini[ups]['parzen2_linear'] = _magick('Parzen', lobes=2, lin=True)
+    ini[ups]['parzen3_srgb'] = _magick('Parzen', lobes=3)
+    ini[ups]['parzen3_linear'] = _magick('Parzen', lobes=3, lin=True)
+    ini[ups]['parzen4_srgb'] = _magick('Parzen')
+    ini[ups]['parzen4_linear'] = _magick('Parzen', lin=True)
+    ini[ups]['welsh2_srgb'] = _magick('Welsh', lobes=2)
+    ini[ups]['welsh2_linear'] = _magick('Welsh', lobes=2, lin=True)
+    ini[ups]['welsh3_srgb'] = _magick('Welsh', lobes=3)
+    ini[ups]['welsh3_linear'] = _magick('Welsh', lobes=3, lin=True)
+    ini[ups]['welsh4_srgb'] = _magick('Welsh')
+    ini[ups]['welsh4_linear'] = _magick('Welsh', lin=True)
+    ini[ups]['hann2_srgb'] = _magick('Hanning', lobes=2)
+    ini[ups]['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
+    ini[ups]['hann3_srgb'] = _magick('Hanning', lobes=3)
+    ini[ups]['hann3_linear'] = _magick('Hanning', lobes=3, lin=True)
+    ini[ups]['hann4_srgb'] = _magick('Hanning')
+    ini[ups]['hann4_linear'] = _magick('Hanning', lin=True)
+    ini[ups]['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
+    ini[ups]['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta=5.36,
+                                         lin=True)
+    ini[ups]['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta=8.93)
+    ini[ups]['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta=8.93,
+                                         lin=True)
+    ini[ups]['kaiser4_srgb'] = _magick('Kaiser', beta=12.15)
+    ini[ups]['kaiser4_linear'] = _magick('Kaiser', beta=12.15, lin=True)
+    ini[ups]['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
+                                          beta=4.7123889803846899)
+    ini[ups]['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
+                                            beta=4.7123889803846899)
+    ini[ups]['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
+                                          beta=7.853981633974483)
+    ini[ups]['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
+                                            beta=7.853981633974483)
+    ini[ups]['kaisersoft4_srgb'] = _magick('Kaiser', beta=10.995574287564276)
+    ini[ups]['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
+                                            beta=10.995574287564276)
+    ini[ups]['kaisersharp2_srgb'] = _magick('Kaiser', lobes=2,
+                                           beta=6.2831853071795865)
+    ini[ups]['kaisersharp2_linear'] = _magick('Kaiser', lobes=2, lin=True,
+                                             beta=6.2831853071795865)
+    ini[ups]['kaisersharp3_srgb'] = _magick('Kaiser', lobes=3,
+                                           beta=9.4247779607693797)
+    ini[ups]['kaisersharp3_linear'] = _magick('Kaiser', lobes=3, lin=True,
+                                             beta=9.4247779607693797)
+    ini[ups]['kaisersharp4_srgb'] = _magick('Kaiser', beta=12.566370614359173)
+    ini[ups]['kaisersharp4_linear'] = _magick('Kaiser', lin=True,
+                                             beta=12.566370614359173)
+    ini[ups]['quadratic_b_spline_srgb'] = _magick('Quadratic')
+    ini[ups]['quadratic_b_spline_linear'] = _magick('Quadratic', lin=True)
+    ini[ups]['cubic_b_spline_srgb'] = _magick('Cubic')
+    ini[ups]['cubic_b_spline_linear'] = _magick('Cubic', lin=True)
+    ini[ups]['mitchell_netravali_srgb'] = _magick(None)
+    ini[ups]['mitchell_netravali_linear'] = _magick(None, lin=True)
+    ini[ups]['ewa_teepee_srgb'] = _magick('Triangle', dist=True)
+    ini[ups]['ewa_teepee_linear'] = _magick('Triangle', dist=True, lin=True)
+    ini[ups]['ewa_hermite_srgb'] = _magick('Hermite', dist=True)
+    ini[ups]['ewa_hermite_linear'] = _magick('Hermite', dist=True, lin=True)
+    ini[ups]['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
+    ini[ups]['ewa_quadratic_b_spline_linear'] = _magick('Quadratic', dist=True,
+                                                       lin=True)
+    ini[ups]['ewa_cubic_b_spline_srgb'] = _magick('Cubic', dist=True)
+    ini[ups]['ewa_cubic_b_spline_linear'] = _magick('Cubic', dist=True,
+                                                   lin=True)
+    ini[ups]['ewa_lanczos2_srgb'] = _magick('Lanczos2', dist=True)
+    ini[ups]['ewa_lanczos2_linear'] = _magick('Lanczos2', dist=True, lin=True)
+    ini[ups]['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
+    ini[ups]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
+    ini[ups]['ewa_lanczos4_srgb'] = _magick('Lanczos', lobes=4, dist=True)
+    ini[ups]['ewa_lanczos4_linear'] = _magick('Lanczos', lobes=4, dist=True,
+                                             lin=True)
+    ini[ups]['ewa_robidoux_srgb'] = _magick(None, dist=True)
+    ini[ups]['ewa_robidoux_linear'] = _magick(None, dist=True, lin=True)
+    ini[ups]['ewa_mitchell_netravali_srgb'] = _magick('Mitchell', dist=True)
+    ini[ups]['ewa_mitchell_netravali_linear'] = _magick('Mitchell', dist=True,
+                                                       lin=True)
+    ini[ups]['ewa_robidoux_sharp_srgb'] = _magick('RobidouxSharp', dist=True)
+    ini[ups]['ewa_robidoux_sharp_linear'] = _magick('RobidouxSharp', dist=True,
+                                                   lin=True)
+    ini[ups]['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
+    ini[ups]['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
+    ini[ups]['ewa_lanczos_radius2_srgb'] = _magick('Lanczos2', dist=True,
+                                                  blur=.8956036897402793)
+    ini[ups]['ewa_lanczos_radius2_linear'] = _magick('Lanczos2', dist=True,
+                                                    blur=.8956036897402793,
+                                                    lin=True)
+    ini[ups]['ewa_lanczos_radius3_srgb'] = _magick('Lanczos', dist=True,
+                                                  blur=.9264075766146068)
+    ini[ups]['ewa_lanczos_radius3_linear'] = _magick('Lanczos', dist=True,
+                                                    blur=.9264075766146068,
+                                                    lin=True)
+    ini[ups]['ewa_lanczos_radius4_srgb'] = _magick('Lanczos', lobes=4,
+                                                  dist=True,
+                                                  blur=.9431597994328477)
+    ini[ups]['ewa_lanczos_radius4_linear'] = _magick('Lanczos', lobes=4,
+                                                    dist=True, lin=True,
+                                                    blur=.9431597994328477)
+    ini[ups]['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
+                                                blur=.9580278036312191)
+    ini[ups]['ewa_lanczos2sharp_linear'] = _magick('Lanczos2', dist=True,
+                                                  blur=.9580278036312191,
                                                   lin=True)
-    ini[U]['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
-    ini[U]['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
-    ini[U]['ewa_lanczos_radius2_srgb'] = _magick('Lanczos2', dist=True,
-                                                 blur=.8956036897402793)
-    ini[U]['ewa_lanczos_radius2_linear'] = _magick('Lanczos2', dist=True,
-                                                   blur=.8956036897402793,
-                                                   lin=True)
-    ini[U]['ewa_lanczos_radius3_srgb'] = _magick('Lanczos', dist=True,
-                                                 blur=.9264075766146068)
-    ini[U]['ewa_lanczos_radius3_linear'] = _magick('Lanczos', dist=True,
-                                                   blur=.9264075766146068,
-                                                   lin=True)
-    ini[U]['ewa_lanczos_radius4_srgb'] = _magick('Lanczos', lobes=4, dist=True,
-                                                 blur=.9431597994328477)
-    ini[U]['ewa_lanczos_radius4_linear'] = _magick('Lanczos', lobes=4,
-                                                   dist=True, lin=True,
-                                                   blur=.9431597994328477)
-    ini[U]['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
-                                               blur=.9580278036312191)
-    ini[U]['ewa_lanczos2sharp_linear'] = _magick('Lanczos2', dist=True,
-                                                 blur=.9580278036312191,
-                                                 lin=True)
-    ini[U]['ewa_lanczos3sharp_srgb'] = _magick('Lanczos', dist=True,
-                                               blur=.9891028367558475)
-    ini[U]['ewa_lanczos3sharp_linear'] = _magick('Lanczos', dist=True,
-                                                 blur=.9891028367558475,
-                                                 lin=True)
-    ini[U]['ewa_lanczos4sharp_srgb'] = _magick('Lanczos', lobes=4, dist=True,
-                                               blur=.9870395083298263)
-    ini[U]['ewa_lanczos4sharp_linear'] = _magick('Lanczos', lobes=4,
-                                                 dist=True, lin=True,
-                                                 blur=.9870395083298263)
-    ini[U]['ewa_lanczos2sharpest_srgb'] = _magick('Lanczos2', dist=True,
-                                                  blur=.88826421508540347)
-    ini[U]['ewa_lanczos2sharpest_linear'] = _magick('Lanczos2', dist=True,
-                                                    blur=.88826421508540347,
-                                                    lin=True)
-    ini[U]['ewa_lanczos3sharpest_srgb'] = _magick('Lanczos', dist=True,
-                                                  blur=.88549061701764)
-    ini[U]['ewa_lanczos3sharpest_linear'] = _magick('Lanczos', dist=True,
-                                                    blur=.88549061701764,
-                                                    lin=True)
-    ini[U]['ewa_lanczos4sharpest_srgb'] = _magick('Lanczos', lobes=4,
+    ini[ups]['ewa_lanczos3sharp_srgb'] = _magick('Lanczos', dist=True,
+                                                blur=.9891028367558475)
+    ini[ups]['ewa_lanczos3sharp_linear'] = _magick('Lanczos', dist=True,
+                                                  blur=.9891028367558475,
+                                                  lin=True)
+    ini[ups]['ewa_lanczos4sharp_srgb'] = _magick('Lanczos', lobes=4, dist=True,
+                                                blur=.9870395083298263)
+    ini[ups]['ewa_lanczos4sharp_linear'] = _magick('Lanczos', lobes=4,
+                                                  dist=True, lin=True,
+                                                  blur=.9870395083298263)
+    ini[ups]['ewa_lanczos2sharpest_srgb'] = _magick('Lanczos2', dist=True,
+                                                   blur=.88826421508540347)
+    ini[ups]['ewa_lanczos2sharpest_linear'] = _magick('Lanczos2', dist=True,
+                                                     blur=.88826421508540347,
+                                                     lin=True)
+    ini[ups]['ewa_lanczos3sharpest_srgb'] = _magick('Lanczos', dist=True,
+                                                   blur=.88549061701764)
+    ini[ups]['ewa_lanczos3sharpest_linear'] = _magick('Lanczos', dist=True,
+                                                     blur=.88549061701764,
+                                                     lin=True)
+    ini[ups]['ewa_lanczos4sharpest_srgb'] = _magick('Lanczos', lobes=4,
                                                    dist=True,
                                                    blur=.88451002338585141)
-    ini[U]['ewa_lanczos4sharpest_linear'] = _magick('Lanczos', lobes=4,
-                                                    dist=True, lin=True,
-                                                    blur=.88451002338585141)
+    ini[ups]['ewa_lanczos4sharpest_linear'] = _magick('Lanczos', lobes=4,
+                                                     dist=True, lin=True,
+                                                     blur=.88451002338585141)
 
     # Define the list of error metrics to use.
-    ini[M] = {}
-    ini.comments[M] = [
+    ini[metrics] = {}
+    ini.comments[metrics] = [
         '', 'IMAGE DIFFERENCE METRICS AND AGGREGATORS',
         'Each metric must be associated with a data aggregation method.',
         'To add a metric, you must provide the following three items:',
@@ -370,23 +376,23 @@ def main():
         '        0 = ascending',
         '        1 = descending'
     ]
-    ini[M]['l_1'] = _metric('l_1', 'l_1', 0)
-    ini[M]['l_2'] = _metric('l_2', 'l_2', 0)
-    ini[M]['l_4'] = _metric('l_4', 'l_4', 0)
-    ini[M]['l_inf'] = _metric('l_inf', 'l_inf', 0)
-    ini[M]['cmc_1'] = _metric('cmc_1', 'l_1', 0)
-    ini[M]['cmc_2'] = _metric('cmc_2', 'l_2', 0)
-    ini[M]['cmc_4'] = _metric('cmc_4', 'l_4', 0)
-    ini[M]['cmc_inf'] = _metric('cmc_inf', 'l_inf', 0)
-    ini[M]['xyz_1'] = _metric('xyz_1', 'l_1', 0)
-    ini[M]['xyz_2'] = _metric('xyz_2', 'l_2', 0)
-    ini[M]['xyz_4'] = _metric('xyz_4', 'l_4', 0)
-    ini[M]['xyz_inf'] = _metric('xyz_inf', 'l_inf', 0)
-    ini[M]['blur_1'] = _metric('blur_1', 'l_1', 0)
-    ini[M]['blur_2'] = _metric('blur_2', 'l_2', 0)
-    ini[M]['blur_4'] = _metric('blur_4', 'l_4', 0)
-    ini[M]['blur_inf'] = _metric('blur_inf', 'l_inf', 0)
-    ini[M]['mssim'] = _metric('mssim', 'l_1', 1)
+    ini[metrics]['l_1'] = _metric('l_1', 'l_1', 0)
+    ini[metrics]['l_2'] = _metric('l_2', 'l_2', 0)
+    ini[metrics]['l_4'] = _metric('l_4', 'l_4', 0)
+    ini[metrics]['l_inf'] = _metric('l_inf', 'l_inf', 0)
+    ini[metrics]['cmc_1'] = _metric('cmc_1', 'l_1', 0)
+    ini[metrics]['cmc_2'] = _metric('cmc_2', 'l_2', 0)
+    ini[metrics]['cmc_4'] = _metric('cmc_4', 'l_4', 0)
+    ini[metrics]['cmc_inf'] = _metric('cmc_inf', 'l_inf', 0)
+    ini[metrics]['xyz_1'] = _metric('xyz_1', 'l_1', 0)
+    ini[metrics]['xyz_2'] = _metric('xyz_2', 'l_2', 0)
+    ini[metrics]['xyz_4'] = _metric('xyz_4', 'l_4', 0)
+    ini[metrics]['xyz_inf'] = _metric('xyz_inf', 'l_inf', 0)
+    ini[metrics]['blur_1'] = _metric('blur_1', 'l_1', 0)
+    ini[metrics]['blur_2'] = _metric('blur_2', 'l_2', 0)
+    ini[metrics]['blur_4'] = _metric('blur_4', 'l_4', 0)
+    ini[metrics]['blur_inf'] = _metric('blur_inf', 'l_inf', 0)
+    ini[metrics]['mssim'] = _metric('mssim', 'l_1', 1)
 
     # Write the project file.
     ini.write()

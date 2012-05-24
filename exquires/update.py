@@ -31,32 +31,34 @@ from subprocess import call, check_output
 
 from configobj import ConfigObj
 
-from database import Database
-from progress import Progress
-from parsing import format_doc, ExquiresHelp
+import database
+import parsing
+import progress
 from __init__ import __version__ as VERSION
 
 
-def _subtract(d1, d2):
-    """Private method to subtract dictionary d2 from d1.
+def _subtract(dict1, dict2):
+    """Private method to subtract dictionary dict2 from dict1.
 
-    :param d1: The dictionary to subtract from.
-    :param d2: The dictionary to subtract.
+    :param dict1: The dictionary to subtract from.
+    :param dict2: The dictionary to subtract.
     :return: The resulting dictionary.
 
     """
     result = {}
-    for key in d1.keys():
-        if not key in d2 or d1[key] != d2[key]:
-            result[key] = d1[key]
+    for key in dict1.keys():
+        if not key in dict2 or dict1[key] != dict2[key]:
+            result[key] = dict1[key]
     return result
 
 
 def main():
+    """Run exquires-update."""
+
     # Define the command-line argument parser.
     parser = argparse.ArgumentParser(version=VERSION,
-                                     description=format_doc(__doc__),
-                                     formatter_class=ExquiresHelp)
+                                     description=parsing.format_doc(__doc__),
+                                     formatter_class=parsing.ExquiresHelp)
     parser.add_argument('-s', '--silent', action='store_true',
                         help='do not display progress information')
     parser.add_argument('-p', '--proj', metavar='PROJECT',
@@ -66,12 +68,11 @@ def main():
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args()
-    except Exception, e:
-        parser.error(str(e))
+    except argparse.ArgumentTypeError, error:
+        parser.error(str(error))
 
     # Construct the path to the configuration and database files.
-    db_file = '.'.join([args.proj, 'db'])
-    db_backup_file = '.'.join([args.proj, 'db', 'bak'])
+    dbase_file = '.'.join([args.proj, 'db'])
     config_file = '.'.join([args.proj, 'ini'])
     config_backup_file = '.'.join([args.proj, 'ini', 'bak'])
 
@@ -84,7 +85,7 @@ def main():
 
     # Determine if the database can be updated.
     if not (os.path.isfile(config_backup_file) and
-            os.path.isfile(db_file) and
+            os.path.isfile(dbase_file) and
             os.path.isdir(args.proj)):
         parser.error(' '.join([args.proj, 'has not been run']))
 
@@ -142,30 +143,23 @@ def main():
 
     # Setup progress indicator.
     if not args.silent:
-        from progress import Progress
-        p = Progress(os.path.basename(__file__), args.proj, ops)
-
-        def prog(image, downsampler, ratio, upsampler=None, metric=None):
-            p.do_op(image, downsampler, ratio, upsampler, metric)
-
-        def cleanup():
-            p.cleanup()
-
-        def complete():
-            p.complete()
+        prg = progress.Progress(os.path.basename(__file__), args.proj, ops)
+        prog = lambda *a, **k: prg.do_op(*a, **k)
+        cleanup = lambda: prg.cleanup()
+        complete = lambda: prg.complete()
     else:
-        prog = lambda *a: None
-        cleanup = lambda *a: None
-        complete = lambda *a: None
+        prog = lambda *a, **k: None
+        cleanup = lambda: None
+        complete = lambda: None
 
     # Open the database connection.
-    db = Database(db_file)
+    dbase = database.Database(dbase_file)
 
     # Indicate that old files are being deleted.
     cleanup()
 
     # Remove tables that have been removed from the configuration file.
-    db.drop_tables(images_old, downsamplers_old, ratios_old)
+    dbase.drop_tables(images_old, downsamplers_old, ratios_old)
 
     # Delete all images and directories that are no longer needed.
     for image in images_old:
@@ -185,24 +179,24 @@ def main():
     # Alter tables and add new tables for the unchanged images.
     for image in images_same:
         image_dir = os.path.join(gen_images_path, image)
-        IMAGE = images[image]
-        MASTER = '.'.join([os.path.join(image_dir, 'master'), 'tif'])
+        image_path = images[image]
+        master = '.'.join([os.path.join(image_dir, 'master'), 'tif'])
 
         # Alter tables and add new tables for the unchanged downsamplers.
         for downsampler in downsamplers_same:
-            DOWN = downsamplers[downsampler]
+            down_path = downsamplers[downsampler]
             downsampler_dir = os.path.join(image_dir, downsampler)
 
             # Alter tables for the unchaged ratios.
             for ratio in ratios_same:
-                TABLE = '_'.join([image, downsampler, ratio])
-                TABLE_OLD = '_'.join([TABLE, 'old'])
-                SIZE = ratios[ratio]
+                table = '_'.join([image, downsampler, ratio])
+                table_old = '_'.join([table, 'old'])
+                size = ratios[ratio]
                 filename = '.'.join([ratio, 'tif'])
-                SMALL = os.path.join(downsampler_dir, filename)
+                small = os.path.join(downsampler_dir, filename)
 
                 # Backup the old table.
-                db.backup_table(TABLE, TABLE_OLD, metrics)
+                dbase.backup_table(table, table_old, metrics)
 
                 # Create a directory for this ratio.
                 ratio_dir = os.path.join(downsampler_dir, ratio)
@@ -211,74 +205,75 @@ def main():
 
                 # Update the existing rows (upsamplers_same).
                 for upsampler in upsamplers_same:
-                    UP = upsamplers[upsampler]
+                    up_path = upsamplers[upsampler]
                     filename = '.'.join([upsampler, 'tif'])
-                    LARGE = os.path.join(os.path.dirname(SMALL),
+                    large = os.path.join(os.path.dirname(small),
                                          ratio, filename)
-                    ROW = db.get_error_data(TABLE_OLD, upsampler, metrics_str)
+                    row = dbase.get_error_data(table_old, upsampler,
+                                               metrics_str)
 
                     # Upsample ratio.tif back to 840 using upsampler.
-                    #  {0} INPUT_IMAGE (SMALL)
-                    #  {1} OUTPUT_IMAGE (LARGE)
-                    #  {2} UPSAMPLING RATIO
-                    #  {3} UPSAMPLED_SIZE (always 840)
+                    #  {0} input image path (small)
+                    #  {1} output image path (large)
+                    #  {2} upsampling ratio
+                    #  {3} upsampled size (always 840)
                     if len(metrics_new) > 0:
                         prog(image, downsampler, ratio, upsampler)
-                        call(UP.format(SMALL, LARGE, ratio, 840).split())
+                        call(up_path.format(small, large, ratio, 840).split())
 
                     for metric in metrics_new:
-                        METRIC = metrics[metric][0]
+                        metric_path = metrics[metric][0]
 
                         # Compare master.tif to upsampler.tif.
-                        #  {0} REFERENCE_IMAGE (MASTER)
-                        #  {1} TEST_IMAGE (LARGE)
+                        #  {0} reference image path (master)
+                        #  {1} test image path (large)
                         prog(image, downsampler, ratio, upsampler, metric)
-                        cmd = METRIC.format(MASTER, LARGE)
-                        ROW[metric] = float(check_output(cmd.split()))
+                        cmd = metric_path.format(master, large)
+                        row[metric] = float(check_output(cmd.split()))
 
-                    db.insert(TABLE, ROW)
+                    dbase.insert(table, row)
 
                 # Delete the backup table.
-                db.drop_backup(TABLE_OLD)
+                dbase.drop_backup(table_old)
 
                 # Add the new rows (upsamplers_new)
                 for upsampler in upsamplers_new:
-                    UP = upsamplers[upsampler]
+                    up_path = upsamplers[upsampler]
                     filename = '.'.join([upsampler, 'tif'])
-                    LARGE = os.path.join(os.path.dirname(SMALL),
+                    large = os.path.join(os.path.dirname(small),
                                          ratio, filename)
-                    ROW = dict(upsampler=upsampler)
+                    row = dict(upsampler=upsampler)
 
                     # Upsample ratio.tif back to 840 using upsampler.
-                    #  {0} INPUT_IMAGE (SMALL)
-                    #  {1} OUTPUT_IMAGE (LARGE)
-                    #  {2} UPSAMPLING RATIO
-                    #  {3} UPSAMPLED_SIZE (always 840)
+                    #  {0} input image path (small)
+                    #  {1} output image path (large)
+                    #  {2} upsampling ratio
+                    #  {3} upsampled size (always 840)
                     prog(image, downsampler, ratio, upsampler)
-                    call(UP.format(SMALL, LARGE, ratio, 840).split())
+                    call(up_path.format(small, large, ratio, 840).split())
                     for metric in metrics:
-                        METRIC = metrics[metric][0]
+                        metric_path = metrics[metric][0]
 
                         # Compare master.tif to upsampler.tif.
-                        #  {0} REFERENCE_IMAGE (MASTER)
-                        #  {1} TEST_IMAGE (LARGE)
+                        #  {0} reference image path (master)
+                        #  {1} test image path (large)
                         prog(image, downsampler, ratio, upsampler, metric)
-                        cmd = METRIC.format(MASTER, LARGE)
-                        ROW[metric] = float(check_output(cmd.split()))
+                        cmd = metric_path.format(master, large)
+                        row[metric] = float(check_output(cmd.split()))
 
                     # Add row to the table and delete the upsampled image.
-                    db.insert(TABLE, ROW)
-                    os.remove(LARGE)
+                    dbase.insert(table, row)
+                    os.remove(large)
 
                 # Remove the directory for this ratio.
                 shutil.rmtree(ratio_dir, True)
 
             # Create tables for unchanged images/downsamplers with new ratios.
             for ratio in ratios_new:
-                TABLE = '_'.join([image, downsampler, ratio])
-                SIZE = ratios[ratio]
+                table = '_'.join([image, downsampler, ratio])
+                size = ratios[ratio]
                 filename = '.'.join([ratio, 'tif'])
-                SMALL = os.path.join(downsampler_dir, filename)
+                small = os.path.join(downsampler_dir, filename)
 
                 # Create a directory for this ratio.
                 ratio_dir = os.path.join(downsampler_dir, ratio)
@@ -286,50 +281,50 @@ def main():
                     os.makedirs(ratio_dir)
 
                 # Downsample master.tif by ratio using downsampler.
-                #  {0} INPUT_IMAGE (MASTER)
-                #  {1} OUTPUT_IMAGE (SMALL)
-                #  {2} DOWNSAMPLING RATIO
-                #  {3} DOWNSAMPLED SIZE (width or height)
+                #  {0} input image path (master)
+                #  {1} output image path (small)
+                #  {2} downsampling ratio
+                #  {3} downsampled size (width or height)
                 prog(image, downsampler, ratio)
-                call(DOWN.format(MASTER, SMALL, ratio, SIZE).split())
+                call(down_path.format(master, small, ratio, size).split())
 
                 # Create a new database table.
-                db.add_table(image, downsampler, ratio, metrics)
+                dbase.add_table(image, downsampler, ratio, metrics)
 
                 for upsampler in upsamplers:
-                    UP = upsamplers[upsampler]
+                    up_path = upsamplers[upsampler]
                     filename = '.'.join([upsampler, 'tif'])
-                    LARGE = os.path.join(os.path.dirname(SMALL),
+                    large = os.path.join(os.path.dirname(small),
                                          ratio, filename)
-                    ROW = dict(upsampler=upsampler)
+                    row = dict(upsampler=upsampler)
 
                     # Upsample ratio.tif back to 840 using upsampler.
-                    #  {0} INPUT_IMAGE (SMALL)
-                    #  {1} OUTPUT_IMAGE (LARGE)
-                    #  {2} UPSAMPLING RATIO
-                    #  {3} UPSAMPLED_SIZE (always 840)
+                    #  {0} input image path (small)
+                    #  {1} output image path (large)
+                    #  {2} upsampling ratio
+                    #  {3} upsampled size (always 840)
                     prog(image, downsampler, ratio, upsampler)
-                    call(UP.format(SMALL, LARGE, ratio, 840).split())
+                    call(up_path.format(small, large, ratio, 840).split())
                     for metric in metrics:
-                        METRIC = metrics[metric][0]
+                        metric_path = metrics[metric][0]
 
                         # Compare master.tif to upsampler.tif.
-                        #  {0} REFERENCE_IMAGE (MASTER)
-                        #  {1} TEST_IMAGE (LARGE)
+                        #  {0} reference image path (master)
+                        #  {1} test image path (large)
                         prog(image, downsampler, ratio, upsampler, metric)
-                        cmd = METRIC.format(MASTER, LARGE)
-                        ROW[metric] = float(check_output(cmd.split()))
+                        cmd = metric_path.format(master, large)
+                        row[metric] = float(check_output(cmd.split()))
 
                     # Add the row to the table and delete the upsampled image.
-                    db.insert(TABLE, ROW)
-                    os.remove(LARGE)
+                    dbase.insert(table, row)
+                    os.remove(large)
 
                 # Remove the directory for this ratio.
                 shutil.rmtree(ratio_dir, True)
 
         # Create new tables for unchanged images with new downsamplers.
         for downsampler in downsamplers_new:
-            DOWN = downsamplers[downsampler]
+            down_path = downsamplers[downsampler]
 
             # Create a directory for this downsampler if necessary.
             downsampler_dir = os.path.join(image_dir, downsampler)
@@ -337,10 +332,10 @@ def main():
                 os.makedirs(downsampler_dir)
 
             for ratio in ratios:
-                TABLE = '_'.join([image, downsampler, ratio])
-                SIZE = ratios[ratio]
+                table = '_'.join([image, downsampler, ratio])
+                size = ratios[ratio]
                 filename = '.'.join([ratio, 'tif'])
-                SMALL = os.path.join(downsampler_dir, filename)
+                small = os.path.join(downsampler_dir, filename)
 
                 # Create a directory for this ratio.
                 ratio_dir = os.path.join(downsampler_dir, ratio)
@@ -348,43 +343,43 @@ def main():
                     os.makedirs(ratio_dir)
 
                 # Downsample master.tif by ratio using downsampler.
-                #  {0} INPUT_IMAGE (MASTER)
-                #  {1} OUTPUT_IMAGE (SMALL)
-                #  {2} DOWNSAMPLING RATIO
-                #  {3} DOWNSAMPLED SIZE (width or height)
+                #  {0} input image path (master)
+                #  {1} output image path (small)
+                #  {2} downsampling ratio
+                #  {3} downsampled size (width or height)
                 prog(image, downsampler, ratio)
-                call(DOWN.format(MASTER, SMALL, ratio, SIZE).split())
+                call(down_path.format(master, small, ratio, size).split())
 
                 # Create a new database table.
-                db.add_table(image, downsampler, ratio, metrics)
+                dbase.add_table(image, downsampler, ratio, metrics)
 
                 for upsampler in upsamplers:
-                    UP = upsamplers[upsampler]
+                    up_path = upsamplers[upsampler]
                     filename = '.'.join([upsampler, 'tif'])
-                    LARGE = os.path.join(os.path.dirname(SMALL),
+                    large = os.path.join(os.path.dirname(small),
                                          ratio, filename)
-                    ROW = dict(upsampler=upsampler)
+                    row = dict(upsampler=upsampler)
 
                     # Upsample ratio.tif back to 840 using upsampler.
-                    #  {0} INPUT_IMAGE (SMALL)
-                    #  {1} OUTPUT_IMAGE (LARGE)
-                    #  {2} UPSAMPLING RATIO
-                    #  {3} UPSAMPLED_SIZE (always 840)
+                    #  {0} input image path (small)
+                    #  {1} output image path (large)
+                    #  {2} upsampling ratio
+                    #  {3} upsampled size (always 840)
                     prog(image, downsampler, ratio, upsampler)
-                    call(UP.format(SMALL, LARGE, ratio, 840).split())
+                    call(up_path.format(small, large, ratio, 840).split())
                     for metric in metrics:
-                        METRIC = metrics[metric][0]
+                        metric_path = metrics[metric][0]
 
                         # Compare master.tif to upsampler.tif.
-                        #  {0} REFERENCE_IMAGE (MASTER)
-                        #  {1} TEST_IMAGE (LARGE)
+                        #  {0} reference image path (master)
+                        #  {1} test image path (large)
                         prog(image, downsampler, ratio, upsampler, metric)
-                        cmd = METRIC.format(MASTER, LARGE)
-                        ROW[metric] = float(check_output(cmd.split()))
+                        cmd = metric_path.format(master, large)
+                        row[metric] = float(check_output(cmd.split()))
 
                     # Add the row to the table and delete the upsampled image.
-                    db.insert(TABLE, ROW)
-                    os.remove(LARGE)
+                    dbase.insert(table, row)
+                    os.remove(large)
 
                 # Remove the directory for this ratio.
                 shutil.rmtree(ratio_dir, True)
@@ -392,17 +387,17 @@ def main():
     # Create the new error tables for the new images.
     for image in images_new:
         image_dir = os.path.join(gen_images_path, image)
-        IMAGE = images_new[image]
-        MASTER = os.path.join(image_dir, 'master.tif')
+        image_path = images_new[image]
+        master = os.path.join(image_dir, 'master.tif')
 
         # Create a new directory for this image if it does not exist.
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
 
         # Make a copy of the test image.
-        shutil.copyfile(IMAGE, MASTER)
+        shutil.copyfile(image_path, master)
         for downsampler in downsamplers:
-            DOWN = downsamplers[downsampler]
+            down_path = downsamplers[downsampler]
 
             # Create a directory for this downsampler if necessary.
             downsampler_dir = os.path.join(image_dir, downsampler)
@@ -410,10 +405,10 @@ def main():
                 os.makedirs(downsampler_dir)
 
             for ratio in ratios:
-                TABLE = '_'.join([image, downsampler, ratio])
-                SIZE = ratios[ratio]
+                table = '_'.join([image, downsampler, ratio])
+                size = ratios[ratio]
                 filename = '.'.join([ratio, 'tif'])
-                SMALL = os.path.join(downsampler_dir, filename)
+                small = os.path.join(downsampler_dir, filename)
 
                 # Create a directory for this ratio.
                 ratio_dir = os.path.join(downsampler_dir, ratio)
@@ -421,50 +416,50 @@ def main():
                     os.makedirs(ratio_dir)
 
                 # Downsample master.tif by ratio using downsampler.
-                #  {0} INPUT_IMAGE (MASTER)
-                #  {1} OUTPUT_IMAGE (SMALL)
-                #  {2} DOWNSAMPLING RATIO
-                #  {3} DOWNSAMPLED SIZE (width or height)
+                #  {0} input image path (master)
+                #  {1} output image path (small)
+                #  {2} downsampling ratio
+                #  {3} downsampled size (width or height)
                 prog(image, downsampler, ratio)
-                call(DOWN.format(MASTER, SMALL, ratio, SIZE).split())
+                call(down_path.format(master, small, ratio, size).split())
 
                 # Create a new database table.
-                db.add_table(image, downsampler, ratio, metrics)
+                dbase.add_table(image, downsampler, ratio, metrics)
 
                 for upsampler in upsamplers:
-                    UP = upsamplers[upsampler]
+                    up_path = upsamplers[upsampler]
                     filename = '.'.join([upsampler, 'tif'])
-                    LARGE = os.path.join(os.path.dirname(SMALL),
+                    large = os.path.join(os.path.dirname(small),
                                          ratio, filename)
-                    ROW = dict(upsampler=upsampler)
+                    row = dict(upsampler=upsampler)
 
                     # Upsample ratio.tif back to 840 using upsampler.
-                    #  {0} INPUT_IMAGE (SMALL)
-                    #  {1} OUTPUT_IMAGE (LARGE)
-                    #  {2} UPSAMPLING RATIO
-                    #  {3} UPSAMPLED_SIZE (always 840)
+                    #  {0} input image path (small)
+                    #  {1} output image path (large)
+                    #  {2} upsampling ratio
+                    #  {3} upsampled size (always 840)
                     prog(image, downsampler, ratio, upsampler)
-                    call(UP.format(SMALL, LARGE, ratio, 840).split())
+                    call(up_path.format(small, large, ratio, 840).split())
                     for metric in metrics:
-                        METRIC = metrics[metric][0]
+                        metric_path = metrics[metric][0]
 
                         # Compare master.tif to upsampler.tif.
-                        #  {0} REFERENCE_IMAGE (MASTER)
-                        #  {1} TEST_IMAGE (LARGE)
+                        #  {0} reference image path (master)
+                        #  {1} test image path (large)
                         prog(image, downsampler, ratio, upsampler, metric)
-                        cmd = METRIC.format(MASTER, LARGE)
-                        ROW[metric] = float(check_output(cmd.split()))
+                        cmd = metric_path.format(master, large)
+                        row[metric] = float(check_output(cmd.split()))
 
                     # Add the row to the table and delete the upsampled image.
-                    db.insert(TABLE, ROW)
-                    os.remove(LARGE)
+                    dbase.insert(table, row)
+                    os.remove(large)
 
                 # Remove the directory for this ratio.
                 shutil.rmtree(ratio_dir, True)
 
     # Backup the configuration file and close the database connection.
     shutil.copyfile(config_file, config_backup_file)
-    db.close()
+    dbase.close()
     complete()
 
 if __name__ == '__main__':

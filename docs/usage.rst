@@ -604,7 +604,13 @@ anything you like. For example, to support images with 8 bits per sample
 
 .. code-block:: console
 
-    $ exquires-compare my_metric my_image1 my_image2 -L 255
+    $ exquires-compare my_metric my_image1 my_image2 -m 255
+
+or:
+
+.. code-block:: console
+
+    $ exquires-compare my_metric my_image1 my_image2 --maxval 255
 
 
 .. _exquires-aggregate-label:

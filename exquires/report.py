@@ -27,17 +27,14 @@ Features
 """
 
 import argparse
-import os
 import sys
 from collections import OrderedDict
 from math import fabs
 from operator import itemgetter
 from subprocess import check_output
 
-from configobj import ConfigObj
-
-from database import Database
-from parsing import *
+import database
+import parsing
 from __init__ import __version__ as VERSION
 
 
@@ -96,17 +93,17 @@ def _get_ranks(printdata, metrics_desc, sort_index):
     :return: A table of ranks.
 
     """
-    l1 = [x[:] for x in printdata]
-    l2 = [x[:] for x in printdata]
+    li1 = [x[:] for x in printdata]
+    li2 = [x[:] for x in printdata]
     for j in range(1, len(printdata[0])):
-        l1.sort(key=itemgetter(j), reverse=metrics_desc[j - 1])
-        l2.sort(key=itemgetter(j), reverse=metrics_desc[j - 1])
-        l2[0][j] = 1
+        li1.sort(key=itemgetter(j), reverse=metrics_desc[j - 1])
+        li2.sort(key=itemgetter(j), reverse=metrics_desc[j - 1])
+        li2[0][j] = 1
         for i in range(1, len(printdata)):
-            l2[i][j] = l2[i - 1][j] if l1[i][j] == l1[i - 1][j] else i + 1
+            li2[i][j] = li2[i - 1][j] if li1[i][j] == li1[i - 1][j] else i + 1
 
-    l2.sort(key=itemgetter(sort_index))
-    return l2
+    li2.sort(key=itemgetter(sort_index))
+    return li2
 
 
 def _print_normal(printdata, outfile, digits):
@@ -145,7 +142,7 @@ def _print_latex(printdata, outfile, digits):
     print >> outfile, '\\begin{table}[t]'
     print >> outfile, '\\centering'
     print >> outfile, '\\begin{tabular}{|l||',
-    for i in range(len(printdata[0]) - 1):
+    for dummy in range(len(printdata[0]) - 1):
         print >> outfile, 'r|',
     print >> outfile, '}'
     print >> outfile, '\\hline'
@@ -172,8 +169,7 @@ def _print_latex(printdata, outfile, digits):
     print >> outfile, '\\end{{table}}'
 
 
-def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
-                 outfile, digits, latex, rank, sort, show_sort):
+def _print_table(dbase, **kwargs):
     """Print a table of aggregate image comparison data.
 
     Since the database contains error data for several images, downsamplers,
@@ -181,7 +177,7 @@ def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
     which of these to consider. This method aggregates the data for each
     relevant column in the appropriate tables.
 
-    :param db: The database file.
+    :param dbase: The database file.
     :param images: The list of image names.
     :param downsamplers: The list of downsampler names.
     :param ratios: The list of ratios in string form.
@@ -195,6 +191,19 @@ def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
     :param show_sort: True if the sort column should be displayed.
 
     """
+    # Get keyword arguments.
+    images = kwargs.get('images', None)
+    downsamplers = kwargs.get('downsamplers', None)
+    ratios = kwargs.get('ratios', None)
+    upsamplers = kwargs.get('upsamplers', None)
+    metrics_d = kwargs.get('metrics_d', None)
+    outfile = kwargs.get('outfile', None)
+    digits = kwargs.get('digits', None)
+    latex = kwargs.get('latex', False)
+    rank = kwargs.get('rank', False)
+    sort = kwargs.get('sort', None)
+    show_sort = kwargs.get('show_sort', True)
+
     # Create list and string versions of the metric names.
     metrics = metrics_d.keys()
     metrics_str = ','.join(metrics)
@@ -225,7 +234,7 @@ def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
     for ratio in ratios:
         query = ' '.join([query, 'ratio = \'{}\' OR'.format(ratio)])
     query = ''.join([query.rstrip(' OR'), ')'])
-    tables = [table[0] for table in db.sql_fetchall(query)]
+    tables = [table[0] for table in dbase.sql_fetchall(query)]
 
     # Setup a data structure (list of lists) to store aggregated data.
     header = ['upsampler']
@@ -241,7 +250,7 @@ def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
         for metric in metrics:
             metric_lists[metric] = []
         for table in tables:
-            row = db.get_error_data(table, upsampler, metrics_str)
+            row = dbase.get_error_data(table, upsampler, metrics_str)
             for metric in metrics:
                 metric_lists[metric].append(row[metric])
         for metric in metrics:
@@ -278,11 +287,14 @@ def _print_table(db, images, downsamplers, ratios, upsamplers, metrics_d,
 
 
 def main():
+    """Run exquires-report."""
+
     # Define the command-line argument parser.
     parser = argparse.ArgumentParser(
         version=VERSION,
-        description=format_doc(__doc__),
-        formatter_class=lambda prog: ExquiresHelp(prog, max_help_position=36)
+        description=parsing.format_doc(__doc__),
+        formatter_class=lambda prog: parsing.ExquiresHelp(prog,
+                                                          max_help_position=36)
     )
 
     # Output options.
@@ -291,10 +303,10 @@ def main():
     parser.add_argument('-r', '--rank', action='store_true',
                         help='display ranks instead of values')
     parser.add_argument('-p', '--proj', metavar='PROJECT', type=str,
-                        action=ProjectParser,
+                        action=parsing.ProjectParser,
                         help='name of the project (default: project1)')
     parser.add_argument('-s', '--sort', metavar='METRIC', type=str,
-                        action=SortParser, default=None,
+                        action=parsing.SortParser, default=None,
                         help='sort using this metric (default: first)')
     parser.add_argument('-d', '--digits', metavar='DIGITS',
                         type=int, choices=range(1, 16), default=4,
@@ -305,19 +317,19 @@ def main():
 
     # Aggregation options.
     parser.add_argument('-I', '--image', metavar='IMAGE',
-                        type=str, nargs='+', action=ListParser,
+                        type=str, nargs='+', action=parsing.ListParser,
                         help='images to consider (default: all)')
     parser.add_argument('-D', '--down', metavar='METHOD',
-                        type=str, nargs='+', action=ListParser,
+                        type=str, nargs='+', action=parsing.ListParser,
                         help='downsamplers to consider (default: all)')
     parser.add_argument('-R', '--ratio', metavar='RATIO',
-                        type=str, nargs='+', action=RatioParser,
+                        type=str, nargs='+', action=parsing.RatioParser,
                         help='ratios to consider (default: all)')
     parser.add_argument('-U', '--up', metavar='METHOD',
-                        type=str, nargs='+', action=ListParser,
+                        type=str, nargs='+', action=parsing.ListParser,
                         help='upsamplers to consider (default: all)')
     parser.add_argument('-M', '--metric', metavar='METRIC',
-                        type=str, nargs='+', action=ListParser,
+                        type=str, nargs='+', action=parsing.ListParser,
                         help='metrics to consider (default: all)')
 
     # Pre-parse the command-line arguments.
@@ -353,25 +365,27 @@ def main():
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args(preparsed_args)
-    except Exception, e:
-        parser.error(str(e))
+    except argparse.ArgumentTypeError, error:
+        parser.error(str(error))
 
     if not args.sort:
         args.sort = args.metric[0]
 
     # Everything is passed as a list except metrics, which is a dictionary.
     # Need to prune the dict first so it matches the argument list.
-    m = _prune_metrics(args.metric, args.metrics_d)
+    met_d = _prune_metrics(args.metric, args.metrics_d)
 
     # Open the database connection.
-    db = Database(args.db_file)
+    dbase = database.Database(args.dbase_file)
 
     # Print the aggregate data table.
-    _print_table(db, args.image, args.down, args.ratio, args.up, m, args.file,
-                 args.digits, args.latex, args.rank, args.sort, args.show_sort)
+    _print_table(dbase, images=args.image, downsamplers=args.down,
+                 ratios=args.ratio, upsamplers=args.up, metrics_d=met_d,
+                 outfile=args.file, digits=args.digits, latex=args.latex,
+                 rank=args.rank, sort=args.sort, show_sort=args.show_sort)
 
     # Close the database connection.
-    db.close()
+    dbase.close()
 
 if __name__ == '__main__':
     main()

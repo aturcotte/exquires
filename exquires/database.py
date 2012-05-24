@@ -11,8 +11,6 @@
 
 """Provides an interface to the sqlite3 image error database."""
 
-import os
-import sys
 import sqlite3
 
 
@@ -23,15 +21,16 @@ class Database:
     The database is used to store error data computed by :mod:`compute_error`.
     """
 
-    def __init__(self, dbfile):
+    def __init__(self, dbasefile):
         """This constructor creates a new Database object.
 
-        :param dbfile: The database file to connect to.
+        :param dbasefile: The database file to connect to.
 
         """
-        self.db = sqlite3.connect(dbfile, detect_types=sqlite3.PARSE_DECLTYPES)
-        self.db.row_factory = sqlite3.Row
-        self.db.text_factory = str
+        self.dbase = sqlite3.connect(dbasefile,
+                                     detect_types=sqlite3.PARSE_DECLTYPES)
+        self.dbase.row_factory = sqlite3.Row
+        self.dbase.text_factory = str
         self.sql_do('CREATE TABLE IF NOT EXISTS TABLEDATA (name TEXT PRIMARY'
                     ' KEY, image TEXT, downsampler TEXT, ratio TEXT )')
 
@@ -42,8 +41,8 @@ class Database:
         :param params: Values to fill any wildcards in the SQL statement.
 
         """
-        self.db.execute(sql, params)
-        self.db.commit()
+        self.dbase.execute(sql, params)
+        self.dbase.commit()
 
     def __create_table(self, name, metrics):
         """Private method used to create a new database table.
@@ -83,7 +82,7 @@ class Database:
         row = dict(name=name, image=image,
                    downsampler=downsampler, ratio=ratio)
         self.insert('TABLEDATA', row)
-        self.db.commit()
+        self.dbase.commit()
         return name
 
     def backup_table(self, name, backup_name, metrics):
@@ -125,15 +124,16 @@ class Database:
             for ratio in ratios:
                 query = query + ' ratio = \'{}\' OR'.format(ratio)
             query = query.rstrip(' OR')
-            cursor = self.db.cursor()
+            cursor = self.dbase.cursor()
             cursor.execute(query)
             names = [(table[0],) for table in cursor.fetchall()]
 
             # Delete the rows from TABLEDATA and drop the tables by name.
-            self.db.executemany('DELETE FROM TABLEDATA WHERE name = ?', names)
+            self.dbase.executemany('DELETE FROM TABLEDATA WHERE name = ?',
+                                   names)
             for name in names:
-                self.db.execute(' '.join(['DROP TABLE', name[0]]))
-            self.db.commit()
+                self.dbase.execute(' '.join(['DROP TABLE', name[0]]))
+            self.dbase.commit()
 
     def sql_fetchall(self, sql, params=()):
         """Fetch all rows for the specified SQL query.
@@ -141,7 +141,7 @@ class Database:
         :param sql: The SQL operation string to execute.
         :param params: The parameter list.
         """
-        cursor = self.db.execute(sql, params)
+        cursor = self.dbase.execute(sql, params)
         return cursor.fetchall()
 
     def get_error_data(self, table, upsampler, metrics_str):
@@ -158,7 +158,7 @@ class Database:
         """
         sql = 'SELECT {} FROM {} WHERE upsampler=\'{}\''
         query = sql.format(metrics_str, table, upsampler)
-        cursor = self.db.execute(query)
+        cursor = self.dbase.execute(query)
         return dict(cursor.fetchone())
 
     def insert(self, table, row):
@@ -172,8 +172,8 @@ class Database:
         values = [row[v] for v in keys]
         query = 'INSERT OR REPLACE INTO {} ({}) VALUES ({})'.format(
             table, ', '.join(keys), ', '.join('?' for i in range(len(values))))
-        cursor = self.db.execute(query, values)
-        self.db.commit()
+        self.dbase.execute(query, values)
+        self.dbase.commit()
 
     def delete(self, table, upsampler):
         """Delete a row from the table.
@@ -183,9 +183,9 @@ class Database:
 
         """
         query = 'DELETE FROM {} where upsampler = ?'.format(table)
-        self.db.execute(query, [upsampler])
-        self.db.commit()
+        self.dbase.execute(query, [upsampler])
+        self.dbase.commit()
 
     def close(self):
         """Close the connection to the database."""
-        self.db.close()
+        self.dbase.close()

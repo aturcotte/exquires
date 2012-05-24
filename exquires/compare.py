@@ -42,9 +42,9 @@
 import argparse
 import inspect
 import os
-import sys
+from math import exp
 
-from parsing import format_doc, ExquiresHelp
+import parsing
 from __init__ import __version__ as VERSION
 
 
@@ -67,7 +67,7 @@ class Metrics(object):
 
     """
 
-    def __init__(self, image1, image2, L=65535):
+    def __init__(self, image1, image2, maxval=65535):
         """This constructor creates a new Metrics object.
 
         By default, a Metrics object is configured to operate on 16-bit images.
@@ -77,12 +77,13 @@ class Metrics(object):
         :param L: The highest possible pixel value (default=65535).
 
         """
-        from vipsCC import VImage
-        self.i1 = VImage.VImage(image1)
-        self.i2 = VImage.VImage(image2)
-        self.L = L
-        sRGB_file = 'sRGB_IEC61966-2-1_black_scaled.icc'
-        self.sRGB_profile = os.path.join(os.path.dirname(__file__), sRGB_file)
+        from vipsCC import VImage, VMask
+        self.vmask = VMask
+        self.im1 = VImage.VImage(image1)
+        self.im2 = VImage.VImage(image2)
+        self.maxval = maxval
+        srgb_file = 'sRGB_IEC61966-2-1_black_scaled.icc'
+        self.srgb_profile = os.path.join(os.path.dirname(__file__), srgb_file)
         self.intent = 1    # IM_INTENT_RELATIVE_COLORIMETRIC
 
     def l_1(self):
@@ -99,8 +100,8 @@ class Metrics(object):
         :return: :math:`\ell_1` error
 
         """
-        from vipsCC import VImage
-        return (self.i1.subtract(self.i2).abs().avg() / self.L) * 100
+        diff = self.im1.subtract(self.im2).abs().avg() / self.maxval
+        return diff * 100
 
     def l_2(self):
         """Compute :math:`\ell_2` error, aka Root Mean Squared Error (RMSE).
@@ -116,8 +117,8 @@ class Metrics(object):
         :return: :math:`\ell_2` error
 
         """
-        from vipsCC import VImage
-        return (self.i1.subtract(self.i2).pow(2).avg() ** 0.5 / self.L) * 100
+        diff = self.im1.subtract(self.im2).pow(2).avg() ** 0.5 / self.maxval
+        return diff * 100
 
     def l_4(self):
         """Compute :math:`\ell_4` error.
@@ -133,8 +134,8 @@ class Metrics(object):
         :return: :math:`\ell_4` error
 
         """
-        from vipsCC import VImage
-        return (self.i1.subtract(self.i2).pow(4).avg() ** 0.25 / self.L) * 100
+        diff = self.im1.subtract(self.im2).pow(4).avg() ** 0.25 / self.maxval
+        return diff * 100
 
     def l_inf(self):
         """Compute :math:`\ell_\infty` error, aka Maximum Absolute Error (MAE).
@@ -150,8 +151,8 @@ class Metrics(object):
         :return: :math:`\ell_\infty` error
 
         """
-        from vipsCC import VImage
-        return (self.i1.subtract(self.i2).abs().max() / self.L) * 100
+        diff = self.im1.subtract(self.im2).abs().max() / self.maxval
+        return diff * 100
 
     def mssim(self):
         """Compute the Mean Structural Similarity Index (MSSIM).
@@ -180,37 +181,37 @@ class Metrics(object):
         :return: Mean SSIM
 
         """
-        from vipsCC import VImage, VMask
 
         # Compute the SSIM constants from the highest possible pixel value.
-        C1 = (0.01 * self.L) ** 2
-        C2 = (0.03 * self.L) ** 2
-        Csum = C1 + C2
+        const1 = (0.01 * self.maxval) ** 2
+        const_sum = const1 + (0.03 * self.maxval) ** 2
 
         # Create the Gaussian blur mask.
-        blur = VMask.VDMask(11, 1, 1.0, 0, _get_blurlist())
+        blur = self.vmask.VDMask(11, 1, 1.0, 0, _get_blurlist())
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = VMask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
-        x = self.i1.recomb(rgb2gray)
-        y = self.i2.recomb(rgb2gray)
+        im1_g = self.im1.recomb(rgb2gray)
+        im2_g = self.im2.recomb(rgb2gray)
 
         # Apply Gaussian blur to the grayscale images.
-        a = x.convsep(blur)
-        b = y.convsep(blur)
+        im1_b = im1_g.convsep(blur)
+        im2_b = im2_g.convsep(blur)
 
         # Compute the SSIM map.
-        c = x.multiply(y).convsep(blur).lin(2, Csum)
-        d = x.pow(2).add(y.pow(2)).convsep(blur).lin(1, Csum)
-        e = a.multiply(b).lin(2, C1)
-        f = b.subtract(a).pow(2).add(e)
-        g = e.multiply(c.subtract(e)).divide(d.subtract(f).multiply(f))
+        tmp1 = im1_g.multiply(im2_g).convsep(blur).lin(2, const_sum)
+        tmp2 = im1_g.pow(2).add(im2_g.pow(2)).convsep(blur).lin(1, const_sum)
+        tmp3 = im1_b.multiply(im2_b).lin(2, const1)
+        tmp4 = im2_b.subtract(im1_b).pow(2).add(tmp3)
+        tmp5 = tmp3.multiply(tmp1.subtract(tmp3))
+        ssim = tmp5.divide(tmp2.subtract(tmp4).multiply(tmp4))
 
         # Crop the SSIM map and return the average.
-        return g.extract_area(5, 5, x.Xsize() - 10, x.Ysize() - 10).avg()
+        crop = ssim.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
+        return crop.avg()
 
     def blur_1(self):
         """Compute MSSIM-inspired :math:`\ell_1` error.
@@ -222,26 +223,22 @@ class Metrics(object):
         :return: MSSIM-inspired :math:`\ell_1` error.
 
         """
-        from vipsCC import VImage, VMask
 
         # Create the Gaussian blur mask.
-        blur = VMask.VDMask(11, 1, 1.0, 0, _get_blurlist())
+        blur = self.vmask.VDMask(11, 1, 1.0, 0, _get_blurlist())
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = VMask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
-        x = self.i1.recomb(rgb2gray)
-        y = self.i2.recomb(rgb2gray)
+        im1_g = self.im1.recomb(rgb2gray)
+        im2_g = self.im2.recomb(rgb2gray)
 
-        # Apply Gaussian blur to the grayscale images.
-        a = x.convsep(blur)
-        b = y.convsep(blur)
-
-        # Crop the difference and return the l_1 error.
-        crop = a.subtract(b).extract_area(5, 5, x.Xsize() - 10, x.Ysize() - 10)
-        return (crop.abs().avg() / self.L) * 100
+        # Apply Gaussian blur, crop the difference and return the l_1 error.
+        diff = im1_g.convsep(blur).subtract(im2_g.convsep(blur))
+        crop = diff.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
+        return (crop.abs().avg() / self.maxval) * 100
 
     def blur_2(self):
         """Compute MSSIM-inspired :math:`\ell_2` error.
@@ -253,26 +250,22 @@ class Metrics(object):
         :return: MSSIM-inspired :math:`\ell_2` error.
 
         """
-        from vipsCC import VImage, VMask
 
         # Create the Gaussian blur mask.
-        blur = VMask.VDMask(11, 1, 1.0, 0, _get_blurlist())
+        blur = self.vmask.VDMask(11, 1, 1.0, 0, _get_blurlist())
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = VMask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
-        x = self.i1.recomb(rgb2gray)
-        y = self.i2.recomb(rgb2gray)
+        im1_g = self.im1.recomb(rgb2gray)
+        im2_g = self.im2.recomb(rgb2gray)
 
-        # Apply Gaussian blur to the grayscale images.
-        a = x.convsep(blur)
-        b = y.convsep(blur)
-
-        # Crop the difference and return the l_2 error.
-        crop = a.subtract(b).extract_area(5, 5, x.Xsize() - 10, x.Ysize() - 10)
-        return (crop.pow(2).avg() ** 0.5 / self.L) * 100
+        # Apply Gaussian blur, crop the difference and return the l_2 error.
+        diff = im1_g.convsep(blur).subtract(im2_g.convsep(blur))
+        crop = diff.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
+        return (crop.pow(2).avg() ** 0.5 / self.maxval) * 100
 
     def blur_4(self):
         """Compute MSSIM-inspired :math:`\ell_4` error.
@@ -284,26 +277,22 @@ class Metrics(object):
         :return: MSSIM-inspired :math:`\ell_4` error.
 
         """
-        from vipsCC import VImage, VMask
 
         # Create the Gaussian blur mask.
-        blur = VMask.VDMask(11, 1, 1.0, 0, _get_blurlist())
+        blur = self.vmask.VDMask(11, 1, 1.0, 0, _get_blurlist())
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = VMask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
-        x = self.i1.recomb(rgb2gray)
-        y = self.i2.recomb(rgb2gray)
+        im1_g = self.im1.recomb(rgb2gray)
+        im2_g = self.im2.recomb(rgb2gray)
 
-        # Apply Gaussian blur to the grayscale images.
-        a = x.convsep(blur)
-        b = y.convsep(blur)
-
-        # Crop the difference and return the l_4 error.
-        crop = a.subtract(b).extract_area(5, 5, x.Xsize() - 10, x.Ysize() - 10)
-        return (crop.pow(4).avg() ** 0.25 / self.L) * 100
+        # Apply Gaussian blur, crop the difference and return the l_4 error.
+        diff = im1_g.convsep(blur).subtract(im2_g.convsep(blur))
+        crop = diff.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
+        return (crop.pow(4).avg() ** 0.25 / self.maxval) * 100
 
     def blur_inf(self):
         """Compute MSSIM-inspired :math:`\ell_\infty` error.
@@ -315,26 +304,22 @@ class Metrics(object):
         :return: MSSIM-inspired :math:`\ell_\infty` error.
 
         """
-        from vipsCC import VImage, VMask
 
         # Create the Gaussian blur mask.
-        blur = VMask.VDMask(11, 1, 1.0, 0, _get_blurlist())
+        blur = self.vmask.VDMask(11, 1, 1.0, 0, _get_blurlist())
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = VMask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
-        x = self.i1.recomb(rgb2gray)
-        y = self.i2.recomb(rgb2gray)
+        im1_g = self.im1.recomb(rgb2gray)
+        im2_g = self.im2.recomb(rgb2gray)
 
-        # Apply Gaussian blur to the grayscale images.
-        a = x.convsep(blur)
-        b = y.convsep(blur)
-
-        # Crop the difference and return the l_1 error.
-        crop = a.subtract(b).extract_area(5, 5, x.Xsize() - 10, x.Ysize() - 10)
-        return (crop.abs().max() / self.L) * 100
+        # Apply Gaussian blur, crop the difference and return the l_inf error.
+        diff = im1_g.convsep(blur).subtract(im2_g.convsep(blur))
+        crop = diff.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
+        return (crop.abs().max() / self.maxval) * 100
 
     def cmc_1(self):
         """Compute :math:`\ell_1` error in Uniform Colour Space (UCS).
@@ -345,9 +330,8 @@ class Metrics(object):
         :return: :math:`\ell_1` error in Uniform Colour Space (UCS).
 
         """
-        from vipsCC import VImage
-        lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
-        lab2 = self.i2.icc_import(self.sRGB_profile, self.intent)
+        lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
+        lab2 = self.im2.icc_import(self.srgb_profile, self.intent)
         return lab1.dECMC_fromLab(lab2).avg()
 
     def cmc_2(self):
@@ -359,9 +343,8 @@ class Metrics(object):
         :return: :math:`\ell_2` error in Uniform Colour Space (UCS).
 
         """
-        from vipsCC import VImage
-        lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
-        lab2 = self.i2.icc_import(self.sRGB_profile, self.intent)
+        lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
+        lab2 = self.im2.icc_import(self.srgb_profile, self.intent)
         return lab1.dECMC_fromLab(lab2).pow(2).avg() ** 0.5
 
     def cmc_4(self):
@@ -373,9 +356,8 @@ class Metrics(object):
         :return: :math:`\ell_4` error in Uniform Colour Space (UCS).
 
         """
-        from vipsCC import VImage
-        lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
-        lab2 = self.i2.icc_import(self.sRGB_profile, self.intent)
+        lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
+        lab2 = self.im2.icc_import(self.srgb_profile, self.intent)
         return lab1.dECMC_fromLab(lab2).pow(4).avg() ** 0.25
 
     def cmc_inf(self):
@@ -387,9 +369,8 @@ class Metrics(object):
         :return: :math:`\ell_\infty` error in Uniform Colour Space (UCS).
 
         """
-        from vipsCC import VImage
-        lab1 = self.i1.icc_import(self.sRGB_profile, self.intent)
-        lab2 = self.i2.icc_import(self.sRGB_profile, self.intent)
+        lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
+        lab2 = self.im2.icc_import(self.srgb_profile, self.intent)
         return lab1.dECMC_fromLab(lab2).max()
 
     def xyz_1(self):
@@ -401,9 +382,8 @@ class Metrics(object):
         :return: :math:`\ell_1` error in XYZ Colour Space.
 
         """
-        from vipsCC import VImage
-        xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
-        xyz2 = self.i2.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
+        xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
+        xyz2 = self.im2.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
         return xyz1.subtract(xyz2).abs().avg()
 
     def xyz_2(self):
@@ -415,9 +395,8 @@ class Metrics(object):
         :return: :math:`\ell_2` error in XYZ Colour Space.
 
         """
-        from vipsCC import VImage
-        xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
-        xyz2 = self.i2.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
+        xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
+        xyz2 = self.im2.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
         return xyz1.subtract(xyz2).pow(2).avg() ** 0.5
 
     def xyz_4(self):
@@ -429,9 +408,8 @@ class Metrics(object):
         :return: :math:`\ell_4` error in XYZ Colour Space.
 
         """
-        from vipsCC import VImage
-        xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
-        xyz2 = self.i2.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
+        xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
+        xyz2 = self.im2.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
         return xyz1.subtract(xyz2).pow(4).avg() ** 0.25
 
     def xyz_inf(self):
@@ -443,34 +421,32 @@ class Metrics(object):
         :return: :math:`\ell_\infty` error in XYZ Colour Space.
 
         """
-        from vipsCC import VImage
-        xyz1 = self.i1.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
-        xyz2 = self.i2.icc_import(self.sRGB_profile, self.intent).Lab2XYZ()
+        xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
+        xyz2 = self.im2.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
         return xyz1.subtract(xyz2).abs().max()
 
 
 def _get_blurlist():
     """Private method to return a Gaussian blur mask."""
-    from math import exp
 
     # Compute the raw Gaussian blur coefficients.
-    blurSigma = 1.5
-    blurDivisor = 2 * blurSigma * blurSigma
-    rawblur1 = exp(-1 / blurDivisor)
-    rawblur2 = exp(-4 / blurDivisor)
-    rawblur3 = exp(-9 / blurDivisor)
-    rawblur4 = exp(-16 / blurDivisor)
-    rawblur5 = exp(-25 / blurDivisor)
+    blur_sigma = 1.5
+    blur_divisor = 2 * blur_sigma * blur_sigma
+    rawblur1 = exp(-1 / blur_divisor)
+    rawblur2 = exp(-4 / blur_divisor)
+    rawblur3 = exp(-9 / blur_divisor)
+    rawblur4 = exp(-16 / blur_divisor)
+    rawblur5 = exp(-25 / blur_divisor)
 
     # Normalize the raw Gaussian blur coefficients.
     rawblursum = rawblur1 + rawblur2 + rawblur3 + rawblur4 + rawblur5
-    blurNormalizer = 2 * rawblursum + 1
-    blur0 = 1 / blurNormalizer
-    blur1 = rawblur1 / blurNormalizer
-    blur2 = rawblur2 / blurNormalizer
-    blur3 = rawblur3 / blurNormalizer
-    blur4 = rawblur4 / blurNormalizer
-    blur5 = rawblur5 / blurNormalizer
+    blur_normalizer = 2 * rawblursum + 1
+    blur0 = 1 / blur_normalizer
+    blur1 = rawblur1 / blur_normalizer
+    blur2 = rawblur2 / blur_normalizer
+    blur3 = rawblur3 / blur_normalizer
+    blur4 = rawblur4 / blur_normalizer
+    blur5 = rawblur5 / blur_normalizer
 
     # Return the Gaussian blur mask as a list.
     return [blur5, blur4, blur3, blur2, blur1,
@@ -478,6 +454,8 @@ def _get_blurlist():
 
 
 def main():
+    """Run exquires-compare."""
+
     # Obtain a list of error metrics that can be called.
     metrics = []
     methods = inspect.getmembers(Metrics, predicate=inspect.ismethod)
@@ -485,32 +463,36 @@ def main():
         metrics.append(method[0])
 
     # Define the command-line argument parser.
-    parser = argparse.ArgumentParser(version=VERSION,
-                                     description=format_doc(__doc__),
-                                     formatter_class=ExquiresHelp)
+    parser = argparse.ArgumentParser(
+        version=VERSION,
+        description=parsing.format_doc(__doc__),
+        formatter_class=lambda prog: parsing.ExquiresHelp(prog,
+                                                          max_help_position=30)
+    )
     parser.add_argument('metric', type=str, metavar='METRIC', choices=metrics,
                         help='the error metric to use')
     parser.add_argument('image1', type=str, metavar='IMAGE_1',
                         help='the first image to compare')
     parser.add_argument('image2', type=str, metavar='IMAGE_2',
                         help='the second image to compare')
-    parser.add_argument('-L', type=int, metavar='MAX_LEVEL', default=65535,
+    parser.add_argument('-m', '--maxval', type=int, metavar='MAX_LEVEL',
+                        default=65535,
                         help='the maximum pixel value (default=65535)')
 
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args()
-    except Exception, e:
-        parser.error(str(e))
+    except argparse.ArgumentTypeError, error:
+        parser.error(str(error))
 
     # Attempt to call the chosen metric on the specified images.
     from vipsCC import VError
     try:
         # Print the result with 15 digits after the decimal.
-        m = Metrics(args.image1, args.image2, args.L)
-        print '%.15f' % getattr(m, args.metric)()
-    except VError.VError, e:
-        parser.error(str(e))
+        metric = Metrics(args.image1, args.image2, args.maxval)
+        print '%.15f' % getattr(metric, args.metric)()
+    except VError.VError, error:
+        parser.error(str(error))
 
 if __name__ == '__main__':
     main()

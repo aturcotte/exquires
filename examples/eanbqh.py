@@ -33,7 +33,7 @@ def main():
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args()
-    except Exception, e:
+    except argparse.ArgumentTypeError, error:
         parser.error(str(e))
 
     # Make sure the input image exists.

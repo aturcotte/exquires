@@ -9,4 +9,6 @@
 #  EXQUIRES | Evaluative eXtensible QUantitative Image Re-Enlargement Suite
 #
 
+"""Package file for EXQUIRES."""
+
 __version__ = '0.9.7'

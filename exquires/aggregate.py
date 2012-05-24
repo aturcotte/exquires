@@ -31,7 +31,7 @@ import inspect
 
 from numpy import average, power
 
-from parsing import format_doc, ExquiresHelp
+import parsing
 from __init__ import __version__ as VERSION
 
 
@@ -81,6 +81,8 @@ class Aggregate(object):
 
 
 def main():
+    """Run exquires-aggregate."""
+
     # Obtain a list of aggregation methods that can be called.
     aggregators = []
     methods = inspect.getmembers(Aggregate, predicate=inspect.ismethod)
@@ -89,8 +91,8 @@ def main():
 
     # Define the command-line argument parser.
     parser = argparse.ArgumentParser(version=VERSION,
-                                     description=format_doc(__doc__),
-                                     formatter_class=ExquiresHelp)
+                                     description=parsing.format_doc(__doc__),
+                                     formatter_class=parsing.ExquiresHelp)
     parser.add_argument('method', metavar='METHOD', choices=aggregators,
                         help='the type of aggregation to use')
     parser.add_argument('values', metavar='NUM', type=float, nargs='+',
@@ -99,12 +101,12 @@ def main():
     # Attempt to parse the command-line arguments.
     try:
         args = parser.parse_args()
-    except Exception, e:
-        parser.error(str(e))
+    except argparse.ArgumentTypeError, error:
+        parser.error(str(error))
 
     # Print the result with 15 digits after the decimal.
-    a = Aggregate(args.values)
-    print '%.15f' % getattr(a, args.method)()
+    aggregation = Aggregate(args.values)
+    print '%.15f' % getattr(aggregation, args.method)()
 
 if __name__ == '__main__':
     main()

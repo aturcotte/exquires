@@ -19,8 +19,12 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 Introduction
 ============
 
-**EXQUIRES** is an open source framework for assessing the performance of image
-upsampling methods. An upsampler's performance is based on its ability to
+**EXQUIRES** is an open source framework for assessing the accuracy of image
+upsampling methods. **EXQUIRES** can also be used to compare image difference
+metrics, or to measure the impact of various factors, including test image
+selection and properties, downsampler choice, resizing ratio, etc.
+
+An upsampler's performance is based on its ability to
 reconstruct test images from various reduced versions. The downsampler used to
 reduce the images has an influence on the re-enlargements, so any number of
 downsampling methods can be used. The difference between the re-enlargements
