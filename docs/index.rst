@@ -50,7 +50,7 @@ several modules, including the following:
 * `re <http://docs.python.org/library/re.html>`_ (handle arguments with hypenated ranges)
 * `sqlite3 <http://docs.python.org/library/sqlite3.html>`_ (database to store image comparison data)
 * `subprocess <http://docs.python.org/library/subprocess.html>`_ (call external applications)
-* `vipsCC <http://www.vips.ecs.soton.ac.uk/index.php?title=Python>`_ (Python interface to VIPS <http://www.vips.ecs.soton.ac.uk/>`_)
+* `vipsCC <http://www.vips.ecs.soton.ac.uk/index.php?title=Python>`_ (Python interface to `VIPS <http://www.vips.ecs.soton.ac.uk/>`_)
 
 The following image processing applications are also used:
 
