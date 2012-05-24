@@ -50,8 +50,9 @@ def _magick(method, **kwargs):
     # Setup keyword arguments.
     lin = kwargs.get('lin', False)
     dist = kwargs.get('dist', False)
+    interp = kwargs.get('interp', False)
     lobes = kwargs.get('lobes', 0)
-    blur = kwargs.get('blur', -1)
+    blur = kwargs.get('blur', 0)
     beta = kwargs.get('beta', 0)
 
     # Create and return command string.
@@ -62,11 +63,13 @@ def _magick(method, **kwargs):
         cmd = ' '.join([cmd, '-filter', method])
     if lobes:
         cmd = ''.join([cmd, ' -define filter:lobes=', str(lobes)])
-    if blur >= 0:
+    if blur:
         cmd = ''.join([cmd, ' -define filter:blur=', str(blur)])
     if beta:
         cmd = ''.join([cmd, ' -define filter:kaiser-beta=', str(beta)])
-    if dist:
+    if interp:
+        cmd ' '..join([cmd, '-interpolative-resize {3}x{3}'])
+    elif dist:
         cmd = ' '.join([cmd, '-distort Resize {3}x{3}'])
     else:
         cmd = ' '.join([cmd, '-resize {3}x{3}'])
@@ -174,8 +177,9 @@ def main():
     ini[downs]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
     ini[downs]['lanczos3_srgb'] = _magick('Lanczos')
     ini[downs]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[downs]['nearest_srgb'] = _magick('Box', dist=True, blur=0)
-    ini[downs]['nearest_linear'] = _magick('Box', dist=True, blur=0, lin=True)
+    ini[downs]['nearest_srgb'] = _magick('Triangle', interp=True, blur=0)
+    ini[downs]['nearest_linear'] = _magick('Triangle', interp=True, blur=0,
+                                           lin=True)
 
     # Define the list of upsamplers to use.
     ini[ups] = {}
