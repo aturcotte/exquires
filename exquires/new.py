@@ -68,7 +68,7 @@ def _magick(method, **kwargs):
     if beta:
         cmd = ''.join([cmd, ' -define filter:kaiser-beta=', str(beta)])
     if interp:
-        cmd ' '..join([cmd, '-interpolative-resize {3}x{3}'])
+        cmd ' '.join([cmd, '-interpolative-resize {3}x{3}'])
     elif dist:
         cmd = ' '.join([cmd, '-distort Resize {3}x{3}'])
     else:
