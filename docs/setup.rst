@@ -67,7 +67,7 @@ Installing EXQUIRES
 
 .. code-block:: console
 
-    $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
+    $ sudo apt-get install python-pip python-configobj python-dev python-numpy python-vipscc libvips-tools
     
 * Install **EXQUIRES** from PyPI using pip:
 
