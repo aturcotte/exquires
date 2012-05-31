@@ -30,6 +30,7 @@ LICENSE = 'BSD 2-Clause License'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
 requirements_file = open(os.path.join(this_dir, 'requirements.txt'))
 REQUIREMENTS = filter(None, requirements_file.read().splitlines())
+DATA_FILES = ['wave.tif', 'sRGB_IEC61966-2-1_black_scaled.icc']
 AUTHOR = 'Adam Turcotte'
 AUTHOR_EMAIL = 'adam.turcotte@gmail.com'
 KEYWORDS = ('image', 'reconstruction', 'enlargement', 'upsampling', 'test', 'testing')
@@ -57,6 +58,7 @@ params = dict(
     version=VERSION,
     packages=PACKAGES,
     install_requires=REQUIREMENTS,
+    package_data={'exquires': DATA_FILES}
 
     # Metadata for PyPI.
     author=AUTHOR,
