@@ -45,22 +45,16 @@ dependencies.
 Installing ImageMagick 7 alpha from source
 ------------------------------------------
 
-* Install dependencies on Debian/Ubuntu/Mint:
-
-.. code-block:: console
+* Install dependencies on Debian/Ubuntu/Mint::
 
     $ sudo apt-get install imagemagick libmagick++-dev
 
-* download and untar the ImageMagick 7 alpha source:
-
-.. code-block:: console
+* download and untar the ImageMagick 7 alpha source::
 
     $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
     $ tar xvfz ImageMagick.tar.gz
 
-* configure, compile and install ImageMagick:
-
-.. code-block:: console
+* configure, compile and install ImageMagick::
 
     $ cd ImageMagick-7.0.0-0
     $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
@@ -68,15 +62,11 @@ Installing ImageMagick 7 alpha from source
     $ make
     $ sudo make install
 
-* configure the dynamic linker run-time bindings:
-
-.. code-block:: console
+* configure the dynamic linker run-time bindings::
 
     $ sudo ldconfig /usr/local/lib
 
-* (optional) ensure that the correct version is now installed:
-
-.. code-block:: console
+* (optional) ensure that the correct version is now installed::
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
@@ -85,15 +75,11 @@ Installing ImageMagick 7 alpha from source
 Installing EXQUIRES
 -------------------
 
-* install dependencies:
-
-.. code-block:: console
+* install dependencies::
 
     $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
     
-* install EXQUIRES from PyPI using pip:
-
-.. code-block:: console
+* install EXQUIRES from PyPI using pip::
 
     $ sudo pip install -U exquires
 
