@@ -58,7 +58,7 @@ params = dict(
     version=VERSION,
     packages=PACKAGES,
     install_requires=REQUIREMENTS,
-    package_data={'exquires': DATA_FILES}
+    package_data={'exquires': DATA_FILES},
 
     # Metadata for PyPI.
     author=AUTHOR,
