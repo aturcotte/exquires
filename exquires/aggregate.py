@@ -26,13 +26,11 @@
 
 """
 
-import argparse
 import inspect
 
-from numpy import average, power
+import numpy
 
 import parsing
-from __init__ import __version__ as VERSION
 
 
 class Aggregate(object):
@@ -53,7 +51,7 @@ class Aggregate(object):
         :return: The average.
 
         """
-        return average(self.values)
+        return numpy.average(self.values)
 
     def l_2(self):
         """Average the squares and return the square root.
@@ -61,7 +59,7 @@ class Aggregate(object):
         :return: The square root of the average of the squares.
 
         """
-        return average(power(self.values, 2)) ** 0.5
+        return numpy.average(numpy.power(self.values, 2)) ** 0.5
 
     def l_4(self):
         """Average the quads and return the fourth root.
@@ -69,7 +67,7 @@ class Aggregate(object):
         :return: The fourth root of the average of the quads.
 
         """
-        return average(power(self.values, 4)) ** 0.25
+        return numpy.average(numpy.power(self.values, 4)) ** 0.25
 
     def l_inf(self):
         """Return the maximum.
@@ -90,19 +88,14 @@ def main():
         aggregators.append(method[0])
 
     # Define the command-line argument parser.
-    parser = argparse.ArgumentParser(version=VERSION,
-                                     description=parsing.format_doc(__doc__),
-                                     formatter_class=parsing.ExquiresHelp)
+    parser = parsing.ExquiresParser(description=__doc__)
     parser.add_argument('method', metavar='METHOD', choices=aggregators,
                         help='the type of aggregation to use')
     parser.add_argument('values', metavar='NUM', type=float, nargs='+',
                          help='number to include in aggregation')
 
     # Attempt to parse the command-line arguments.
-    try:
-        args = parser.parse_args()
-    except argparse.ArgumentTypeError, error:
-        parser.error(str(error))
+    args = parser.parse_args()
 
     # Print the result with 15 digits after the decimal.
     aggregation = Aggregate(args.values)

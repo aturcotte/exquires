@@ -8,13 +8,6 @@ Modules & Classes
 The :mod:`aggregate` Module
 ===========================
 .. automodule:: aggregate
-
-.. _Aggregate-class:
-
-----------------------------
-The :class:`Aggregate` Class
-----------------------------
-.. autoclass:: aggregate.Aggregate
     :members:
 
 .. _compare-module:
@@ -23,85 +16,75 @@ The :class:`Aggregate` Class
 The :mod:`compare` Module
 =========================
 .. automodule:: compare
+    :members:
 
-.. _Metrics-class:
+.. _correlate-module:
 
-----------------------------
-The :class:`Metrics` Class
-----------------------------
-.. autoclass:: compare.Metrics
+===========================
+The :mod:`correlate` Module
+===========================
+.. automodule:: correlate
     :members:
 
 ==========================
 The :mod:`database` Module
 ==========================
 .. automodule:: database
-
-----------------------------
-The :class:`Database` Class
-----------------------------
-.. autoclass:: database.Database
     :members:
 
 =====================
 The :mod:`new` Module
 =====================
 .. automodule:: new
+    :members:
+
+============================
+The :mod:`operations` Module
+============================
+.. automodule:: operations
+    :members:
 
 =========================
 The :mod:`parsing` Module
 =========================
 .. automodule:: parsing
-
--------------------------------
-The :class:`ExquiresHelp` Class
--------------------------------
-.. autoclass:: parsing.ExquiresHelp
-    :members:
-
---------------------------------
-The :class:`ProjectParser` Class
---------------------------------
-.. autoclass:: parsing.ProjectParser
-    :members:
-
------------------------------
-The :class:`ListParser` Class
------------------------------
-.. autoclass:: parsing.ListParser
-    :members:
-
------------------------------
-The :class:`SortParser` Class
------------------------------
-.. autoclass:: parsing.SortParser
     :members:
 
 ==========================
 The :mod:`progress` Module
 ==========================
 .. automodule:: progress
-
----------------------------
-The :class:`Progress` Class
----------------------------
-.. autoclass:: progress.Progress
     :members:
 
 ========================
 The :mod:`report` Module
 ========================
 .. automodule:: report
+    :members:
 
 =====================
 The :mod:`run` Module
 =====================
 .. automodule:: run
+    :members:
+
+=======================
+The :mod:`stats` Module
+=======================
+.. automodule:: stats
+    :members:
+
+=======================
+The :mod:`tools` Module
+=======================
+.. automodule:: tools
+    :members:
 
 ========================
 The :mod:`update` Module
 ========================
 .. automodule:: update
+    :members:
 
 ==================
 Indices and Tables

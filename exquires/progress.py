@@ -32,10 +32,10 @@ class Progress(object):
 
     """
 
-    def __init__(self, prg, proj, total_ops):
+    def __init__(self, program, proj, total_ops):
         """This constructor creates a new Progress object.
 
-        :param prg: The name of the program that is running.
+        :param program: The name of the program that is running.
         :param proj: The name of the project being used.
         :param total_ops: The total number of operations.
 
@@ -44,7 +44,7 @@ class Progress(object):
         curses.cbreak()
         curses.noecho()
         curses.curs_set(0)
-        self.prg = prg
+        self.program = program
         self.proj = proj
         self.total_ops = total_ops
         self.num_ops = 0
@@ -133,33 +133,30 @@ class Progress(object):
     def cleanup(self):
         """Indicate that files are being deleted."""
         self.scr.clear()
-        self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
+        self.scr.addstr(1, 1, self.program, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)
         self.__table_middle(6, 'PROGRESS', '0%')
         self.__table_bottom(8, 'STATUS', 'DELETING OLD FILES')
         self.scr.refresh()
 
-    def do_op(self, image, downsampler, ratio, **kwargs):
+    def do_op(self, args, upsampler=None, metric=None):
         """Update the progress indicator.
 
         If no upsampler is specified, operation=downsampling.
         If an upsampler is specified, but no metric, operation=upsampling.
         If an upsampler and metric are specified, operation=comparing.
 
-        :param image: The image being processed.
-        :param downsampler: The downsampler being used.
-        :param ratio: The resampling ratio being used.
+        :param args.image: The image being processed.
+        :param args.downsampler: The downsampler being used.
+        :param args.ratio: The resampling ratio being used.
         :param upsampler: The upsampler being used.
         :param metric: The metric being used.
 
         """
-        upsampler = kwargs.get('upsampler', None)
-        metric = kwargs.get('metric', None)
-
         percent = int(self.num_ops * 100 / self.total_ops)
         self.num_ops += 1
         self.scr.clear()
-        self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
+        self.scr.addstr(1, 1, self.program, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)
         self.__table_middle(6, 'PROGRESS', '{}%'.format(percent))
 
@@ -170,25 +167,25 @@ class Progress(object):
         else:
             self.__table_middle(8, 'STATUS', 'DOWNSAMPLING')
 
-        self.__table_middle(10, 'IMAGE', image)
-        self.__table_middle(12, 'DOWNSAMPLER', downsampler)
+        self.__table_middle(10, 'IMAGE', args.image)
+        self.__table_middle(12, 'DOWNSAMPLER', args.downsampler)
 
         if metric:
-            self.__table_middle(14, 'RATIO', ratio)
+            self.__table_middle(14, 'RATIO', args.ratio)
             self.__table_middle(16, 'UPSAMPLER', upsampler)
             self.__table_bottom(18, 'METRIC', metric)
         elif upsampler:
-            self.__table_middle(14, 'RATIO', ratio)
+            self.__table_middle(14, 'RATIO', args.ratio)
             self.__table_bottom(16, 'UPSAMPLER', upsampler)
         else:
-            self.__table_bottom(14, 'RATIO', ratio)
+            self.__table_bottom(14, 'RATIO', args.ratio)
 
         self.scr.refresh()
 
     def complete(self):
         """Complete the progress indicator."""
         self.scr.clear()
-        self.scr.addstr(1, 1, self.prg, curses.A_BOLD)
+        self.scr.addstr(1, 1, self.program, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)
         self.__table_middle(6, 'PROGRESS', '100%')
         self.__table_bottom(8, 'STATUS', 'COMPLETE')

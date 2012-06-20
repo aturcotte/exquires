@@ -15,10 +15,15 @@ import argparse
 import os
 import fnmatch
 import re
+import sys
 
 from configobj import ConfigObj
 
-def format_doc(docstring):
+import tools
+from exquires import __version__ as VERSION
+
+
+def _format_doc(docstring):
     """Parse the module docstring and re-format all reST markup.
 
     :param docstring: The module docstring to format.
@@ -43,6 +48,212 @@ def format_doc(docstring):
     emph1 = re.sub(r'^\*', r'^\033[4m', re.sub(r' \*', r' \033[4m', bold6))
     emph2 = re.sub(r'\*,', r'\033[0m,', re.sub(r'\* ', r'\033[0m ', emph1))
     return re.sub(r'\*$', r'\033[0m$', re.sub(r'\*.', r'\033[0m.', emph2))
+
+
+class ExquiresParser(argparse.ArgumentParser):
+
+    """Generic EXQUIRES parser."""
+
+    def __init__(self, description):
+        """This constructor creates a new ExquiresParser object.
+
+        :param description: The docstring from the calling program.
+
+        """
+        super(ExquiresParser, self).__init__(
+            version=VERSION, description=_format_doc(description),
+            formatter_class=lambda prog: ExquiresHelp(prog,
+                                                      max_help_position=36)
+        )
+
+    def parse_args(self, args=None, namespace=None):
+        """Parse command-line arguments.
+
+        :param args: The command-line arguments.
+        :param namespace: The namespace.
+
+        """
+        # Get the raw command-line arguments
+        if args is None:
+            args = sys.argv[1:]
+
+        # Attempt to parse the command-line arguments.
+        try:
+            args = super(ExquiresParser, self).parse_args(args, namespace)
+        except argparse.ArgumentTypeError, error:
+            self.error(str(error))
+
+
+class OperationsParser(ExquiresParser):
+
+    """Parser for exquires-run and exquires-update."""
+
+    def __init__(self, description, update=False):
+        """This constructor creates a new OperationsParser object.
+
+        :param description: The docstring from the calling program.
+
+        """
+        super(OperationsParser, self).__init__(description)
+        self.add_argument('-s', '--silent', action='store_true',
+                          help='do not display progress information')
+        self.add_argument('-p', '--proj', metavar='PROJECT',
+                          type=str, default='project1',
+                          help='name of the project (default: project1)')
+        self.update = update
+
+    def parse_args(self, args=None, namespace=None):
+        """Parse arguments for exquires-run or exquires-update.
+
+        :param args: The command-line arguments.
+        :param namespace: The namespace.
+
+        """
+        # Get the raw command-line arguments
+        if args is None:
+            args = sys.argv[1:]
+
+        # Attempt to parse the command-line arguments.
+        args = super(OperationsParser, self).parse_args(args, namespace)
+
+        # Construct the path to the configuration and database files.
+        args.dbase_file = '.'.join([args.proj, 'db'])
+        args.config_file = '.'.join([args.proj, 'ini'])
+        args.config_bak = '.'.join([args.config_file, 'bak'])
+        args.prog = self.prog
+
+        # Report an error if the configuration file does not exist.
+        if not os.path.isfile(args.config_file):
+            self.error(' '.join(['unrecognized project:', args.proj]))
+
+        if self.update:
+            # Determine if the database can be updated.
+            if not (os.path.isfile(args.config_bak) and
+                    os.path.isfile(args.dbase_file)):
+                self.error(' '.join([args.proj, 'has not been run']))
+        else:
+            # Create a new database file, backing up any that already exists.
+            if os.path.isfile(args.dbase_file):
+                os.rename(args.dbase_file, '.'.join([args.proj, 'db', 'bak']))
+
+        # Return the parsed arguments.
+        return args
+
+
+class StatsParser(ExquiresParser):
+
+    """Parser for exquires-report and exquires-correlate."""
+
+    def __init__(self, description, correlate=False):
+        """This constructor creates a new StatsParser object.
+
+        :param description: The docstring from the calling program.
+
+        """
+        super(StatsParser, self).__init__(description)
+
+        # Output options.
+        self.add_argument('-l', '--latex', action='store_true',
+                          help='print a LaTeX formatted table')
+
+        if not correlate:
+            group = self.add_mutually_exclusive_group()
+            group.add_argument('-r', '--rank', action='store_true',
+                               help='print Spearman (fractional) ranks')
+            group.add_argument('-m', '--merge', action='store_true',
+                               help='print merged Spearman ranks')
+
+        self.add_argument('-p', '--proj', metavar='PROJECT', type=str,
+                          action=ProjectAction,
+                          help='name of the project (default: project1)')
+        self.add_argument('-f', '--file', metavar='FILE',
+                          type=argparse.FileType('w'), default=sys.stdout,
+                          help='output to file (default: sys.stdout)')
+        self.add_argument('-d', '--digits', metavar='DIGITS',
+                          type=int, choices=range(1, 16), default=4,
+                          help='total number of digits (default: 4)')
+
+        if not correlate:
+            # Sort option.
+            self.add_argument('-s', '--sort', metavar='METRIC', type=str,
+                              action=SortAction, default=None,
+                              help='sort using this metric (default: first)')
+
+        # Upsampler selection.
+        self.add_argument('-U', '--up', metavar='METHOD',
+                          type=str, nargs='+', action=ListAction,
+                          help='upsamplers to consider (default: all)')
+
+        # Determine if using exquires-report or exquires-correlate.
+        if correlate:
+            group = self.add_mutually_exclusive_group()
+        else:
+            group = self
+
+        # Aggregation/correlation options.
+        group.add_argument('-I', '--image', metavar='IMAGE',
+                           type=str, nargs='+', action=ListAction,
+                           help='images to consider (default: all)')
+        group.add_argument('-D', '--down', metavar='METHOD',
+                           type=str, nargs='+', action=ListAction,
+                           help='downsamplers to consider (default: all)')
+        group.add_argument('-R', '--ratio', metavar='RATIO',
+                           type=str, nargs='+', action=RatioAction,
+                           help='ratios to consider (default: all)')
+        group.add_argument('-M', '--metric', metavar='METRIC',
+                           type=str, nargs='+', action=ListAction,
+                           help='metrics to consider (default: all)')
+
+    def parse_args(self, args=None, namespace=None):
+        """Parse arguments for exquires-report or exquires-correlate.
+
+        :param args: The command-line arguments.
+        :param namespace: The namespace.
+
+        """
+        # Get the raw command-line arguments
+        if args is None:
+            args = sys.argv[1:]
+
+        # Deal with the -h/--help  and -v/--version options.
+        help_or_version = False
+        for arg in args:
+            if arg in ('-h', '--help', '-v', '--version'):
+                help_or_version = True
+                break
+
+        # Deal with the -p/--proj option.
+        if not help_or_version:
+            proj = False
+            for i in range(0, len(args) - 1):
+                if args[i] == '-p' or args[i] == '--proj':
+                    args.insert(0, args.pop(i + 1))
+                    args.insert(0, args.pop(i + 1))
+                    proj = True
+                    break
+            if not proj:
+                args.insert(0, 'project1')
+                args.insert(0, '--proj')
+
+        # Make --sort the rightmost option.
+        for i in range(2, len(args) - 1):
+            if args[i] == '--sort':
+                args.append(args.pop(i))
+                args.append(args.pop(i))
+                break
+
+        # Attempt to parse the command-line arguments.
+        args = super(StatsParser, self).parse_args(args, namespace)
+
+        # Need to prune the dict first so it matches the argument list.
+        args.metrics_d = tools.prune_metrics(args.metric, args.metrics_d)
+
+        # Default to sorting by the leftmost column.
+        if not args.sort:
+            args.sort = args.metric[0]
+
+        # Return the parsed arguments.
+        return args
 
 
 class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
@@ -81,7 +292,7 @@ class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
         return ''.join([indent + line for line in text.splitlines(True)])
 
 
-class ProjectParser(argparse.Action):
+class ProjectAction(argparse.Action):  # pylint: disable-msg=R0903
 
     """Parser action to read a project file based on the specified name."""
 
@@ -109,8 +320,15 @@ class ProjectParser(argparse.Action):
         setattr(args, 'sort', None)
         setattr(args, 'show_sort', True)
 
+        # Set the "flags" to False.
+        setattr(args, 'image_flag', False)
+        setattr(args, 'down_flag', False)
+        setattr(args, 'ratio_flag', False)
+        setattr(args, 'metric_flag', False)
+        setattr(args, 'up_flag', False)
 
-class ListParser(argparse.Action):
+
+class ListAction(argparse.Action):  # pylint: disable-msg=R0903
 
     """Parser action to handle wildcards for options that support them.
 
@@ -135,9 +353,10 @@ class ListParser(argparse.Action):
                 raise argparse.ArgumentError(self, msg)
             matches.update(results)
         setattr(args, self.dest, [x for x in value_list if x in matches])
+        setattr(args, '_'.join([self.dest, 'flag']), True)
 
 
-class RatioParser(argparse.Action):
+class RatioAction(argparse.Action):  # pylint: disable-msg=R0903
 
     """Parser action to deal with ratio ranges."""
 
@@ -169,9 +388,10 @@ class RatioParser(argparse.Action):
                 msg = 'format error in {}'.format(value)
                 raise argparse.ArgumentError(self, msg)
         setattr(args, self.dest, [x for x in value_list if x in matches])
+        setattr(args, '_'.join([self.dest, 'flag']), True)
 
 
-class SortParser(argparse.Action):
+class SortAction(argparse.Action):  # pylint: disable-msg=R0903
 
     """Parser action to sort the data by the appropriate metric."""
 

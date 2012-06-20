@@ -85,16 +85,56 @@ class Database:
         self.dbase.commit()
         return name
 
-    def backup_table(self, name, backup_name, metrics):
+    def backup_table(self, name, metrics):
         """Backup an existing image error table.
 
         :param name: The name of the table to backup.
-        :param backup_name: The name to use for the backup table.
         :param metrics: The error metrics (columns) to backup.
+        :return: The name of the backup_table
 
         """
+        backup_name = '_'.join([name, 'bak'])
         self.sql_do('ALTER TABLE {} RENAME TO {}'.format(name, backup_name))
         self.__create_table(name, metrics)
+        return backup_name
+
+    def get_tables(self, images=None, downsamplers=None, ratios=None):
+        """Return table names for these images, downsamplers, and ratios.
+
+        :param images: The list of image names.
+        :param downsamplers: The list of downsampler names.
+        :param ratios: The list of ratios in string form.
+        :return: A list of table names.
+
+        """
+        # Start assembling an SQL query for the specified tables.
+        query = 'SELECT name FROM TABLEDATA WHERE ('
+
+        # Append the image names.
+        if images:
+            for image in images:
+                query = ' '.join([query, 'image = \'{}\' OR'.format(image)])
+            query = ''.join([query.rstrip(' OR'), ')'])
+
+        # Append the downsampler names.
+        if downsamplers:
+            if images:
+                query = ' '.join([query, 'AND ('])
+            for downsampler in downsamplers:
+                downsampler_str = 'downsampler = \'{}\' OR'.format(downsampler)
+                query = ' '.join([query, downsampler_str])
+            query = ''.join([query.rstrip(' OR'), ')'])
+
+        # Append the ratios.
+        if ratios:
+            if (images or downsamplers):
+                query = ' '.join([query, 'AND ('])
+            for ratio in ratios:
+                query = ' '.join([query, 'ratio = \'{}\' OR'.format(ratio)])
+            query = ''.join([query.rstrip(' OR'), ')'])
+
+        # Return the table names.
+        return [table[0] for table in self.sql_fetchall(query)]
 
     def drop_backup(self, name):
         """Drop a backup table once it is no longer needed.

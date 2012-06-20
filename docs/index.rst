@@ -100,6 +100,7 @@ Usage Overview
 * Modify the project file to suit your needs
 * Use ``exquires-run`` to compute the image difference data
 * Use ``exquires-update`` to compute only the new data after editing the project file
-* Use ``exquires-report`` to print tables of aggregated data
+* Use ``exquires-report`` to produce tables of aggregated data
+* Use ``exquires-correlate`` to produce Spearman's rank cross-correlation matrices
 
 For more information on using **EXQUIRES**, see :ref:`usage-label`.

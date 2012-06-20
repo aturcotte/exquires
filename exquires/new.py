@@ -25,13 +25,11 @@ The project file is used to specify the following components of the suite:
 
 """
 
-import argparse
-import os
+from os import path
 
 from configobj import ConfigObj
 
 import parsing
-from __init__ import __version__ as VERSION
 
 
 def _magick(method, **kwargs):
@@ -92,57 +90,32 @@ def _metric(method, aggregator, sort):
             ' '.join(['exquires-aggregate', aggregator, '{0}']), sort]
 
 
-def main():
-    """Run exquires-new."""
+def _add_default_images(ini, image):
+    """Add the default images to the specified ini file.
 
-    # Construct the path to the default test image.
-    this_dir = os.path.abspath(os.path.dirname(__file__))
-    wave = os.path.join(this_dir, 'wave.tif')
+    :param ini: The ini file to modify
 
-    # Define the command-line argument parser.
-    parser = argparse.ArgumentParser(
-        version=VERSION,
-        description=parsing.format_doc(__doc__),
-        formatter_class=lambda prog: parsing.ExquiresHelp(prog,
-                                                          max_help_position=34)
-    )
-    parser.add_argument('-p', '--proj', metavar='PROJECT', type=str,
-                        help='name of the project (default: project1)',
-                        default='project1')
-    parser.add_argument('-I', '--image', metavar='IMAGE', type=str, nargs='+',
-                        help='the test images to use (default: wave.tif)',
-                        default=[wave])
-
-    # Attempt to parse the command-line arguments.
-    try:
-        args = parser.parse_args()
-    except argparse.ArgumentTypeError, error:
-        parser.error(str(error))
-
-    # Convenience strings for indexing.
-    images = 'Images'
-    ratios = 'Ratios'
-    downs = 'Downsamplers'
-    ups = 'Upsamplers'
-    metrics = 'Metrics'
-
-    # Create a new project file.
-    ini = ConfigObj()
-    ini.filename = '.'.join([args.proj, 'ini'])
-
+    """
     # Define the list of images to be resampled.
-    ini[images] = {}
-    ini.comments[images] = [
+    key = 'Images'
+    ini[key] = {}
+    ini.comments[key] = [
         'TEST IMAGES',
         'Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.',
         'Any images that are added must conform to this standard.'
     ]
-    for image in args.image:
-        image_path = os.path.abspath(image)
-        name = os.path.splitext(os.path.basename(image))[0]
-        ini[images][name] = image_path
+    for img in image:
+        ini[key][path.splitext(path.basename(img))[0]] = path.abspath(img)
 
+
+def _add_default_ratios(ini):
+    """Add the default ratios to the specified ini file.
+
+    :param ini: The ini file to modify
+
+    """
     # Define the list of resampling ratios to use.
+    ratios = 'Ratios'
     ini[ratios] = {}
     ini.comments[ratios] = [
         '', 'RESAMPLING RATIOS',
@@ -157,7 +130,15 @@ def main():
     ini[ratios]['7'] = '120'
     ini[ratios]['8'] = '105'
 
+
+def _add_default_downsamplers(ini):
+    """Add the default downsamplers to the specified ini file.
+
+    :param ini: The ini file to modify
+
+    """
     # Define the list of downsamplers to use.
+    downs = 'Downsamplers'
     ini[downs] = {}
     ini.comments[downs] = [
         '', 'DOWNSAMPLING COMMANDS',
@@ -181,7 +162,243 @@ def main():
     ini[downs]['nearest_linear'] = _magick('Triangle', interp=True, blur=0,
                                            lin=True)
 
+
+def _std_int_lin_tensor_mtds_1(ini_ups):
+    """Add the 1st part of the standard interpolatory linear tensor methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['nearest_srgb'] = _magick('Point')
+    ini_ups['nearest_linear'] = _magick('Point', lin=True)
+    ini_ups['bilinear_srgb'] = _magick('Triangle')
+    ini_ups['bilinear_linear'] = _magick('Triangle', lin=True)
+    ini_ups['cubic_hermite_srgb'] = _magick('Hermite')
+    ini_ups['cubic_hermite_linear'] = _magick('Hermite', lin=True)
+    ini_ups['catmull_rom_srgb'] = _magick('Catrom')
+    ini_ups['catmull_rom_linear'] = _magick('Catrom', lin=True)
+    ini_ups['lanczos2_srgb'] = _magick('Lanczos2')
+    ini_ups['lanczos2_linear'] = _magick('Lanczos2', lin=True)
+    ini_ups['lanczos3_srgb'] = _magick('Lanczos')
+    ini_ups['lanczos3_linear'] = _magick('Lanczos', lin=True)
+    ini_ups['lanczos4_srgb'] = _magick('Lanczos', lobes=4)
+    ini_ups['lanczos4_linear'] = _magick('Lanczos', lobes=4, lin=True)
+    ini_ups['bartlett2_srgb'] = _magick('Bartlett', lobes=2)
+    ini_ups['bartlett2_linear'] = _magick('Bartlett', lobes=2, lin=True)
+    ini_ups['bartlett3_srgb'] = _magick('Bartlett', lobes=3)
+    ini_ups['bartlett3_linear'] = _magick('Bartlett', lobes=3, lin=True)
+    ini_ups['bartlett4_srgb'] = _magick('Bartlett')
+    ini_ups['bartlett4_linear'] = _magick('Bartlett', lin=True)
+    ini_ups['blackman2_srgb'] = _magick('Blackman', lobes=2)
+    ini_ups['blackman2_linear'] = _magick('Blackman', lobes=2, lin=True)
+    ini_ups['blackman3_srgb'] = _magick('Blackman', lobes=3)
+    ini_ups['blackman3_linear'] = _magick('Blackman', lobes=3, lin=True)
+    ini_ups['blackman4_srgb'] = _magick('Blackman')
+    ini_ups['blackman4_linear'] = _magick('Blackman', lin=True)
+    ini_ups['bohman2_srgb'] = _magick('Bohman', lobes=2)
+    ini_ups['bohman2_linear'] = _magick('Bohman', lobes=2, lin=True)
+    ini_ups['bohman3_srgb'] = _magick('Bohman', lobes=3)
+    ini_ups['bohman3_linear'] = _magick('Bohman', lobes=3, lin=True)
+    ini_ups['bohman4_srgb'] = _magick('Bohman')
+    ini_ups['bohman4_linear'] = _magick('Bohman', lin=True)
+
+
+def _std_int_lin_tensor_mtds_2(ini_ups):
+    """Add the 2nd part of the standard interpolatory linear tensor methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['cosine2_srgb'] = _magick('Cosine', lobes=2)
+    ini_ups['cosine2_linear'] = _magick('Cosine', lobes=2, lin=True)
+    ini_ups['cosine3_srgb'] = _magick('Cosine', lobes=3)
+    ini_ups['cosine3_linear'] = _magick('Cosine', lobes=3, lin=True)
+    ini_ups['cosine4_srgb'] = _magick('Cosine')
+    ini_ups['cosine4_linear'] = _magick('Cosine', lin=True)
+    ini_ups['hamming2_srgb'] = _magick('Hamming', lobes=2)
+    ini_ups['hamming2_linear'] = _magick('Hamming', lobes=2, lin=True)
+    ini_ups['hamming3_srgb'] = _magick('Hamming', lobes=3)
+    ini_ups['hamming3_linear'] = _magick('Hamming', lobes=3, lin=True)
+    ini_ups['hamming4_srgb'] = _magick('Hamming')
+    ini_ups['hamming4_linear'] = _magick('Hamming', lin=True)
+    ini_ups['parzen2_srgb'] = _magick('Parzen', lobes=2)
+    ini_ups['parzen2_linear'] = _magick('Parzen', lobes=2, lin=True)
+    ini_ups['parzen3_srgb'] = _magick('Parzen', lobes=3)
+    ini_ups['parzen3_linear'] = _magick('Parzen', lobes=3, lin=True)
+    ini_ups['parzen4_srgb'] = _magick('Parzen')
+    ini_ups['parzen4_linear'] = _magick('Parzen', lin=True)
+    ini_ups['welsh2_srgb'] = _magick('Welsh', lobes=2)
+    ini_ups['welsh2_linear'] = _magick('Welsh', lobes=2, lin=True)
+    ini_ups['welsh3_srgb'] = _magick('Welsh', lobes=3)
+    ini_ups['welsh3_linear'] = _magick('Welsh', lobes=3, lin=True)
+    ini_ups['welsh4_srgb'] = _magick('Welsh')
+    ini_ups['welsh4_linear'] = _magick('Welsh', lin=True)
+    ini_ups['hann2_srgb'] = _magick('Hanning', lobes=2)
+    ini_ups['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
+    ini_ups['hann3_srgb'] = _magick('Hanning', lobes=3)
+    ini_ups['hann3_linear'] = _magick('Hanning', lobes=3, lin=True)
+    ini_ups['hann4_srgb'] = _magick('Hanning')
+    ini_ups['hann4_linear'] = _magick('Hanning', lin=True)
+
+
+def _novel_int_lin_flt_mtds(ini_ups):
+    """Add the novel interpolatory linear filtering methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
+    ini_ups['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta=5.36,
+                                         lin=True)
+    ini_ups['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta=8.93)
+    ini_ups['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta=8.93,
+                                         lin=True)
+    ini_ups['kaiser4_srgb'] = _magick('Kaiser', beta=12.15)
+    ini_ups['kaiser4_linear'] = _magick('Kaiser', beta=12.15, lin=True)
+    ini_ups['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
+                                          beta=4.7123889803846899)
+    ini_ups['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
+                                            beta=4.7123889803846899)
+    ini_ups['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
+                                          beta=7.853981633974483)
+    ini_ups['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
+                                            beta=7.853981633974483)
+    ini_ups['kaisersoft4_srgb'] = _magick('Kaiser', beta=10.995574287564276)
+    ini_ups['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
+                                            beta=10.995574287564276)
+    ini_ups['kaisersharp2_srgb'] = _magick('Kaiser', lobes=2,
+                                           beta=6.2831853071795865)
+    ini_ups['kaisersharp2_linear'] = _magick('Kaiser', lobes=2, lin=True,
+                                             beta=6.2831853071795865)
+    ini_ups['kaisersharp3_srgb'] = _magick('Kaiser', lobes=3,
+                                           beta=9.4247779607693797)
+    ini_ups['kaisersharp3_linear'] = _magick('Kaiser', lobes=3, lin=True,
+                                             beta=9.4247779607693797)
+    ini_ups['kaisersharp4_srgb'] = _magick('Kaiser', beta=12.566370614359173)
+    ini_ups['kaisersharp4_linear'] = _magick('Kaiser', lin=True,
+                                             beta=12.566370614359173)
+
+
+def _std_nonint_lin_tensor_mtds(ini_ups):
+    """Add the standard non-interpolatory linear tensor methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['quadratic_b_spline_srgb'] = _magick('Quadratic')
+    ini_ups['quadratic_b_spline_linear'] = _magick('Quadratic', lin=True)
+    ini_ups['cubic_b_spline_srgb'] = _magick('Cubic')
+    ini_ups['cubic_b_spline_linear'] = _magick('Cubic', lin=True)
+    ini_ups['mitchell_netravali_srgb'] = _magick(None)
+    ini_ups['mitchell_netravali_linear'] = _magick(None, lin=True)
+
+
+def _std_int_ewa_lin_flt_mtds(ini_ups):
+    """Add the standard interpolatory EWA linear filtering methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['ewa_teepee_srgb'] = _magick('Triangle', dist=True)
+    ini_ups['ewa_teepee_linear'] = _magick('Triangle', dist=True, lin=True)
+    ini_ups['ewa_hermite_srgb'] = _magick('Hermite', dist=True)
+    ini_ups['ewa_hermite_linear'] = _magick('Hermite', dist=True, lin=True)
+
+
+def _std_nonint_ewa_lin_flt_mtds(ini_ups):
+    """Add the standard non-interpolatory EWA linear filtering methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
+    ini_ups['ewa_quadratic_b_spline_linear'] = _magick('Quadratic', dist=True,
+                                                       lin=True)
+    ini_ups['ewa_cubic_b_spline_srgb'] = _magick('Cubic', dist=True)
+    ini_ups['ewa_cubic_b_spline_linear'] = _magick('Cubic', dist=True,
+                                                   lin=True)
+    ini_ups['ewa_lanczos2_srgb'] = _magick('Lanczos2', dist=True)
+    ini_ups['ewa_lanczos2_linear'] = _magick('Lanczos2', dist=True, lin=True)
+    ini_ups['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
+    ini_ups['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
+    ini_ups['ewa_lanczos4_srgb'] = _magick('Lanczos', lobes=4, dist=True)
+    ini_ups['ewa_lanczos4_linear'] = _magick('Lanczos', lobes=4, dist=True,
+                                             lin=True)
+
+
+def _novel_nonint_ewa_lin_flt_mtds(ini_ups):
+    """Add the novel non-interpolatory EWA linear filtering methods.
+
+    :param ini_ups: The upsamplers dictionary for the specified ini file.
+
+    """
+    ini_ups['ewa_robidoux_srgb'] = _magick(None, dist=True)
+    ini_ups['ewa_robidoux_linear'] = _magick(None, dist=True, lin=True)
+    ini_ups['ewa_mitchell_netravali_srgb'] = _magick('Mitchell', dist=True)
+    ini_ups['ewa_mitchell_netravali_linear'] = _magick('Mitchell', dist=True,
+                                                       lin=True)
+    ini_ups['ewa_robidoux_sharp_srgb'] = _magick('RobidouxSharp', dist=True)
+    ini_ups['ewa_robidoux_sharp_linear'] = _magick('RobidouxSharp', dist=True,
+                                                   lin=True)
+    ini_ups['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
+    ini_ups['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
+    ini_ups['ewa_lanczos_radius2_srgb'] = _magick('Lanczos2', dist=True,
+                                                  blur=.8956036897402793)
+    ini_ups['ewa_lanczos_radius2_linear'] = _magick('Lanczos2', dist=True,
+                                                    blur=.8956036897402793,
+                                                    lin=True)
+    ini_ups['ewa_lanczos_radius3_srgb'] = _magick('Lanczos', dist=True,
+                                                  blur=.9264075766146068)
+    ini_ups['ewa_lanczos_radius3_linear'] = _magick('Lanczos', dist=True,
+                                                    blur=.9264075766146068,
+                                                    lin=True)
+    ini_ups['ewa_lanczos_radius4_srgb'] = _magick('Lanczos', lobes=4,
+                                                  dist=True,
+                                                  blur=.9431597994328477)
+    ini_ups['ewa_lanczos_radius4_linear'] = _magick('Lanczos', lobes=4,
+                                                    dist=True, lin=True,
+                                                    blur=.9431597994328477)
+    ini_ups['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
+                                                blur=.9580278036312191)
+    ini_ups['ewa_lanczos2sharp_linear'] = _magick('Lanczos2', dist=True,
+                                                  blur=.9580278036312191,
+                                                  lin=True)
+    ini_ups['ewa_lanczos3sharp_srgb'] = _magick('Lanczos', dist=True,
+                                                blur=.9891028367558475)
+    ini_ups['ewa_lanczos3sharp_linear'] = _magick('Lanczos', dist=True,
+                                                  blur=.9891028367558475,
+                                                  lin=True)
+    ini_ups['ewa_lanczos4sharp_srgb'] = _magick('Lanczos', lobes=4, dist=True,
+                                                blur=.9870395083298263)
+    ini_ups['ewa_lanczos4sharp_linear'] = _magick('Lanczos', lobes=4,
+                                                  dist=True, lin=True,
+                                                  blur=.9870395083298263)
+    ini_ups['ewa_lanczos2sharpest_srgb'] = _magick('Lanczos2', dist=True,
+                                                   blur=.88826421508540347)
+    ini_ups['ewa_lanczos2sharpest_linear'] = _magick('Lanczos2', dist=True,
+                                                     blur=.88826421508540347,
+                                                     lin=True)
+    ini_ups['ewa_lanczos3sharpest_srgb'] = _magick('Lanczos', dist=True,
+                                                   blur=.88549061701764)
+    ini_ups['ewa_lanczos3sharpest_linear'] = _magick('Lanczos', dist=True,
+                                                     blur=.88549061701764,
+                                                     lin=True)
+    ini_ups['ewa_lanczos4sharpest_srgb'] = _magick('Lanczos', lobes=4,
+                                                   dist=True,
+                                                   blur=.88451002338585141)
+    ini_ups['ewa_lanczos4sharpest_linear'] = _magick('Lanczos', lobes=4,
+                                                     dist=True, lin=True,
+                                                     blur=.88451002338585141)
+
+
+def _add_default_upsamplers(ini):
+    """Add the default upsamplers to the specified ini file.
+
+    :param ini: The ini file to modify
+
+    """
     # Define the list of upsamplers to use.
+    ups = 'Upsamplers'
     ini[ups] = {}
     ini.comments[ups] = [
         '', 'UPSAMPLING COMMANDS',
@@ -192,180 +409,24 @@ def main():
         '    {2} = upsampling ratio',
         '    {3} = upsampled size (always 840)'
     ]
-    ini[ups]['nearest_srgb'] = _magick('Point')
-    ini[ups]['nearest_linear'] = _magick('Point', lin=True)
-    ini[ups]['bilinear_srgb'] = _magick('Triangle')
-    ini[ups]['bilinear_linear'] = _magick('Triangle', lin=True)
-    ini[ups]['cubic_hermite_srgb'] = _magick('Hermite')
-    ini[ups]['cubic_hermite_linear'] = _magick('Hermite', lin=True)
-    ini[ups]['catmull_rom_srgb'] = _magick('Catrom')
-    ini[ups]['catmull_rom_linear'] = _magick('Catrom', lin=True)
-    ini[ups]['lanczos2_srgb'] = _magick('Lanczos2')
-    ini[ups]['lanczos2_linear'] = _magick('Lanczos2', lin=True)
-    ini[ups]['lanczos3_srgb'] = _magick('Lanczos')
-    ini[ups]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[ups]['lanczos4_srgb'] = _magick('Lanczos', lobes=4)
-    ini[ups]['lanczos4_linear'] = _magick('Lanczos', lobes=4, lin=True)
-    ini[ups]['bartlett2_srgb'] = _magick('Bartlett', lobes=2)
-    ini[ups]['bartlett2_linear'] = _magick('Bartlett', lobes=2, lin=True)
-    ini[ups]['bartlett3_srgb'] = _magick('Bartlett', lobes=3)
-    ini[ups]['bartlett3_linear'] = _magick('Bartlett', lobes=3, lin=True)
-    ini[ups]['bartlett4_srgb'] = _magick('Bartlett')
-    ini[ups]['bartlett4_linear'] = _magick('Bartlett', lin=True)
-    ini[ups]['blackman2_srgb'] = _magick('Blackman', lobes=2)
-    ini[ups]['blackman2_linear'] = _magick('Blackman', lobes=2, lin=True)
-    ini[ups]['blackman3_srgb'] = _magick('Blackman', lobes=3)
-    ini[ups]['blackman3_linear'] = _magick('Blackman', lobes=3, lin=True)
-    ini[ups]['blackman4_srgb'] = _magick('Blackman')
-    ini[ups]['blackman4_linear'] = _magick('Blackman', lin=True)
-    ini[ups]['bohman2_srgb'] = _magick('Bohman', lobes=2)
-    ini[ups]['bohman2_linear'] = _magick('Bohman', lobes=2, lin=True)
-    ini[ups]['bohman3_srgb'] = _magick('Bohman', lobes=3)
-    ini[ups]['bohman3_linear'] = _magick('Bohman', lobes=3, lin=True)
-    ini[ups]['bohman4_srgb'] = _magick('Bohman')
-    ini[ups]['bohman4_linear'] = _magick('Bohman', lin=True)
-    ini[ups]['cosine2_srgb'] = _magick('Cosine', lobes=2)
-    ini[ups]['cosine2_linear'] = _magick('Cosine', lobes=2, lin=True)
-    ini[ups]['cosine3_srgb'] = _magick('Cosine', lobes=3)
-    ini[ups]['cosine3_linear'] = _magick('Cosine', lobes=3, lin=True)
-    ini[ups]['cosine4_srgb'] = _magick('Cosine')
-    ini[ups]['cosine4_linear'] = _magick('Cosine', lin=True)
-    ini[ups]['hamming2_srgb'] = _magick('Hamming', lobes=2)
-    ini[ups]['hamming2_linear'] = _magick('Hamming', lobes=2, lin=True)
-    ini[ups]['hamming3_srgb'] = _magick('Hamming', lobes=3)
-    ini[ups]['hamming3_linear'] = _magick('Hamming', lobes=3, lin=True)
-    ini[ups]['hamming4_srgb'] = _magick('Hamming')
-    ini[ups]['hamming4_linear'] = _magick('Hamming', lin=True)
-    ini[ups]['parzen2_srgb'] = _magick('Parzen', lobes=2)
-    ini[ups]['parzen2_linear'] = _magick('Parzen', lobes=2, lin=True)
-    ini[ups]['parzen3_srgb'] = _magick('Parzen', lobes=3)
-    ini[ups]['parzen3_linear'] = _magick('Parzen', lobes=3, lin=True)
-    ini[ups]['parzen4_srgb'] = _magick('Parzen')
-    ini[ups]['parzen4_linear'] = _magick('Parzen', lin=True)
-    ini[ups]['welsh2_srgb'] = _magick('Welsh', lobes=2)
-    ini[ups]['welsh2_linear'] = _magick('Welsh', lobes=2, lin=True)
-    ini[ups]['welsh3_srgb'] = _magick('Welsh', lobes=3)
-    ini[ups]['welsh3_linear'] = _magick('Welsh', lobes=3, lin=True)
-    ini[ups]['welsh4_srgb'] = _magick('Welsh')
-    ini[ups]['welsh4_linear'] = _magick('Welsh', lin=True)
-    ini[ups]['hann2_srgb'] = _magick('Hanning', lobes=2)
-    ini[ups]['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
-    ini[ups]['hann3_srgb'] = _magick('Hanning', lobes=3)
-    ini[ups]['hann3_linear'] = _magick('Hanning', lobes=3, lin=True)
-    ini[ups]['hann4_srgb'] = _magick('Hanning')
-    ini[ups]['hann4_linear'] = _magick('Hanning', lin=True)
-    ini[ups]['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
-    ini[ups]['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta=5.36,
-                                         lin=True)
-    ini[ups]['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta=8.93)
-    ini[ups]['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta=8.93,
-                                         lin=True)
-    ini[ups]['kaiser4_srgb'] = _magick('Kaiser', beta=12.15)
-    ini[ups]['kaiser4_linear'] = _magick('Kaiser', beta=12.15, lin=True)
-    ini[ups]['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
-                                          beta=4.7123889803846899)
-    ini[ups]['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                            beta=4.7123889803846899)
-    ini[ups]['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
-                                          beta=7.853981633974483)
-    ini[ups]['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                            beta=7.853981633974483)
-    ini[ups]['kaisersoft4_srgb'] = _magick('Kaiser', beta=10.995574287564276)
-    ini[ups]['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
-                                            beta=10.995574287564276)
-    ini[ups]['kaisersharp2_srgb'] = _magick('Kaiser', lobes=2,
-                                           beta=6.2831853071795865)
-    ini[ups]['kaisersharp2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                             beta=6.2831853071795865)
-    ini[ups]['kaisersharp3_srgb'] = _magick('Kaiser', lobes=3,
-                                           beta=9.4247779607693797)
-    ini[ups]['kaisersharp3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                             beta=9.4247779607693797)
-    ini[ups]['kaisersharp4_srgb'] = _magick('Kaiser', beta=12.566370614359173)
-    ini[ups]['kaisersharp4_linear'] = _magick('Kaiser', lin=True,
-                                             beta=12.566370614359173)
-    ini[ups]['quadratic_b_spline_srgb'] = _magick('Quadratic')
-    ini[ups]['quadratic_b_spline_linear'] = _magick('Quadratic', lin=True)
-    ini[ups]['cubic_b_spline_srgb'] = _magick('Cubic')
-    ini[ups]['cubic_b_spline_linear'] = _magick('Cubic', lin=True)
-    ini[ups]['mitchell_netravali_srgb'] = _magick(None)
-    ini[ups]['mitchell_netravali_linear'] = _magick(None, lin=True)
-    ini[ups]['ewa_teepee_srgb'] = _magick('Triangle', dist=True)
-    ini[ups]['ewa_teepee_linear'] = _magick('Triangle', dist=True, lin=True)
-    ini[ups]['ewa_hermite_srgb'] = _magick('Hermite', dist=True)
-    ini[ups]['ewa_hermite_linear'] = _magick('Hermite', dist=True, lin=True)
-    ini[ups]['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
-    ini[ups]['ewa_quadratic_b_spline_linear'] = _magick('Quadratic', dist=True,
-                                                       lin=True)
-    ini[ups]['ewa_cubic_b_spline_srgb'] = _magick('Cubic', dist=True)
-    ini[ups]['ewa_cubic_b_spline_linear'] = _magick('Cubic', dist=True,
-                                                   lin=True)
-    ini[ups]['ewa_lanczos2_srgb'] = _magick('Lanczos2', dist=True)
-    ini[ups]['ewa_lanczos2_linear'] = _magick('Lanczos2', dist=True, lin=True)
-    ini[ups]['ewa_lanczos3_srgb'] = _magick('Lanczos', dist=True)
-    ini[ups]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
-    ini[ups]['ewa_lanczos4_srgb'] = _magick('Lanczos', lobes=4, dist=True)
-    ini[ups]['ewa_lanczos4_linear'] = _magick('Lanczos', lobes=4, dist=True,
-                                             lin=True)
-    ini[ups]['ewa_robidoux_srgb'] = _magick(None, dist=True)
-    ini[ups]['ewa_robidoux_linear'] = _magick(None, dist=True, lin=True)
-    ini[ups]['ewa_mitchell_netravali_srgb'] = _magick('Mitchell', dist=True)
-    ini[ups]['ewa_mitchell_netravali_linear'] = _magick('Mitchell', dist=True,
-                                                       lin=True)
-    ini[ups]['ewa_robidoux_sharp_srgb'] = _magick('RobidouxSharp', dist=True)
-    ini[ups]['ewa_robidoux_sharp_linear'] = _magick('RobidouxSharp', dist=True,
-                                                   lin=True)
-    ini[ups]['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
-    ini[ups]['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
-    ini[ups]['ewa_lanczos_radius2_srgb'] = _magick('Lanczos2', dist=True,
-                                                  blur=.8956036897402793)
-    ini[ups]['ewa_lanczos_radius2_linear'] = _magick('Lanczos2', dist=True,
-                                                    blur=.8956036897402793,
-                                                    lin=True)
-    ini[ups]['ewa_lanczos_radius3_srgb'] = _magick('Lanczos', dist=True,
-                                                  blur=.9264075766146068)
-    ini[ups]['ewa_lanczos_radius3_linear'] = _magick('Lanczos', dist=True,
-                                                    blur=.9264075766146068,
-                                                    lin=True)
-    ini[ups]['ewa_lanczos_radius4_srgb'] = _magick('Lanczos', lobes=4,
-                                                  dist=True,
-                                                  blur=.9431597994328477)
-    ini[ups]['ewa_lanczos_radius4_linear'] = _magick('Lanczos', lobes=4,
-                                                    dist=True, lin=True,
-                                                    blur=.9431597994328477)
-    ini[ups]['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
-                                                blur=.9580278036312191)
-    ini[ups]['ewa_lanczos2sharp_linear'] = _magick('Lanczos2', dist=True,
-                                                  blur=.9580278036312191,
-                                                  lin=True)
-    ini[ups]['ewa_lanczos3sharp_srgb'] = _magick('Lanczos', dist=True,
-                                                blur=.9891028367558475)
-    ini[ups]['ewa_lanczos3sharp_linear'] = _magick('Lanczos', dist=True,
-                                                  blur=.9891028367558475,
-                                                  lin=True)
-    ini[ups]['ewa_lanczos4sharp_srgb'] = _magick('Lanczos', lobes=4, dist=True,
-                                                blur=.9870395083298263)
-    ini[ups]['ewa_lanczos4sharp_linear'] = _magick('Lanczos', lobes=4,
-                                                  dist=True, lin=True,
-                                                  blur=.9870395083298263)
-    ini[ups]['ewa_lanczos2sharpest_srgb'] = _magick('Lanczos2', dist=True,
-                                                   blur=.88826421508540347)
-    ini[ups]['ewa_lanczos2sharpest_linear'] = _magick('Lanczos2', dist=True,
-                                                     blur=.88826421508540347,
-                                                     lin=True)
-    ini[ups]['ewa_lanczos3sharpest_srgb'] = _magick('Lanczos', dist=True,
-                                                   blur=.88549061701764)
-    ini[ups]['ewa_lanczos3sharpest_linear'] = _magick('Lanczos', dist=True,
-                                                     blur=.88549061701764,
-                                                     lin=True)
-    ini[ups]['ewa_lanczos4sharpest_srgb'] = _magick('Lanczos', lobes=4,
-                                                   dist=True,
-                                                   blur=.88451002338585141)
-    ini[ups]['ewa_lanczos4sharpest_linear'] = _magick('Lanczos', lobes=4,
-                                                     dist=True, lin=True,
-                                                     blur=.88451002338585141)
 
+    _std_int_lin_tensor_mtds_1(ini[ups])
+    _std_int_lin_tensor_mtds_2(ini[ups])
+    _novel_int_lin_flt_mtds(ini[ups])
+    _std_nonint_lin_tensor_mtds(ini[ups])
+    _std_int_ewa_lin_flt_mtds(ini[ups])
+    _std_nonint_ewa_lin_flt_mtds(ini[ups])
+    _novel_nonint_ewa_lin_flt_mtds(ini[ups])
+
+
+def _add_default_metrics(ini):
+    """Add the default metrics to the specified ini file.
+
+    :param ini: The ini file to modify
+
+    """
     # Define the list of error metrics to use.
+    metrics = 'Metrics'
     ini[metrics] = {}
     ini.comments[metrics] = [
         '', 'IMAGE DIFFERENCE METRICS AND AGGREGATORS',
@@ -397,6 +458,36 @@ def main():
     ini[metrics]['blur_4'] = _metric('blur_4', 'l_4', 0)
     ini[metrics]['blur_inf'] = _metric('blur_inf', 'l_inf', 0)
     ini[metrics]['mssim'] = _metric('mssim', 'l_1', 1)
+
+
+def main():
+    """Run exquires-new."""
+
+    # Construct the path to the default test image.
+    this_dir = path.abspath(path.dirname(__file__))
+    wave = path.join(this_dir, 'wave.tif')
+
+    # Define the command-line argument parser.
+    parser = parsing.ExquiresParser(description=__doc__)
+    parser.add_argument('-p', '--proj', metavar='PROJECT', type=str,
+                        help='name of the project (default: project1)',
+                        default='project1')
+    parser.add_argument('-I', '--image', metavar='IMAGE', type=str, nargs='+',
+                        help='the test images to use (default: wave.tif)',
+                        default=[wave])
+
+    # Attempt to parse the command-line arguments.
+    args = parser.parse_args()
+
+    # Create a new project file.
+    ini = ConfigObj()
+    ini.filename = '.'.join([args.proj, 'ini'])
+
+    _add_default_images(ini, args.image)
+    _add_default_ratios(ini)
+    _add_default_downsamplers(ini)
+    _add_default_upsamplers(ini)
+    _add_default_metrics(ini)
 
     # Write the project file.
     ini.write()

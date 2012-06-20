@@ -4,24 +4,27 @@
 Usage Instructions
 ******************
 
-**EXQUIRES** comes with four programs to create and maintain a project:
+**EXQUIRES** comes with several programs, each of which include a
+``-h``/``--help`` option to display usage information and a
+``-v``/``--version`` option to display the version number.
+
+These five main programs can be used to create and maintain a project,
+which can be specified with the ``-p``/``--proj`` option:
 
 * ``exquires-new`` (see :ref:`exquires-new-label`)
 * ``exquires-run`` (see :ref:`exquires-run-label`)
 * ``exquires-update`` (see :ref:`exquires-update-label`)
 * ``exquires-report`` (see :ref:`exquires-report-label`)
+* ``exquires-correlate`` (see :ref:`exquires-correlate-label`)
 
-as well as two programs that are responsible for computing image differences
+These two programs are responsible for computing image differences
 and aggregating the results:
 
 * ``exquires-compare`` (see :ref:`exquires-compare-label`)
 * ``exquires-aggregate`` (see :ref:`exquires-aggregate-label`)
 
-Each of these programs include a ``-h``/``--help`` option to display usage
-information and a ``-v``/``--version`` option to display the version number.
-
 The following sections will explain how to make use of these programs to
-compute data and view aggregated results.
+compute data and view aggregated results and cross-correlation matrices.
 
 
 ===========================
@@ -269,9 +272,9 @@ and ``exquires-aggregate``. Also note that most of the metrics return an error
 measure, meaning that a lower result is better. MSSIM, on the other hand, is
 a similarity index, meaning that a higher result is better.
 
-For more information on the default metrics, see :ref:`Metrics-class`.
+For more information on the default metrics, see :ref:`compare-module`.
 
-For more information on the aggregation methods, see :ref:`Aggregate-class`.
+For more information on the aggregation methods, see :ref:`aggregate-module`.
 
 
 .. _exquires-run-label:
@@ -385,8 +388,8 @@ or:
     $ exquires-report --latex
 
 Likewise, ``exquires-report`` normally shows the aggregated data when it prints
-the table. You can instead show the rankings for each upsampling method by
-using:
+the table. You can instead show the Spearman (fractional) ranks for each
+upsampling method by using:
 
 .. code-block:: console
 
@@ -398,20 +401,18 @@ or:
 
     $ exquires-report --rank
 
-If you do decide to display the aggregated data instead of the rankings,
-``exquires-report`` will display 4 digits by default. You can select
-any number of digits between 1 and 16. For example, you can change the number
-of digits to to 6 using:
+Furthermore, you can instead merge the Spearman (fractional) ranks across
+all specified metrics by using:
 
 .. code-block:: console
 
-    $ exquires-report -d 6
+    $ exquires-report -m
 
 or:
 
 .. code-block:: console
 
-    $ exquires-report --digits 6
+    $ exquires-report --merge
 
 Whether you display aggregated data or ranks, by default the upsamplers in the
 printed table will be sorted from best-to-worst according to the first metric
@@ -430,7 +431,6 @@ or:
 
 where ``my_metric`` is one of the metrics defined in the project file.
 
-
 By default, ``exquires-report`` prints the aggregated data to standard output.
 You can write the aggregated data to a file by using:
 
@@ -446,6 +446,19 @@ or:
 
 where ``my_file`` is the file you wish to write the data to.
 
+When producing tables, ``exquires-report`` will display 4 digits by default.
+You can select any number of digits between 1 and 16. For example, you can
+change the number of digits to to 6 using:
+
+.. code-block:: console
+
+    $ exquires-report -d 6
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --digits 6
 
 There are three components that determine which database tables to aggregate
 across: images, ratios, and downsamplers. By default, the image comparison data
@@ -523,32 +536,6 @@ metric, with each row representing an upsampler and each column representing
 a metric. If you wish to display only certain rows and columns, use the
 following options.
 
-You can specify the upsamplers (rows) to display by using:
-
-.. code-block:: console
-
-    $ exquires-report -U my_upsamplers
-
-or:
-
-.. code-block:: console
-
-    $ exquires-report --up my_upsamplers
-
-where ``my_upsamplers`` is a list of upsamplers defined in the project file.
-
-.. note::
-
-    The arguments passed to the ``-U``/``--up`` option support wildcard
-    characters.
-
-For example, to only display data for the upsamplers suffixed with
-``_srgb``, type:
-
-.. code-block:: console
-
-    $ exquires-report -U *_srgb
-
 You can specify the metrics (columns) to display by using:
 
 .. code-block:: console
@@ -575,6 +562,145 @@ type:
 
     $ exquires-report -M xyz_*
 
+You can specify the upsamplers (rows) to display by using:
+
+.. code-block:: console
+
+    $ exquires-report -U my_upsamplers
+
+or:
+
+.. code-block:: console
+
+    $ exquires-report --up my_upsamplers
+
+where ``my_upsamplers`` is a list of upsamplers defined in the project file.
+
+.. note::
+
+    The arguments passed to the ``-U``/``--up`` option support wildcard
+    characters.
+
+For example, to only display data for the upsamplers suffixed with
+``_srgb``, type:
+
+.. code-block:: console
+
+    $ exquires-report -U *_srgb
+
+
+.. _exquires-correlate-label:
+
+===================================================
+Generate a Spearman's rank cross-correlation matrix
+===================================================
+
+In addition to producing a table of Spearman (fractional) ranks, 
+
+The basic syntax to print a cross-correlation matrix is:
+
+.. code-block:: console
+
+    $ exquires-correlate
+
+which will read a backup of the project file ``project1.ini`` that was created
+the last time ``exquires-run`` or ``exquires-update`` was called, select the
+appropriate values from the database, aggregate the data, and print the
+cross-correlation matrix for all comparison metrics to standard output.
+
+You can select which upsamplers to consider when computing the matrix
+by using the ``-U``/``--up`` option.
+
+By default, the ``-M``/``--metric`` option is selected. You can select one of
+the following cross-correlation groups:
+
+* ``-I``/``--image``
+* ``-D``/``--down``
+* ``-R``/``--ratio``
+* ``-M``/``--metric``
+
+As with the other programs, you can specify the project name using:
+
+.. code-block:: console
+
+    $ exquires-correlate -p my_project
+
+or:
+
+.. code-block:: console
+
+    $ exquires-correlate --proj my_project
+
+
+Normally, ``exquires-correlate`` prints the cross-correlation matrix as a
+plaintext table. You may wish to include the results in a LaTeX document
+instead, which can be done using:
+
+.. code-block:: console
+
+    $ exquires-correlate -l
+
+or:
+
+.. code-block:: console
+
+    $ exquires-correlate --latex
+
+By default, ``exquires-correlate`` prints the cross-correlation matrix to
+standard output. You can write the matrix to a file by using:
+
+.. code-block:: console
+
+    $ exquires-correlate -f my_file
+
+or:
+
+.. code-block:: console
+
+    $ exquires-correlate --file my_file
+
+where ``my_file`` is the file you wish to write the data to.
+
+When producing a matrix, ``exquires-correlate`` will display 4 digits by
+default. You can select any number of digits between 1 and 16. For example,
+you can change the number of digits to to 6 using:
+
+.. code-block:: console
+
+    $ exquires-correlate -d 6
+
+or:
+
+.. code-block:: console
+
+    $ exquires-correlate --digits 6
+
+You can specify the upsamplers (rows) to consider in the computation by using:
+
+.. code-block:: console
+
+    $ exquires-correlate -U my_upsamplers
+
+or:
+
+.. code-block:: console
+
+    $ exquires-correlate --up my_upsamplers
+
+where ``my_upsamplers`` is a list of upsamplers defined in the project file.
+
+.. note::
+
+    The arguments passed to the ``-U``/``--up`` option support wildcard
+    characters.
+
+For example, to only consider data for the upsamplers suffixed with
+``_srgb``, type:
+
+.. code-block:: console
+
+    $ exquires-correlate -U *_srgb
+
 
 .. _exquires-compare-label:
 
@@ -584,8 +710,7 @@ Manually comparing images
 
 The ``exquires-run`` and ``exquires-update`` programs compute data to be
 inserted into the database by calling ``exquires-compare``
-(see :ref:`compare-module`), which provides an
-interface to :ref:`Metrics-class`.
+(see :ref:`compare-module`).
 
 You can call ``exquires-compare`` directly on any pair of images with the
 same dimensions by using:
@@ -621,8 +746,7 @@ Manually aggregating data
 
 The ``exquires-report`` program aggregates the image comparison data before
 printing it to standard output or writing it to a file by calling
-``exquires-aggregate`` (see :ref:`aggregate-module`), which provides an
-interface to :ref:`Aggregate-class`.
+``exquires-aggregate`` (see :ref:`aggregate-module`).
 
 You can call ``exquires-aggregate`` directly on any list of numbers by using:
 

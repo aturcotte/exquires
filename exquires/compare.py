@@ -39,13 +39,11 @@
 
 """
 
-import argparse
 import inspect
 import os
 from math import exp
 
 import parsing
-from __init__ import __version__ as VERSION
 
 
 class Metrics(object):
@@ -77,13 +75,14 @@ class Metrics(object):
         :param L: The highest possible pixel value (default=65535).
 
         """
-        from vipsCC import VImage, VMask
-        self.vmask = VMask
-        self.im1 = VImage.VImage(image1)
-        self.im2 = VImage.VImage(image2)
+        vipscc = __import__('vipsCC', globals(), locals(),
+                           ['VImage', 'VMask'], -1)
+        self.vmask = vipscc.VMask
+        self.im1 = vipscc.VImage.VImage(image1)
+        self.im2 = vipscc.VImage.VImage(image2)
         self.maxval = maxval
-        srgb_file = 'sRGB_IEC61966-2-1_black_scaled.icc'
-        self.srgb_profile = os.path.join(os.path.dirname(__file__), srgb_file)
+        self.srgb_profile = os.path.join(os.path.dirname(__file__),
+                                         'sRGB_IEC61966-2-1_black_scaled.icc')
         self.intent = 1    # IM_INTENT_RELATIVE_COLORIMETRIC
 
     def l_1(self):
@@ -210,8 +209,8 @@ class Metrics(object):
         ssim = tmp5.divide(tmp2.subtract(tmp4).multiply(tmp4))
 
         # Crop the SSIM map and return the average.
-        crop = ssim.extract_area(5, 5, im1_g.Xsize() - 10, im1_g.Ysize() - 10)
-        return crop.avg()
+        return ssim.extract_area(5, 5,
+                                 im1_g.Xsize() - 10, im1_g.Ysize() - 10).avg()
 
     def blur_1(self):
         """Compute MSSIM-inspired :math:`\ell_1` error.
@@ -463,12 +462,7 @@ def main():
         metrics.append(method[0])
 
     # Define the command-line argument parser.
-    parser = argparse.ArgumentParser(
-        version=VERSION,
-        description=parsing.format_doc(__doc__),
-        formatter_class=lambda prog: parsing.ExquiresHelp(prog,
-                                                          max_help_position=30)
-    )
+    parser = parsing.ExquiresParser(description=__doc__)
     parser.add_argument('metric', type=str, metavar='METRIC', choices=metrics,
                         help='the error metric to use')
     parser.add_argument('image1', type=str, metavar='IMAGE_1',
@@ -480,18 +474,15 @@ def main():
                         help='the maximum pixel value (default=65535)')
 
     # Attempt to parse the command-line arguments.
-    try:
-        args = parser.parse_args()
-    except argparse.ArgumentTypeError, error:
-        parser.error(str(error))
+    args = parser.parse_args()
 
     # Attempt to call the chosen metric on the specified images.
-    from vipsCC import VError
+    vipscc = __import__('vipsCC', globals(), locals(), ['VError'], -1)
     try:
         # Print the result with 15 digits after the decimal.
         metric = Metrics(args.image1, args.image2, args.maxval)
         print '%.15f' % getattr(metric, args.metric)()
-    except VError.VError, error:
+    except vipscc.VError.VError, error:
         parser.error(str(error))
 
 if __name__ == '__main__':
