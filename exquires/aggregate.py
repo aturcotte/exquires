@@ -30,7 +30,7 @@ import inspect
 
 import numpy
 
-import parsing
+from exquires import parsing
 
 
 class Aggregate(object):

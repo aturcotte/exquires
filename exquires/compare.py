@@ -43,7 +43,7 @@ import inspect
 import os
 from math import exp
 
-import parsing
+from exquires import parsing
 
 
 class Metrics(object):

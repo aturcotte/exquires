@@ -30,8 +30,7 @@ To view aggregated error data, use **exquires-report**.
 
 from configobj import ConfigObj
 
-import operations
-import parsing
+from exquires import operations, parsing
 
 
 def _run(args):

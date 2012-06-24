@@ -28,8 +28,7 @@ import argparse
 
 from configobj import ConfigObj
 
-import operations
-import parsing
+from exquires import operations, parsing
 
 
 def _subtract(dict1, dict2):

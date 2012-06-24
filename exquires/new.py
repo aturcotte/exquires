@@ -29,7 +29,7 @@ from os import path
 
 from configobj import ConfigObj
 
-import parsing
+from exquires import parsing
 
 
 def _magick(method, **kwargs):

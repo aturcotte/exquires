@@ -1,7 +1,10 @@
-include setup.py
-include requirements.txt
-include wave.txt
-include LICENSE.txt
-include README.rst
-include MANIFEST.in
+include setup.py requirements.txt wave.txt
+include AUTHORS CHANGELOG FAQ INSTALL LICENSE MANIFEST.in
+include NEWS README.rst THANKS TODO
+
+recursive-include docs *
 recursive-include exquires *.py *.icc *.tif *.h *.c *.rst
+
+global-exclude *.pyc
+
+prune docs/_build

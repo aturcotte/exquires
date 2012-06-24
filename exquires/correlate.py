@@ -28,9 +28,7 @@ import argparse
 
 import numpy
 
-import database
-import parsing
-import stats
+from exquires import database, parsing, stats
 
 
 def _get_group_and_ranks(args):

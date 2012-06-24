@@ -15,9 +15,7 @@ import os
 import shutil
 from subprocess import call, check_output
 
-import database
-import progress
-import tools
+from exquires import database, progress, tools
 
 # pylint: disable-msg=R0903
 

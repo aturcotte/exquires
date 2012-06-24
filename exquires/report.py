@@ -29,9 +29,7 @@ import argparse
 
 from operator import itemgetter
 
-import database
-import parsing
-import stats
+from exquires import database, parsing, stats
 
 
 def _print_table(args):

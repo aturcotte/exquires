@@ -19,7 +19,7 @@ import sys
 
 from configobj import ConfigObj
 
-import tools
+from exquires import tools
 from exquires import __version__ as VERSION
 
 # pylint: disable-msg=R0903
