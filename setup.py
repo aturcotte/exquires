@@ -24,7 +24,8 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup'])
-DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
+DESCRIPTION = '''EXQUIRES - Evaluative and eXtensible QUantitative Image
+Re-Enlargement Suite''''
 URL = 'http://exquires.ca'
 LICENSE = 'BSD 2-Clause License'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
@@ -33,7 +34,8 @@ REQUIREMENTS = filter(None, requirements_file.read().splitlines())
 DATA_FILES = ['wave.tif', 'sRGB_IEC61966-2-1_black_scaled.icc', 'examples/*']
 AUTHOR = 'Adam Turcotte'
 AUTHOR_EMAIL = 'adam.turcotte@gmail.com'
-KEYWORDS = ('image', 'reconstruction', 'enlargement', 'upsampling', 'test', 'testing')
+KEYWORDS = ('image', 'reconstruction', 'enlargement',
+            'upsampling', 'test', 'testing')
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
     'License :: OSI Approved :: BSD License',
