@@ -25,7 +25,7 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup'])
 DESCRIPTION = '''EXQUIRES - Evaluative and eXtensible QUantitative Image
-Re-Enlargement Suite''''
+Re-Enlargement Suite'''
 URL = 'http://exquires.ca'
 LICENSE = 'BSD 2-Clause License'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
