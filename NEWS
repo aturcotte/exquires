@@ -1,0 +1,7 @@
+exquires 0.9.8
+--------------
+
+Version 0.9.8 introduces options for computing fractional ranks, either
+individually for each metric or averaged across all metrics, to
+exquires-report. A new program, exquires-correlate, uses fractional ranks to
+compute a Spearman's rank cross-correlation matrix.

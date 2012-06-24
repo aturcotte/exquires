@@ -98,7 +98,6 @@ def _get_group_and_ranks(args):
             else:
                 ranks = stats.get_merged_ranks(agg_table, metrics_desc, 0)
 
-            print ranks
     else:
         # Setup the tables to access.
         table_args.images = args.image

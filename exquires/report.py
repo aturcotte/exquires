@@ -22,7 +22,7 @@ Features
 --------
 
  * -R/--ratio supports hyphenated ranges (ex. '1-3 5' gives '1 2 3 5')
- * -I/--image, -D/--downsampler, -U/--upsampler & -M/--metric support wildcards
+ * -U/--up, -I/--image, -D/--down and -M/--metric support wildcards
 
 """
 import argparse
