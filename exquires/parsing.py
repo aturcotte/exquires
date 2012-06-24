@@ -22,6 +22,8 @@ from configobj import ConfigObj
 import tools
 from exquires import __version__ as VERSION
 
+# pylint: disable-msg=R0903
+
 
 def _format_doc(docstring):
     """Parse the module docstring and re-format all reST markup.
@@ -82,6 +84,9 @@ class ExquiresParser(argparse.ArgumentParser):
             args = super(ExquiresParser, self).parse_args(args, namespace)
         except argparse.ArgumentTypeError, error:
             self.error(str(error))
+
+        # Return the parsed arguments.
+        return args
 
 
 class OperationsParser(ExquiresParser):
@@ -151,6 +156,7 @@ class StatsParser(ExquiresParser):
 
         """
         super(StatsParser, self).__init__(description)
+        self.correlate = correlate
 
         # Output options.
         self.add_argument('-l', '--latex', action='store_true',
@@ -222,8 +228,8 @@ class StatsParser(ExquiresParser):
                 help_or_version = True
                 break
 
-        # Deal with the -p/--proj option.
         if not help_or_version:
+            # Deal with the -p/--proj option.
             proj = False
             for i in range(0, len(args) - 1):
                 if args[i] == '-p' or args[i] == '--proj':
@@ -245,12 +251,20 @@ class StatsParser(ExquiresParser):
         # Attempt to parse the command-line arguments.
         args = super(StatsParser, self).parse_args(args, namespace)
 
-        # Need to prune the dict first so it matches the argument list.
-        args.metrics_d = tools.prune_metrics(args.metric, args.metrics_d)
-
         # Default to sorting by the leftmost column.
         if not args.sort:
             args.sort = args.metric[0]
+
+        # Deal with the sort/metric options.
+        if not (self.correlate or args.merge) and args.sort not in args.metric:
+            args.metric.insert(0, args.sort)
+            args.show_sort = False
+
+        # Construct the path to the database file.
+        args.dbase_file = '.'.join([args.proj, 'db'])
+
+        # Need to prune the dict first so it matches the argument list.
+        args.metrics_d = tools.prune_metrics(args.metric, args.metrics_d)
 
         # Return the parsed arguments.
         return args
@@ -292,7 +306,7 @@ class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
         return ''.join([indent + line for line in text.splitlines(True)])
 
 
-class ProjectAction(argparse.Action):  # pylint: disable-msg=R0903
+class ProjectAction(argparse.Action):
 
     """Parser action to read a project file based on the specified name."""
 
@@ -309,26 +323,28 @@ class ProjectAction(argparse.Action):  # pylint: disable-msg=R0903
 
         # Read the configuration file last used to update the database.
         config = ConfigObj(proj_file)
-        setattr(args, 'proj', proj_file)
-        setattr(args, 'image', config['Images'].keys())
-        setattr(args, 'down', config['Downsamplers'].keys())
-        setattr(args, 'ratio', config['Ratios'].keys())
-        setattr(args, 'up', config['Upsamplers'].keys())
-        setattr(args, 'metrics_d', config['Metrics'])
-        setattr(args, 'metrics', getattr(args, 'metrics_d').keys())
-        setattr(args, 'metric', getattr(args, 'metrics'))
-        setattr(args, 'sort', None)
-        setattr(args, 'show_sort', True)
+        setattr(args, self.dest, value)
+        args.image = config['Images'].keys()
+        args.down = config['Downsamplers'].keys()
+        args.ratio = config['Ratios'].keys()
+        args.up = config['Upsamplers'].keys()
+        args.metrics_d = config['Metrics']
+        args.metrics = config['Metrics'].keys()
+        args.metric = config['Metrics'].keys()
+        args.sort = None
+        args.show_sort = True
+        args.merge = False
+        args.rank = False
 
         # Set the "flags" to False.
-        setattr(args, 'image_flag', False)
-        setattr(args, 'down_flag', False)
-        setattr(args, 'ratio_flag', False)
-        setattr(args, 'metric_flag', False)
-        setattr(args, 'up_flag', False)
+        args.image_flag = False
+        args.down_flag = False
+        args.ratio_flag = False
+        args.metric_flag = False
+        args.up_flag = False
 
 
-class ListAction(argparse.Action):  # pylint: disable-msg=R0903
+class ListAction(argparse.Action):
 
     """Parser action to handle wildcards for options that support them.
 
@@ -356,30 +372,28 @@ class ListAction(argparse.Action):  # pylint: disable-msg=R0903
         setattr(args, '_'.join([self.dest, 'flag']), True)
 
 
-class RatioAction(argparse.Action):  # pylint: disable-msg=R0903
+class RatioAction(argparse.Action):
 
     """Parser action to deal with ratio ranges."""
 
     def __call__(self, parser, args, values, option_string=None):
-        #value_list = getattr(args, self.dest)
-        value_list = range(0, 20)
         matches = set()
         for value in values:
             # first, figure out if it's a range
             # if so, replace with ' '.join(range(start, end+1))
             nums = value.split('-')
             if len(nums) == 1:
-                if int(nums[0]) not in value_list:
-                    tup = value, ', '.join([repr(val) for val in value_list])
+                if nums[0] not in args.ratio:
+                    tup = value, ', '.join([repr(val) for val in args.ratio])
                     msg = 'invalid choice: %r (choose from %s)' % tup
                     raise argparse.ArgumentError(self, msg)
                 matches.add(int(nums[0]))
             elif len(nums) == 2:
                 value_range = range(int(nums[0]), int(nums[1]) + 1)
                 for num in value_range:
-                    if int(num) not in value_range:
+                    if str(num) not in args.ratio:
                         tup = value, ', '.join([
-                            repr(val) for val in value_list
+                            repr(val) for val in args.ratio
                         ])
                         msg = 'invalid choice: %r (choose from %s)' % tup
                         raise argparse.ArgumentError(self, msg)
@@ -387,23 +401,17 @@ class RatioAction(argparse.Action):  # pylint: disable-msg=R0903
             else:
                 msg = 'format error in {}'.format(value)
                 raise argparse.ArgumentError(self, msg)
-        setattr(args, self.dest, [x for x in value_list if x in matches])
-        setattr(args, '_'.join([self.dest, 'flag']), True)
+        args.ratio = [x for x in args.ratio if int(x) in matches]
+        args.ratio_flag = True
 
 
-class SortAction(argparse.Action):  # pylint: disable-msg=R0903
+class SortAction(argparse.Action):
 
     """Parser action to sort the data by the appropriate metric."""
 
     def __call__(self, parser, args, value, option_string=None):
-        value_list = getattr(args, 'metrics')
-        if value not in value_list:
-            tup = value, ', '.join([repr(val) for val in value_list])
+        if value not in args.metrics:
+            tup = value, ', '.join([repr(val) for val in args.metrics])
             msg = 'invalid choice: %r (choose from %s)' % tup
             raise argparse.ArgumentError(self, msg)
-        metric = getattr(args, 'metric')
-        if value not in metric:
-            metric.insert(0, value)
-            setattr(args, 'metric', metric)
-            setattr(args, 'show_sort', False)
         setattr(args, self.dest, value)

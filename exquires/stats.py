@@ -151,18 +151,15 @@ def get_merged_ranks(printdata, metrics_desc, sort_index):
     :return: A table of ranks.
 
     """
-
     # Get the Spearman (Fractional) ranks.
-    get_ranks(printdata, metrics_desc, sort_index)
+    data = get_ranks(printdata, metrics_desc, sort_index)
 
     # Combine the ranks into a single column.
-    for i in range(0, len(printdata)):
-        printdata[i] = [printdata[i][0], numpy.average(printdata[i][1:])]
+    for row in data:
+        row[1:] = [numpy.average(row[1:])]
 
     # Convert the averages back into ranks.
-    get_ranks(printdata, [0], sort_index)
-
-    return printdata
+    return get_ranks(data, [0], sort_index)
 
 
 def get_aggregate_table(dbase, upsamplers, metrics_d, tables):

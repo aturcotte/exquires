@@ -25,6 +25,7 @@ Features
  * -I/--image, -D/--downsampler, -U/--upsampler & -M/--metric support wildcards
 
 """
+import argparse
 
 from operator import itemgetter
 
@@ -48,7 +49,7 @@ def _print_table(args):
     :param args.up: The list of selected upsampler names.
     :param args.metric: The list of selected metric names.
     :param args.metrics_d: The dictionary of all metrics.
-    :param args.outfile: The name of the output file.
+    :param args.file: The name of the output file.
     :param args.digits: The number of digits to print.
     :param args.latex: If true, print a LaTeX-formatted table.
     :param args.rank: If true, print fractional ranks instead of data.
@@ -75,7 +76,11 @@ def _print_table(args):
     dbase = database.Database(args.dbase_file)
 
     # Get a list of table names to aggregate across.
-    tables = dbase.get_tables(args.image, args.down, args.ratio)
+    table_args = argparse.Namespace()
+    table_args.images = args.image
+    table_args.downsamplers = args.down
+    table_args.ratios = args.ratio
+    tables = dbase.get_tables(table_args)
 
     # Get the table (list of lists) of aggregate image difference data.
     printdata = stats.get_aggregate_table(dbase, args.up,
@@ -102,18 +107,18 @@ def _print_table(args):
         header = ['upsampler']
         for metric in args.metric:
             header.append(metric)
-        printdata.insert(0, header)
 
         # Remove the sort column if necessary.
         if not args.show_sort:
+            header.pop(1)
             for row in printdata:
                 row.pop(sort_index)
 
     # Pass the printdata to the appropriate table printer.
     if args.latex:
-        stats.print_latex(printdata, args.outfile, args.digits, header)
+        stats.print_latex(printdata, args.file, args.digits, header)
     else:
-        stats.print_normal(printdata, args.outfile, args.digits, header)
+        stats.print_normal(printdata, args.file, args.digits, header)
 
 
 def main():

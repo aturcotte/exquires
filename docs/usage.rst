@@ -5,23 +5,23 @@ Usage Instructions
 ******************
 
 **EXQUIRES** comes with several programs, each of which include a
-``-h``/``--help`` option to display usage information and a
-``-v``/``--version`` option to display the version number.
+:file:`-h/--help` option to display usage information and a
+:file:`-v/--version` option to display the version number.
 
 These five main programs can be used to create and maintain a project,
-which can be specified with the ``-p``/``--proj`` option:
+which can be specified with the :file:`-p/--proj` option:
 
-* ``exquires-new`` (see :ref:`exquires-new-label`)
-* ``exquires-run`` (see :ref:`exquires-run-label`)
-* ``exquires-update`` (see :ref:`exquires-update-label`)
-* ``exquires-report`` (see :ref:`exquires-report-label`)
-* ``exquires-correlate`` (see :ref:`exquires-correlate-label`)
+* :program:`exquires-new` (see :ref:`exquires-new-label`)
+* :program:`exquires-run` (see :ref:`exquires-run-label`)
+* :program:`exquires-update` (see :ref:`exquires-update-label`)
+* :program:`exquires-report` (see :ref:`exquires-report-label`)
+* :program:`exquires-correlate` (see :ref:`exquires-correlate-label`)
 
 These two programs are responsible for computing image differences
 and aggregating the results:
 
-* ``exquires-compare`` (see :ref:`exquires-compare-label`)
-* ``exquires-aggregate`` (see :ref:`exquires-aggregate-label`)
+* :program:`exquires-compare` (see :ref:`exquires-compare-label`)
+* :program:`exquires-aggregate` (see :ref:`exquires-aggregate-label`)
 
 The following sections will explain how to make use of these programs to
 compute data and view aggregated results and cross-correlation matrices.
@@ -33,11 +33,11 @@ Obtain suitable test images
 
 **EXQUIRES** is designed to use sRGB TIFF images with 16 bits per sample
 (48 bits per pixel) and a width and height of 840 pixels. One image
-(`wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_)
+(`wave.tif <http://www.imagemagick.org/download/image-bank/16bit840x840images/images/wave.tif>`_)
 is included as a default selection.
 
 A separate distribution of test images converted from RAW is available
-`here <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_.
+`here <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_.
 The examples in this section make use of several images from this collection.
 
 
@@ -47,7 +47,7 @@ The examples in this section make use of several images from this collection.
 Create a new project file
 =========================
 
-A project file is a *.ini* file that tells **EXQUIRES** which of the following
+A project file is a :file`.ini` file that tells **EXQUIRES** which of the following
 to use:
 
 * Images
@@ -62,8 +62,8 @@ The basic syntax to create a new project is:
 
     $ exquires-new
 
-which will create the project file ``project1.ini`` and include the image
-`wave.tif <http://exquires.rivetsforbreakfast.com/downloads/wave/wave.tif>`_
+which will create the project file :file:`project1.ini` and include the image
+`wave.tif <http://www.imagemagick.org/download/image-bank/16bit840x840images/images/wave.tif>`_
 along with a default collection of ratios, downsamplers, upsamplers, and
 metrics.
 
@@ -79,29 +79,30 @@ or:
 
     $ exquires-new --proj my_project --image my_images
 
-where ``my_project`` is a name to identify your project and ``my_images`` is
-a list (wildcards are supported) of images with the following properties:
+where :file:`my_project` is a name to identify your project and
+:file:`my_images` is a list (wildcards are supported) of images with the
+following properties:
 
 :File Format: TIFF
 :Colour Space: sRGB
 :Bit Depth: 16 bits/sample (48 bits/pixel)
 :Size: 840x840 pixels
 
-To demonstrate, we will create a new project ``example_proj`` using the
-`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_
+To demonstrate, we will create a new project :command:`example_proj` using the
+`16bit840x840images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
 collection:
 
 .. code-block:: console
 
-    $ exquires-new -p example_proj -I 840x840images/images/*
+    $ exquires-new -p example_proj -I 16bit840x840images/images/*
 
 ==========================
 Customize the project file
 ==========================
 
 Once a project file has been generated, you can manually edit it to suit your
-needs. For our example project ``example_proj``, we have a project file
-**example_proj.ini** and we will look at each section in detail.
+needs. For our example project :command:`example_proj`, we have a project file
+:file:`example_proj.ini` and we will look at each section in detail.
 
 ------
 Images
@@ -109,8 +110,8 @@ Images
 
 This section lists the paths to the test images that will be used. We will keep
 this example project small by removing all but two of the
-`840x840images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_,
-**apartments.tif** and **cabins.tif**.
+`16bit840x840images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_,
+:file:`apartments.tif` and :file:`cabins.tif`.
 
 .. code-block:: ini
 
@@ -118,8 +119,8 @@ this example project small by removing all but two of the
     # Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.
     # Any images that are added must conform to this standard.
     [Images]
-    apartments = /home/user/840x840images/images/apartments.tif
-    cabins = /home/user/840x840images/images/cabins.tif
+    apartments = /home/user/16bit840x840images/images/apartments.tif
+    cabins = /home/user/16bit840x840images/images/cabins.tif
 
 Notice that **EXQUIRES** has also assigned default names for these images,
 which you can also modify.
@@ -171,23 +172,23 @@ of the defaults.
 
 Note that the **ImageMagick** commands in this example make use of numbered
 replacement fields to denote the command-line arguments. If you wish to add
-your own downsampling method, you must use ``{0}`` and ``{1}`` to specify the
-input and output images, and either ``{2}`` or ``{3}`` (or both) to specify
-the size of the reduced image.
+your own downsampling method, you must use :command:`{0}` and :command:`{1}`
+to specify the input and output images, and either :command:`{2}` or
+:command:`{3}` (or both) to specify the size of the reduced image.
 
-Also note that the methods suffixed with ``_srgb`` do not apply gamma
-correction, meaning that the sRGB images are downsampled using linear averaging
-even though sRGB is a non-linear colour space.
-The methods suffixed with ``_linear`` convert the input image to linear RGB
+Also note that the methods suffixed with :command:`_srgb` do not apply
+gamma correction, meaning that the sRGB images are downsampled using linear
+averaging even though sRGB is a non-linear colour space.
+The methods suffixed with :command:`_linear` convert the input image to linear RGB
 with sRGB primaries before downsampling, then convert the result back to sRGB,
-using the **ImageMagick** command ``-colorspace``. Such suffixes are useful
-because they allow one to separately aggregate the
+using the **ImageMagick** command :command:`-colorspace`. Such suffixes are
+useful because they allow one to separately aggregate the
 results of only downsampling or upsampling using the two main "tracks" without
 having to list the methods individually. In the same spirit if, for example,
 you were to program downsamplers or upsamplers that convert into and out of
 sRGB using ICC profiles, we would suggest that you use something like the
-``_icc`` suffix; if you were to go through the XYZ colourspace, we would
-suggest ``_xyz``.
+:command:`_icc` suffix; if you were to go through the XYZ colourspace, we would
+suggest :command:`_xyz`.
 
 ----------
 Upsamplers
@@ -222,10 +223,10 @@ method with several Lanczos variations.
     eanbqh = python eanbqh.py {0} {1} {3}
 
 Your upsampling program may not be equipped to handle the TIFF formatted images
-used by **EXQUIRES**. Likewise, the ``eanbqh16`` program is only compatible
-with binary-mode PPM images. An example of bridging this gap is found in
-``eanbqh.py``, which uses ImageMagick to manage the conversions between the two
-image formats.
+used by **EXQUIRES**. Likewise, the :program:`eanbqh16` program is only
+compatible with binary-mode PPM images. An example of bridging this gap is
+found in :file:`eanbqh.py`, which uses ImageMagick to manage the conversions
+between the two image formats.
 
 -------
 Metrics
@@ -267,10 +268,11 @@ aggregator and a best-to-worst ordering, as seen in the default settings.
     blur_inf = exquires-compare blur_inf {0} {1}, exquires-aggregate l_inf {0}, 0
     mssim = exquires-compare mssim {0} {1}, exquires-aggregate l_1 {0}, 1
 
-Note that these default metric definitions make use of ``exquires-compare``
-and ``exquires-aggregate``. Also note that most of the metrics return an error
-measure, meaning that a lower result is better. MSSIM, on the other hand, is
-a similarity index, meaning that a higher result is better.
+Note that these default metric definitions make use of
+:program:`exquires-compare` and :program:`exquires-aggregate`. Also note that
+most of the metrics return an error measure, meaning that a lower result is
+better. MSSIM, on the other hand, is a similarity index, meaning that a higher
+result is better.
 
 For more information on the default metrics, see :ref:`compare-module`.
 
@@ -289,7 +291,7 @@ The basic syntax to run a project is:
 
     $ exquires-run
 
-which will read the project file ``project1.ini``, downsample the images
+which will read the project file :file:`project1.ini`, downsample the images
 by each ratio using each downsampler, re-enlarge the downsampled images using
 each upsampler, and compute the difference using each metric.
 
@@ -305,8 +307,8 @@ or:
 
     $ exquires-run --proj my_project
 
-By default, ``exquires-run`` displays progress information. You can disable
-this output using:
+By default, :program:`exquires-run` displays progress information.
+You can disable this output using:
 
 .. code-block:: console
 
@@ -323,7 +325,7 @@ or:
     With large project files, this program can take an *extremely* long time to
     run. For slower machines, it is recommended to start with a small set of
     test images. You can add additional images later and call
-    ``exquires-update`` to compute the new data.
+    :program:`exquires-update` to compute the new data.
 
 
 .. _exquires-update-label:
@@ -332,11 +334,11 @@ or:
 Update the image difference data
 ================================
 
-If you make changes to the project file after calling ``exquires-run``,
+If you make changes to the project file after calling :program:`exquires-run`,
 running it again will compute all data, including data for unchanged entries
 in the project file. To compute only the new data rather than recomputing the
-entire data set, use ``exquires-update``, which supports the same options as
-``exquires-run``.
+entire data set, use :program:`exquires-update`, which supports the same
+options as :program:`exquires-run`.
 
 
 .. _exquires-report-label:
@@ -355,10 +357,10 @@ The basic syntax to print aggregated data is:
 
     $ exquires-report
 
-which will read a backup of the project file ``project1.ini`` that was created
-the last time ``exquires-run`` or ``exquires-update`` was called, select the
-appropriate values from the database, aggregate the data, and print the
-results in tabular format to standard output.
+which will read a backup of the project file :file:`project1.ini` that was
+created the last time :program:`exquires-run` or :program:`exquires-update` was
+called, select the appropriate values from the database, aggregate the data,
+and print the results in tabular format to standard output.
 
 As with the other programs, you can specify the project name using:
 
@@ -373,9 +375,9 @@ or:
     $ exquires-report --proj my_project
 
 
-Normally, ``exquires-report`` prints the data as a plaintext table. You may
-wish to include the results in a LaTeX document instead, which can be done
-using:
+Normally, :program:`exquires-report` prints the data as a plaintext table.
+You may wish to include the results in a LaTeX document instead, which can be
+done using:
 
 .. code-block:: console
 
@@ -387,8 +389,8 @@ or:
 
     $ exquires-report --latex
 
-Likewise, ``exquires-report`` normally shows the aggregated data when it prints
-the table. You can instead show the Spearman (fractional) ranks for each
+Likewise, :program:`exquires-report` normally shows the aggregated data when it
+prints the table. You can instead show the Spearman (fractional) ranks for each
 upsampling method by using:
 
 .. code-block:: console
@@ -429,10 +431,10 @@ or:
 
     $ exquires-report --sort my_metric
 
-where ``my_metric`` is one of the metrics defined in the project file.
+where :file:`my_metric` is one of the metrics defined in the project file.
 
-By default, ``exquires-report`` prints the aggregated data to standard output.
-You can write the aggregated data to a file by using:
+By default, :program:`exquires-report` prints the aggregated data to standard
+output. You can write the aggregated data to a file by using:
 
 .. code-block:: console
 
@@ -444,11 +446,11 @@ or:
 
     $ exquires-report --file my_file
 
-where ``my_file`` is the file you wish to write the data to.
+where :file:`my_file` is the file you wish to write the data to.
 
-When producing tables, ``exquires-report`` will display 4 digits by default.
-You can select any number of digits between 1 and 16. For example, you can
-change the number of digits to to 6 using:
+When producing tables, :program:`exquires-report` will display 4 digits by
+default. You can select any number of digits between 1 and 16. For example, you
+can change the number of digits to to 6 using:
 
 .. code-block:: console
 
@@ -477,11 +479,11 @@ or:
 
     $ exquires-report --image my_images
 
-where ``my_images`` is a list of images defined in the project file.
+where :file:`my_images` is a list of images defined in the project file.
 
 .. note::
 
-    The arguments passed to the ``-I``/``--image`` option support wildcard
+    The arguments passed to the :file:`-I/--image` option support wildcard
     characters.
 
 You can specify the downsamplers to aggregate across by using:
@@ -496,11 +498,12 @@ or:
 
     $ exquires-report --down my_downsamplers
 
-where ``my_downsamplers`` is a list of downsamplers defined in the project file.
+where :file:`my_downsamplers` is a list of downsamplers defined in the
+project file.
 
 .. note::
 
-    The arguments passed to the ``-D``/``--down`` option support wildcard
+    The arguments passed to the :file:`-D/--down` option support wildcard
     characters.
 
 You can specify the ratios to aggregate across by using:
@@ -516,11 +519,11 @@ or:
     $ exquires-report --ratio my_ratios
 
 
-where ``my_ratios`` is a list of images defined in the project file.
+where :file:`my_ratios` is a list of images defined in the project file.
 
 .. note::
 
-    The arguments passed to the ``-R``/``--ratio`` option support hyphenated
+    The arguments passed to the :file:`-R/--ratio` option support hyphenated
     ranges.
 
 For example, to aggregate over the ratios **1**, **2**, **3**, **4**, and **6**,
@@ -548,15 +551,15 @@ or:
 
     $ exquires-report --metric my_metrics
 
-where ``my_metrics`` is a list of metrics defined in the project file.
+where :file:`my_metrics` is a list of metrics defined in the project file.
 
 .. note::
 
-    The arguments passed to the ``-M``/``--metric`` option support wildcard
+    The arguments passed to the :file:`-M/--metric` option support wildcard
     characters.
 
-For example, to only display data for the metrics prefixed with ``xyz_``,
-type:
+For example, to only display data for the metrics prefixed with
+:command:`xyz_`, type:
 
 .. code-block:: console
 
@@ -574,15 +577,16 @@ or:
 
     $ exquires-report --up my_upsamplers
 
-where ``my_upsamplers`` is a list of upsamplers defined in the project file.
+where :file:`my_upsamplers` is a list of upsamplers defined in the project
+file.
 
 .. note::
 
-    The arguments passed to the ``-U``/``--up`` option support wildcard
+    The arguments passed to the :file:`-U/--up` option support wildcard
     characters.
 
 For example, to only display data for the upsamplers suffixed with
-``_srgb``, type:
+:command:`_srgb`, type:
 
 .. code-block:: console
 
@@ -603,21 +607,22 @@ The basic syntax to print a cross-correlation matrix is:
 
     $ exquires-correlate
 
-which will read a backup of the project file ``project1.ini`` that was created
-the last time ``exquires-run`` or ``exquires-update`` was called, select the
-appropriate values from the database, aggregate the data, and print the
-cross-correlation matrix for all comparison metrics to standard output.
+which will read a backup of the project file :file:`project1.ini` that was
+created the last time :program:`exquires-run` or :program:`exquires-update` was
+called, select the appropriate values from the database, aggregate the data,
+and print the cross-correlation matrix for all comparison metrics to standard
+output.
 
 You can select which upsamplers to consider when computing the matrix
-by using the ``-U``/``--up`` option.
+by using the :file:`-U/--up` option.
 
-By default, the ``-M``/``--metric`` option is selected. You can select one of
+By default, the :file:`-M/--metric` option is selected. You can select one of
 the following cross-correlation groups:
 
-* ``-I``/``--image``
-* ``-D``/``--down``
-* ``-R``/``--ratio``
-* ``-M``/``--metric``
+* :file:`-I/--image`
+* :file:`-D/--down`
+* :file:`-R/--ratio`
+* :file:`-M/--metric`
 
 As with the other programs, you can specify the project name using:
 
@@ -632,8 +637,8 @@ or:
     $ exquires-correlate --proj my_project
 
 
-Normally, ``exquires-correlate`` prints the cross-correlation matrix as a
-plaintext table. You may wish to include the results in a LaTeX document
+Normally, :program:`exquires-correlate` prints the cross-correlation matrix as
+a plaintext table. You may wish to include the results in a LaTeX document
 instead, which can be done using:
 
 .. code-block:: console
@@ -646,8 +651,8 @@ or:
 
     $ exquires-correlate --latex
 
-By default, ``exquires-correlate`` prints the cross-correlation matrix to
-standard output. You can write the matrix to a file by using:
+By default, :program:`exquires-correlate` prints the cross-correlation matrix
+to standard output. You can write the matrix to a file by using:
 
 .. code-block:: console
 
@@ -659,9 +664,9 @@ or:
 
     $ exquires-correlate --file my_file
 
-where ``my_file`` is the file you wish to write the data to.
+where :file:`my_file` is the file you wish to write the data to.
 
-When producing a matrix, ``exquires-correlate`` will display 4 digits by
+When producing a matrix, :program:`exquires-correlate` will display 4 digits by
 default. You can select any number of digits between 1 and 16. For example,
 you can change the number of digits to to 6 using:
 
@@ -687,15 +692,15 @@ or:
 
     $ exquires-correlate --up my_upsamplers
 
-where ``my_upsamplers`` is a list of upsamplers defined in the project file.
+where :file:`my_upsamplers` is a list of upsamplers defined in the project file.
 
 .. note::
 
-    The arguments passed to the ``-U``/``--up`` option support wildcard
+    The arguments passed to the :file:`-U/--up` option support wildcard
     characters.
 
 For example, to only consider data for the upsamplers suffixed with
-``_srgb``, type:
+:command:`_srgb`, type:
 
 .. code-block:: console
 
@@ -708,23 +713,23 @@ For example, to only consider data for the upsamplers suffixed with
 Manually comparing images
 =========================
 
-The ``exquires-run`` and ``exquires-update`` programs compute data to be
-inserted into the database by calling ``exquires-compare``
+The :program:`exquires-run` and :program:`exquires-update` programs compute
+data to be inserted into the database by calling :program:`exquires-compare`
 (see :ref:`compare-module`).
 
-You can call ``exquires-compare`` directly on any pair of images with the
+You can call :program:`exquires-compare` directly on any pair of images with the
 same dimensions by using:
 
 .. code-block:: console
 
     $ exquires-compare my_metric my_image1 my_image2
 
-where ``my_image1`` and ``my_image2`` are the images to compare and
-``my_metric`` is one of the metrics described in :ref:`compare-module`.
+where :file:`my_image1` and :file:`my_image2` are the images to compare and
+:file:`my_metric` is one of the metrics described in :ref:`compare-module`.
 
-By default, ``exquires-compare`` expects images with 16 bits per sample: each
-value is between 0 and 65535. You can change the maximum value from 65535 to
-anything you like. For example, to support images with 8 bits per sample
+By default, :program:`exquires-compare` expects images with 16 bits per sample:
+each value is between 0 and 65535. You can change the maximum value from 65535
+to anything you like. For example, to support images with 8 bits per sample
 (values between 0 and 255), type:
 
 .. code-block:: console
@@ -744,18 +749,20 @@ or:
 Manually aggregating data
 =========================
 
-The ``exquires-report`` program aggregates the image comparison data before
-printing it to standard output or writing it to a file by calling
-``exquires-aggregate`` (see :ref:`aggregate-module`).
+The :program:`exquires-report` program aggregates the image comparison data
+before printing it to standard output or writing it to a file by calling
+:program:`exquires-aggregate` (see :ref:`aggregate-module`).
 
-You can call ``exquires-aggregate`` directly on any list of numbers by using:
+You can call :program:`exquires-aggregate` directly on any list of numbers by
+using:
 
 .. code-block:: console
 
     $ exquires-aggregate my_method my_numbers
 
-where ``my_numbers`` is a list of numbers separated by spaces and ``my_method``
-is one of the aggregation methods described in :ref:`aggregate-module`.
+where :file:`my_numbers` is a list of numbers separated by spaces and
+:file:`my_method` is one of the aggregation methods described in
+:ref:`aggregate-module`.
 
 For example, to return the average of a list of numbers, type:
 

@@ -24,6 +24,8 @@ by using the -U/--up option.
 
 """
 
+import argparse
+
 import numpy
 
 import database
@@ -41,7 +43,7 @@ def _get_group_and_ranks(args):
     :param args.up: The list of selected upsampler names.
     :param args.metric: The list of selected metric names.
     :param args.metrics_d: The dictionary of all metrics.
-    :param args.outfile: The name of the output file.
+    :param args.file: The name of the output file.
     :param args.digits: The number of digits to print.
     :param args.latex: If true, print a LaTeX-formatted table.
     :param args.image_flag: If true, cross-correlate images.
@@ -64,20 +66,29 @@ def _get_group_and_ranks(args):
 
     # Determine which cross-correlation to perform.
     ranks = []
+    table_args = argparse.Namespace()
     if args.image_flag or args.down_flag or args.ratio_flag:
         if args.image_flag:
             key = 'images'
             group = args.image
+            table_args.downsamplers = None
+            table_args.ratios = None
         elif args.down_flag:
             key = 'downsamplers'
             group = args.down
+            table_args.images = None
+            table_args.ratios = None
         else:  # args.ratio_flag:
             key = 'ratios'
             group = args.ratio
+            table_args.images = None
+            table_args.downsamplers = None
 
         for item in group:
+            # Setup the tables to access.
+            setattr(table_args, key, [item])
             agg_table = stats.get_aggregate_table(
-                dbase, args.up, args.metrics_d, dbase.get_tables({key: [item]})
+                dbase, args.up, args.metrics_d, dbase.get_tables(table_args)
             )
 
             if ranks:
@@ -86,11 +97,18 @@ def _get_group_and_ranks(args):
                     ranks[i].append(col[i][1])
             else:
                 ranks = stats.get_merged_ranks(agg_table, metrics_desc, 0)
+
+            print ranks
     else:
+        # Setup the tables to access.
+        table_args.images = args.image
+        table_args.downsamplers = args.down
+        table_args.ratios = args.ratio
         group = args.metric
+
+        # Get the rank table.
         agg_table = stats.get_aggregate_table(
-            dbase, args.up, args.metrics_d,
-            dbase.get_tables(args.image, args.down, args.ratios)
+            dbase, args.up, args.metrics_d, dbase.get_tables(table_args)
         )
         ranks = stats.get_ranks(agg_table, metrics_desc, 0)
 
@@ -111,7 +129,7 @@ def _print_matrix(args):
     :param args.up: The list of selected upsampler names.
     :param args.metric: The list of selected metric names.
     :param args.metrics_d: The dictionary of all metrics.
-    :param args.outfile: The name of the output file.
+    :param args.file: The name of the output file.
     :param args.digits: The number of digits to print.
     :param args.latex: If true, print a LaTeX-formatted table.
     :param args.image_flag: If true, cross-correlate images.
@@ -144,9 +162,9 @@ def _print_matrix(args):
 
     # Pass the coefficient matrix to the appropriate table printer.
     if args.latex:
-        stats.print_latex(matrix, args.outfile, args.digits)
+        stats.print_latex(matrix, args.file, args.digits)
     else:
-        stats.print_normal(matrix, args.outfile, args.digits)
+        stats.print_normal(matrix, args.file, args.digits)
 
 
 def main():

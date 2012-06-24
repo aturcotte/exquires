@@ -1,0 +1,44 @@
+@import url("default.css");
+
+/* -- body styles ----------------------------------------------------------- */
+
+div.note {
+    border: 1px solid #000060;
+    background-color: #a0c5d9;
+    color: #000060;
+}
+
+/* -- code displays --------------------------------------------------------- */
+
+tt.file {
+    border: 0 !important;
+    background-color: transparent;
+    color: #000060;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+/* -- tables ---------------------------------------------------------------- */
+
+table.docutils {
+    border: 0;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1px 8px 1px 5px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #aaa;
+}
+
+table.docutils td {
+    background-color: #ffc;
+    color: #602c10;
+}
+
+table.docutils th {
+    background-color: #1a2741;
+    color: #fff;
+}

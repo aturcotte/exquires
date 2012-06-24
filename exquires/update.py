@@ -106,7 +106,8 @@ def _update(args):
     # Get the various namespaces for this project update.
     current, new, old, same = _get_namespaces(args.config_file,
                                               args.config_bak)
-    args.metrics = same.metrics
+    args.met_same = same.metrics
+    args.metrics = current.metrics
 
     # Define operations.
     same.up_obj = operations.Upsamplers(same.upsamplers, new.metrics, True)

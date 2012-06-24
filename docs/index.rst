@@ -2,11 +2,11 @@
 EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ***************************************************************************
 
-.. image:: assets/exquires-600.png
+.. image:: _images/exquires-logo.png
 
 ----
 
-:Web: `exquires.rivetsforbreakfast.com <http://exquires.rivetsforbreakfast.com>`_
+:Web: `exquires.ca <http://exquires.ca>`_
 :PyPI: `exquires package <http://pypi.python.org/pypi/exquires>`_
 :Dev: `exquires on GitHub <http://github.com/aturcotte/exquires>`_
 :License: `BSD 2-Clause License <http://www.opensource.org/licenses/bsd-license.php>`_
@@ -46,7 +46,7 @@ difference metrics. The following components of **EXQUIRES** are configurable:
 several modules, including the following:
 
 * `argparse <http://code.google.com/p/argparse/>`_ (handle command-line arguments)
-* `configobj <http://www.voidspace.org.uk/python/configobj.html>`_ (create and read *.ini* files)
+* `configobj <http://www.voidspace.org.uk/python/configobj.html>`_ (create and read :file:`.ini` files)
 * `curses <http://docs.python.org/library/curses.html>`_ (display progress information)
 * `fnmatch <http://docs.python.org/library/fnmatch.html>`_ (handle wildcard characters)
 * `inspect <http://docs.python.org/library/inspect.html>`_ (get a list of methods for a class)
@@ -95,12 +95,12 @@ see :ref:`setup-label`.
 Usage Overview
 ==============
 
-* Obtain suitable `840x840 test images <http://exquires.rivetsforbreakfast.com/downloads/840x840images.zip>`_
-* Use ``exquires-new`` to create a new project file
+* Obtain suitable `840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
+* Use :program:`exquires-new` to create a new project file
 * Modify the project file to suit your needs
-* Use ``exquires-run`` to compute the image difference data
-* Use ``exquires-update`` to compute only the new data after editing the project file
-* Use ``exquires-report`` to produce tables of aggregated data
-* Use ``exquires-correlate`` to produce Spearman's rank cross-correlation matrices
+* Use :program:`exquires-run` to compute the image difference data
+* Use :program:`exquires-update` to compute only the new data after editing the project file
+* Use :program:`exquires-report` to produce tables of aggregated data
+* Use :program:`exquires-correlate` to produce Spearman's rank cross-correlation matrices
 
 For more information on using **EXQUIRES**, see :ref:`usage-label`.

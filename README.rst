@@ -8,7 +8,7 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 
 ----
 
-:Web: `exquires.rivetsforbreakfast.com <http://exquires.rivetsforbreakfast.com>`_
+:Web: `exquires.ca <http://exquires.ca>`_
 :PyPI: `exquires <http://pypi.python.org/pypi/exquires>`_
 :Dev: `git repo <http://github.com/aturcotte/exquires>`_
 
@@ -18,7 +18,7 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 Documentation & Instructions
 ============================
 
-Please visit: http://exquires.rivetsforbreakfast.com
+Please visit: http://exquires.ca
 
 ===============================
 Basic Installation Instructions

@@ -98,12 +98,12 @@ class Database:
         self.__create_table(name, metrics)
         return backup_name
 
-    def get_tables(self, images=None, downsamplers=None, ratios=None):
+    def get_tables(self, args):
         """Return table names for these images, downsamplers, and ratios.
 
-        :param images: The list of image names.
-        :param downsamplers: The list of downsampler names.
-        :param ratios: The list of ratios in string form.
+        :param args.images: The list of image names.
+        :param args.downsamplers: The list of downsampler names.
+        :param args.ratios: The list of ratios in string form.
         :return: A list of table names.
 
         """
@@ -111,25 +111,25 @@ class Database:
         query = 'SELECT name FROM TABLEDATA WHERE ('
 
         # Append the image names.
-        if images:
-            for image in images:
+        if args.images:
+            for image in args.images:
                 query = ' '.join([query, 'image = \'{}\' OR'.format(image)])
             query = ''.join([query.rstrip(' OR'), ')'])
 
         # Append the downsampler names.
-        if downsamplers:
-            if images:
+        if args.downsamplers:
+            if args.images:
                 query = ' '.join([query, 'AND ('])
-            for downsampler in downsamplers:
+            for downsampler in args.downsamplers:
                 downsampler_str = 'downsampler = \'{}\' OR'.format(downsampler)
                 query = ' '.join([query, downsampler_str])
             query = ''.join([query.rstrip(' OR'), ')'])
 
         # Append the ratios.
-        if ratios:
-            if (images or downsamplers):
+        if args.ratios:
+            if (args.images or args.downsamplers):
                 query = ' '.join([query, 'AND ('])
-            for ratio in ratios:
+            for ratio in args.ratios:
                 query = ' '.join([query, 'ratio = \'{}\' OR'.format(ratio)])
             query = ''.join([query.rstrip(' OR'), ')'])
 
@@ -196,7 +196,7 @@ class Database:
                             return error data for.
 
         """
-        sql = 'SELECT {} FROM {} WHERE upsampler=\'{}\''
+        sql = 'SELECT upsampler,{} FROM {} WHERE upsampler=\'{}\''
         query = sql.format(metrics_str, table, upsampler)
         cursor = self.dbase.execute(query)
         return dict(cursor.fetchone())

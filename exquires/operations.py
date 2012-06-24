@@ -19,8 +19,10 @@ import database
 import progress
 import tools
 
+# pylint: disable-msg=R0903
 
-class Operations(object):   # pylint: disable-msg=R0903
+
+class Operations(object):
 
     """This class is responsible for calling all operations."""
 
@@ -50,7 +52,8 @@ class Operations(object):   # pylint: disable-msg=R0903
         :param args.dbase_file: The database file.
         :param args.proj: The name of the current project.
         :param args.silent: True if using silent mode, else false.
-        :param args.metrics: The dictionary of metrics.
+        :param args.met_same: The dictionary of unchanged metrics.
+        :param args.metrics: The dictionary of current metrics.
         :param args.config_file: The current configuration file.
         :param args.config_bak: The previous configuration file.
 
@@ -90,7 +93,7 @@ class Operations(object):   # pylint: disable-msg=R0903
         complete()
 
 
-class Images(object):  # pylint: disable-msg=R0903
+class Images(object):
 
     """This class calls operations for a particular set of images."""
 
@@ -124,7 +127,8 @@ class Images(object):  # pylint: disable-msg=R0903
         :param args.dbase: The connected database.
         :param args.proj: The name of the current project.
         :param args.silent: True if using silent mode, else false.
-        :param args.metrics: The dictionary of metrics.
+        :param args.met_same: The dictionary of unchanged metrics.
+        :param args.metrics: The dictionary of current metrics.
         :param args.do_op: The function to update the displayed progress.
 
         """
@@ -145,7 +149,7 @@ class Images(object):  # pylint: disable-msg=R0903
                 shutil.rmtree(args.image_dir, True)
 
 
-class Downsamplers(object):  # pylint: disable-msg=R0903
+class Downsamplers(object):
 
     """This class calls operations for a particular set of downsamplers."""
 
@@ -179,7 +183,8 @@ class Downsamplers(object):  # pylint: disable-msg=R0903
         :param args.dbase: The connected database.
         :param args.proj: The name of the current project.
         :param args.silent: True if using silent mode, else false.
-        :param args.metrics: The dictionary of metrics.
+        :param args.met_same: The dictionary of unchanged metrics.
+        :param args.metrics: The dictionary of current metrics.
         :param args.do_op: The function to update the displayed progress.
         :param args.image: The name of the image.
         :param args.image_dir: The directory to store results for this image.
@@ -202,7 +207,7 @@ class Downsamplers(object):  # pylint: disable-msg=R0903
                 shutil.rmtree(args.downsampler_dir, True)
 
 
-class Ratios(object):  # pylint: disable-msg=R0903
+class Ratios(object):
 
     """This class calls operations for a particular set of ratios."""
 
@@ -234,7 +239,8 @@ class Ratios(object):  # pylint: disable-msg=R0903
         :param args.dbase: The connected database.
         :param args.proj: The name of the current project.
         :param args.silent: True if using silent mode, else false.
-        :param args.metrics: The dictionary of metrics.
+        :param args.met_same: The dictionary of unchanged metrics.
+        :param args.metrics: The dictionary of current metrics.
         :param args.do_op: The function to update the displayed progress.
         :param args.image: The name of the image.
         :param args.image_dir: The directory to store results for this image.
@@ -267,7 +273,8 @@ class Ratios(object):  # pylint: disable-msg=R0903
                     ).split()
                 )
 
-                if self.same and same:
+                is_same = self.same and same
+                if is_same:
                     # Access the existing database table.
                     args.table = '_'.join([args.image,
                                            args.downsampler, args.ratio])
@@ -281,17 +288,17 @@ class Ratios(object):  # pylint: disable-msg=R0903
 
                 # Compute for all upsamplers.
                 for upsampler in self.upsamplers:
-                    upsampler.compute(args)
+                    upsampler.compute(args, is_same)
 
                 # Remove the directory for this ratio.
                 shutil.rmtree(ratio_dir, True)
 
                 # Delete the backup table.
-                if self.same and same:
+                if is_same:
                     args.dbase.drop_backup(args.table_bak)
 
 
-class Upsamplers(object):  # pylint: disable-msg=R0903
+class Upsamplers(object):
 
     """This class upsamples an image and compares with its master image."""
 
@@ -305,7 +312,8 @@ class Upsamplers(object):  # pylint: disable-msg=R0903
         self.upsamplers = upsamplers
         self.metrics = metrics
         self.same = same
-        self.len = len(self.upsamplers) * (len(self.metrics) + 1)
+        ops = len(self.metrics)
+        self.len = len(self.upsamplers) * (ops + 1) if ops else 0
 
     def __len__(self):
         """Return the length of this Upsamplers object.
@@ -338,8 +346,6 @@ class Upsamplers(object):  # pylint: disable-msg=R0903
 
         """
         if len(self):
-            metrics_str = ','.join(args.metrics)
-
             # Compute for all upsamplers.
             for upsampler in self.upsamplers:
                 large = os.path.join(
@@ -347,10 +353,10 @@ class Upsamplers(object):  # pylint: disable-msg=R0903
                     '.'.join([upsampler, 'tif'])
                 )
 
-                if self.same and same:
+                if self.same and same and args.met_same:
                     # Access the existing table row.
                     row = args.dbase.get_error_data(args.table_bak, upsampler,
-                                                    metrics_str)
+                                                    ','.join(args.met_same))
                 else:
                     # Start creating a new table row.
                     row = dict(upsampler=upsampler)
