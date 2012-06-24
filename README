@@ -37,24 +37,24 @@ or download the `source distribution from PyPI <http://pypi.python.org/pypi/exqu
 Detailed Installation Instructions
 ==================================
 
-The following instructions are for Debian/Ubuntu/Mint Linux. For other
-platforms, the setup is generally the same, with the exeption of installing
-system dependencies.
+These instructions are for Debian/Ubuntu/Mint Linux.  For other platforms, the
+setup is generally the same, with the exception of installing system
+dependencies.  
 
 ------------------------------------------
 Installing ImageMagick 7 alpha from source
 ------------------------------------------
 
-* Install dependencies::
+* Install dependencies on Debian/Ubuntu/Mint::
 
     $ sudo apt-get install imagemagick libmagick++-dev
 
-* Download and untar the ImageMagick 7 alpha source::
+* download and untar the ImageMagick 7 alpha source::
 
     $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
     $ tar xvfz ImageMagick.tar.gz
 
-* Configure, compile and install ImageMagick::
+* configure, compile and install ImageMagick::
 
     $ cd ImageMagick-7.0.0-0
     $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
@@ -62,11 +62,11 @@ Installing ImageMagick 7 alpha from source
     $ make
     $ sudo make install
 
-* Configure the dynamic linker run-time bindings::
+* configure the dynamic linker run-time bindings::
 
     $ sudo ldconfig /usr/local/lib
 
-* (Optional) Ensure that the correct version is now installed::
+* (optional) ensure that the correct version is now installed::
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
@@ -75,11 +75,11 @@ Installing ImageMagick 7 alpha from source
 Installing EXQUIRES
 -------------------
 
-* Install remaining dependencies::
+* install dependencies::
 
-    $ sudo apt-get install python-pip python-configobj python-dev python-numpy python-vipscc libvips-tools
+    $ sudo apt-get install python-pip python-configobj python-numpy python-vipscc libvips-tools
     
-* Install EXQUIRES from PyPI using pip::
+* install EXQUIRES from PyPI using pip::
 
     $ sudo pip install -U exquires
 
@@ -96,9 +96,9 @@ Usage Overview
 ==============
 
 * Obtain suitable `840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
-* Use :program:`exquires-new` to create a new project file
+* Use ``exquires-new`` to create a new project file
 * Modify the project file to suit your needs
-* Use :program:`exquires-run` to compute the image difference data
-* Use :program:`exquires-update` to compute only the new data after editing the project file
-* Use :program:`exquires-report` to produce tables of aggregated data
-* Use :program:`exquires-correlate` to produce Spearman's rank cross-correlation matrices
+* Use ``exquires-run`` to compute the image difference data
+* Use ``exquires-update`` to compute only the new data after editing the project file
+* Use ``exquires-report`` to print tables of aggregated data
+* Use ``exquires-correlate`` to produce Spearman's rank cross-correlation matrices
