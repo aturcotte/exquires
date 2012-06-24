@@ -6,7 +6,7 @@ Detailed Installation Instructions
 
 The following instructions are for Debian/Ubuntu/Mint Linux. For other
 platforms, the setup is generally the same, with the exeption of installing
-system dependencies.  
+system dependencies.
 
 ============
 Requirements
