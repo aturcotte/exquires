@@ -190,7 +190,7 @@ class Metrics(object):
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 1, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
         im1_g = self.im1.recomb(rgb2gray)
@@ -228,7 +228,7 @@ class Metrics(object):
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 1, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
         im1_g = self.im1.recomb(rgb2gray)
@@ -255,7 +255,7 @@ class Metrics(object):
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 1, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
         im1_g = self.im1.recomb(rgb2gray)
@@ -282,7 +282,7 @@ class Metrics(object):
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 1, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
         im1_g = self.im1.recomb(rgb2gray)
@@ -309,7 +309,7 @@ class Metrics(object):
 
         # Compute a mask for converting the image to grayscale.
         # Note that the result is equivalent to the Y channel of YIQ.
-        rgb2gray = self.vmask.VDMask(3, 1, 0, 0, [0.299, 0.587, 0.114])
+        rgb2gray = self.vmask.VDMask(3, 1, 1, 0, [0.299, 0.587, 0.114])
 
         # Convert the image to grayscale using Matlab's approach.
         im1_g = self.im1.recomb(rgb2gray)
