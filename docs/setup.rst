@@ -27,22 +27,20 @@ Installing ImageMagick 7 alpha from source
 
 .. code-block:: console
 
-    $ sudo apt-get install imagemagick libmagick++-dev
+    $ sudo apt-get install imagemagick libmagick++-dev subversion
 
-* Download and untar the ImageMagick 7 alpha source:
+* Download the ImageMagick 7 development source:
 
 .. code-block:: console
 
-    $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
-    $ tar xvfz ImageMagick.tar.gz
+    $ svn co https://subversion.imagemagick.org/subversion/ImageMagick-Windows/trunk/ ImageMagick
 
 * Configure, compile and install ImageMagick:
 
 .. code-block:: console
 
-    $ cd ImageMagick-7.0.0-0
-    $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
-                  CXXFLAGS="-O2 -pthread"
+    $ cd ImageMagick/ImageMagick
+    $ CFLAGS="-march=native -O2" CXXFLAGS="-march=native -O2" ./configure --enable-hdri
     $ make
     $ sudo make install
 
@@ -58,6 +56,18 @@ Installing ImageMagick 7 alpha from source
 
     $ identify -version
     $ pkg-config --modversion ImageMagick
+
+* Updating ImageMagick development version:
+
+.. code-block:: console
+
+    $ cd ImageMagick/ImageMagick
+    $ sudo make uninstall
+    $ make clean
+    $ svn update
+    $ CFLAGS="-march=native -O2" CXXFLAGS="-march=native -O2" ./configure --enable-hdri
+    $ make
+    $ sudo make install
 
 ===================
 Installing EXQUIRES

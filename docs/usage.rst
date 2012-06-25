@@ -40,6 +40,12 @@ A separate distribution of test images converted from RAW is available
 `here <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_.
 The examples in this section make use of several images from this collection.
 
+The easiest way to obtain a copy of the image bank is as follows:
+
+.. code-block:: console
+
+    $ wget -r -nH --cut-dirs=3 ftp://ftp.imagemagick.org/pub/ImageMagick/image-bank/16bit840x840images/
+
 
 .. _exquires-new-label:
 
@@ -94,7 +100,7 @@ collection:
 
 .. code-block:: console
 
-    $ exquires-new -p example_proj -I 16bit840x840images/images/*
+    $ exquires-new -p example_proj -I /path/to/16bit840x840images/images/*
 
 ==========================
 Customize the project file
@@ -119,8 +125,8 @@ this example project small by removing all but two of the
     # Images are 16-bit sRGB TIFFs with a width and height of 840 pixels.
     # Any images that are added must conform to this standard.
     [Images]
-    apartments = /home/user/16bit840x840images/images/apartments.tif
-    cabins = /home/user/16bit840x840images/images/cabins.tif
+    apartments = /path/to/user/16bit840x840images/images/apartments.tif
+    cabins = /path/to/16bit840x840images/images/cabins.tif
 
 Notice that **EXQUIRES** has also assigned default names for these images,
 which you can also modify.
