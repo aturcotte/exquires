@@ -24,10 +24,10 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup'])
-DESCRIPTION = '''EXQUIRES - Evaluative and eXtensible QUantitative Image
-Re-Enlargement Suite'''
+DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.ca'
-LICENSE = 'BSD 2-Clause License'
+LICENSE = 'BSD 2-Clause (http://www.opensource.org/licenses/bsd-license.php)'
+PLATFORM = 'Unix'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()
 requirements_file = open(os.path.join(this_dir, 'requirements.txt'))
 REQUIREMENTS = filter(None, requirements_file.read().splitlines())
@@ -49,6 +49,7 @@ CLASSIFIERS = [
 CONSOLE_SCRIPTS = [
     'exquires-aggregate = exquires.aggregate:main',
     'exquires-compare = exquires.compare:main',
+    'exquires-correlate = exquires.correlate:main',
     'exquires-new = exquires.new:main',
     'exquires-report = exquires.report:main',
     'exquires-run = exquires.run:main',
@@ -67,6 +68,8 @@ params = dict(
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    license=LICENSE,
+    platform=PLATFORM,
     keywords=KEYWORDS,
     url=URL,
     classifiers=CLASSIFIERS,

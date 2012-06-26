@@ -25,10 +25,12 @@ sys.path.insert(0, os.path.abspath('../exquires'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath',
+              'sphinx.ext.ifconfig', 'sphinx.ext.viewcode']
 
 # LaTeX math customizations.
-pngmath_dvipng_args = ['gamma', '1.5', '-D', '120', '-bg', 'Transparent', '-fg', 'rgb 0.376 0.173 0.063']
+pngmath_dvipng_args = ['gamma', '1.5', '-D', '120', '-bg',
+                       'Transparent', '-fg', 'rgb 0.376 0.173 0.063']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -61,7 +63,7 @@ release = '0.9.8'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-today = 'June 24, 2012'
+today = 'June 25, 2012'
 # Else, today_fmt is used as the format for a strftime call.
 #today_fmt = '%B %d, %Y'
 
