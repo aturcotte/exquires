@@ -49,8 +49,8 @@ def main():
 
     # Convert the TIF input to PPM.
     if args.linear:
-        call(['magick', args.image_in,
-              '-set colorspace sRGB', '-colorspace RGB', temp_in])
+        call(['magick', args.image_in, '-set', 'colorspace', 'sRGB',
+              '-colorspace', 'RGB', temp_in])
     else:
         call(['magick', args.image_in, temp_in])
 
@@ -59,8 +59,8 @@ def main():
 
     # Convert the PPM result back to TIF.
     if args.linear:
-        call(['magick', temp_out,
-              '-set colorspace RGB', '-colorspace sRGB', args.image_out])
+        call(['magick', temp_out, '-set', 'colorspace', 'sRGB',
+              '-colorspace', 'RGB', args.image_out])
     else:
         call(['magick', temp_out, args.image_out])
 
