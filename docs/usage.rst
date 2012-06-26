@@ -226,7 +226,8 @@ method with several Lanczos variations.
     lanczos3_linear = magick {0} -colorspace RGB -filter Lanczos -resize {3}x{3} -colorspace sRGB -strip {1}
     lanczos4_srgb = magick {0} -filter Lanczos -define filter:lobes=4 -resize {3}x{3} -strip {1}
     lanczos4_linear = magick {0} -colorspace RGB -filter Lanczos -define filter:lobes=4 -resize {3}x{3} -colorspace sRGB -strip {1}
-    eanbqh = python eanbqh.py {0} {1} {3}
+    eanbqh_srgb = python eanbqh.py {0} {1} {3}
+    eanbqh_linear = python eanbqh.py --linear {0} {1} {3}
 
 Your upsampling program may not be equipped to handle the TIFF formatted images
 used by **EXQUIRES**. Likewise, the :program:`eanbqh16` program is only
