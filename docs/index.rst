@@ -95,7 +95,7 @@ see :ref:`setup-label`.
 Usage Overview
 ==============
 
-* Obtain suitable `840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
+* Obtain suitable `16 bit 840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
 * Use :program:`exquires-new` to create a new project file
 * Modify the project file to suit your needs
 * Use :program:`exquires-run` to compute the image difference data

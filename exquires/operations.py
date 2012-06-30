@@ -343,21 +343,26 @@ class Upsamplers(object):
         :param same: True if accessing an existing table.
 
         """
-        if len(self):
-            # Compute for all upsamplers.
-            for upsampler in self.upsamplers:
+        is_same = self.same and same and args.met_same
+
+        # Compute for all upsamplers.
+        for upsampler in self.upsamplers:
+            row = {}
+            if is_same:
+                # Access the existing table row.
+                row = args.dbase.get_error_data(args.table_bak, upsampler,
+                                                ','.join(args.met_same))
+
+            if len(self):
+                if not is_same:
+                    # Start creating a new table row.
+                    row['upsampler'] = upsampler
+
+                # Construct the path to the upsampled image.
                 large = os.path.join(
                     os.path.dirname(args.small), args.ratio,
                     '.'.join([upsampler, 'tif'])
                 )
-
-                if self.same and same and args.met_same:
-                    # Access the existing table row.
-                    row = args.dbase.get_error_data(args.table_bak, upsampler,
-                                                    ','.join(args.met_same))
-                else:
-                    # Start creating a new table row.
-                    row = dict(upsampler=upsampler)
 
                 # Upsample ratio.tif back to 840 using upsampler.
                 #  {0} input image path (small)
@@ -381,6 +386,9 @@ class Upsamplers(object):
                         )
                     )
 
-                # Add the row to the table and delete the upsampled image.
-                args.dbase.insert(args.table, row)
+                # Remove the upsampled image.
                 os.remove(large)
+
+            # Add the new row to the table.
+            if row:
+                args.dbase.insert(args.table, row)

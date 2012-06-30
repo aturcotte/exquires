@@ -11,7 +11,7 @@
 
 """Display progress information for **exquires-run** and **exquires-update**.
 
-When the '--silent' option is not selected in **exquires-run** or
+When the '-s/--silent' option is not selected in **exquires-run** or
 **exquires-update**, the Progress class is used to display the appropriate
 information.
 

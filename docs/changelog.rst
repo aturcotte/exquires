@@ -3,6 +3,12 @@ Changelog
 *********
 
 ===============
+Version 0.9.8.2
+===============
+
+* Important bugfix for exquires-update
+
+===============
 Version 0.9.8.1
 ===============
 

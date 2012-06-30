@@ -10,7 +10,7 @@ EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ----
 
 :Web: `exquires.ca <http://exquires.ca>`_
-:PyPI: `exquires <http://pypi.python.org/pypi/exquires>`_
+:PyPI: `exquires package <http://pypi.python.org/pypi/exquires>`_
 :Dev: `exquires on GitHub <http://github.com/aturcotte/exquires>`_
 
 ----
@@ -96,7 +96,7 @@ Installing latest EXQUIRES dev branch from git repo
 Usage Overview
 ==============
 
-* Obtain suitable `840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
+* Obtain suitable `16 bit 840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
 * Use ``exquires-new`` to create a new project file
 * Modify the project file to suit your needs
 * Use ``exquires-run`` to compute the image difference data

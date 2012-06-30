@@ -15,6 +15,9 @@ setup.py for exquires.
 
 import os
 
+if sys.version_info < (2, 7):
+    raise Exception("EXQUIRES requires Python 2.7 or higher.")
+
 from setuptools import setup, find_packages
 
 from exquires import __version__ as VERSION

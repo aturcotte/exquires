@@ -68,6 +68,7 @@ Installing ImageMagick 7 alpha from source
     $ CFLAGS="-march=native -O2" CXXFLAGS="-march=native -O2" ./configure --enable-hdri
     $ make
     $ sudo make install
+    $ sudo ldconfig /usr/local/lib
 
 ===================
 Installing EXQUIRES
