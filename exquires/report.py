@@ -114,9 +114,9 @@ def _print_table(args):
 
     # Pass the printdata to the appropriate table printer.
     if args.latex:
-        stats.print_latex(printdata, args.file, args.digits, header)
+        stats.print_latex(printdata, args, header)
     else:
-        stats.print_normal(printdata, args.file, args.digits, header)
+        stats.print_normal(printdata, args, header)
 
 
 def main():

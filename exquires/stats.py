@@ -36,77 +36,95 @@ def _format_cell(cell, digits):
         return cell
 
 
-def print_normal(printdata, outfile, digits, header=None):
+def print_normal(printdata, args, header, matrix=False):
     """Print the processed data table with normal formatting.
 
     :param printdata: A list of lists, defining the table to print.
-    :param outfile: The path to write the aggregated error table.
-    :param digits: The number of digits to display after the decimal point.
+    :param args.file: The path to write the aggregated error table.
+    :param args.digits: The maximum number of digits to display.
     :param header: A list of table headings.
+    :param matrix: True if printing a correlation matrix.
 
     """
-    # Compute the column widths and print the header if it exists.
-    if header:
-        col_pad = [max(len(header[0]), max(len(row[0]) for row in printdata))]
-        col_pad[1:] = [max(digits + 1, len(heading)) for heading in header[1:]]
+    # Compute the column widths (padding).
+    pad = [max(len(header[0]), max(len(row[0]) for row in printdata))]
+    pad[1:] = [max(args.digits + 1, len(head)) for head in header[1:]]
 
-        print >> outfile, header[0].ljust(col_pad[0]),
-        for i, heading in enumerate(header[1:], 1):
-            print >> outfile, heading.rjust(col_pad[i] + 1),
-        print >> outfile
+    # Print the header.
+    if matrix:
+        index = 0
+        print >> args.file, ''.ljust(pad[0]),
     else:
-        col_pad = [max(len(row[0]) for row in printdata)]
-        col_pad[1:] = [digits + 1] * (len(printdata[0]) - 1)
+        index = 1
+        print >> args.file, header[0].ljust(pad[0]),
+    for i, heading in enumerate(header[index:], index):
+        print >> args.file, heading.rjust(pad[i] + 1),
+    print >> args.file
 
     # Print the remaining rows.
-    for row in printdata:
-        # Print the cell for the left column (upsamplers).
-        print >> outfile, row[0].ljust(col_pad[0]),
+    for j, row in enumerate(printdata):
+        # Print the cell for the left column.
+        if matrix:
+            print >> args.file, header[j].ljust(pad[0]),
+        else:
+            print >> args.file, row[0].ljust(pad[0]),
 
         # Print the cells for the remaining columns.
-        for i, cell in enumerate(row[1:], 1):
-            print >> outfile, _format_cell(cell, digits).rjust(col_pad[i] + 1),
-        print >> outfile
+        for i, cell in enumerate(row[index:], index):
+            print >> args.file, _format_cell(
+                    cell, args.digits).rjust(pad[i] + 1),
+        print >> args.file
 
 
-def print_latex(printdata, outfile, digits, header=None):
+def print_latex(printdata, args, header, matrix=False):
     """Print the processed data table with LaTeX formatting.
 
     :param printdata: A list of lists, defining the table to print.
-    :param outfile: The path to write the aggregated data table.
-    :param digits: The number of digits to display.
+    :param args.file: The path to write the aggregated data table.
+    :param args.digits: The number of digits to display.
     :param header: A list of table headings.
 
     """
     # No padding is necessary since this is a LaTeX table.
-    print >> outfile, '\\begin{table}[t]'
-    print >> outfile, '\\centering'
-    print >> outfile, '\\begin{tabular}{|l||',
+    print >> args.file, '\\begin{table}[t]'
+    print >> args.file, '\\centering'
+    print >> args.file, '\\begin{tabular}{|l||',
     for dummy in range(len(printdata[0]) - 1):
-        print >> outfile, 'r|',
-    print >> outfile, '}'
-    print >> outfile, '\\hline'
+        print >> args.file, 'r|',
+    print >> args.file, '}'
+    print >> args.file, '\\hline'
 
     # Print the header.
-    if header:
-        print >> outfile, header[0],
-        for heading in header[1:]:
-            print >> outfile, ' & {}'.format(heading),
-        print >> outfile, '\\\\'
-        print >> outfile, '\\hline'
+    if matrix:
+        index = 0
+    else:
+        index = 1
+        print >> args.file, header[0],
+    for heading in header[index:]:
+        print >> args.file, ' & {}'.format(heading),
+    print >> args.file, '\\\\'
+    print >> args.file, '\\hline'
 
     # Print the remaining rows.
-    for row in printdata:
-        print >> outfile, row[0],
-        for col in row[1:]:
-            print >> outfile, ' & {}'.format(_format_cell(col, digits)),
-        print >> outfile, '\\\\'
+    for j, row in enumerate(printdata):
+        # Print the cell for the left column.
+        if matrix:
+            print >> args.file, header[j],
+        else:
+            print >> args.file, row[0],
 
-    print >> outfile, '\\hline'
-    print >> outfile, '\\end{{tabular}}'
-    print >> outfile, '\\caption{{Insert a caption}}'
-    print >> outfile, '\\label{{tab:table1}}'
-    print >> outfile, '\\end{{table}}'
+        # Print the cells for the remaining columns.
+        for cell in row[index:]:
+            print >> args.file, ' & {}'.format(
+                    _format_cell(cell, args.digits)
+            ),
+        print >> args.file, '\\\\'
+
+    print >> args.file, '\\hline'
+    print >> args.file, '\\end{{tabular}}'
+    print >> args.file, '\\caption{{Insert a caption}}'
+    print >> args.file, '\\label{{tab:table1}}'
+    print >> args.file, '\\end{{table}}'
 
 
 def get_ranks(printdata, metrics_desc, sort_index):

@@ -3,6 +3,12 @@ Changelog
 *********
 
 ===============
+Version 0.9.8.3
+===============
+
+* Modified matrix formatting for exquires-correlate
+
+===============
 Version 0.9.8.2
 ===============
 

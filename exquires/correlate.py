@@ -154,14 +154,11 @@ def _print_matrix(args):
                     coeff[0] / ((coeff[1] * coeff[2]) ** 0.5)
             )
 
-    # Attach the row headers.
-    matrix = numpy.append([[item] for item in group], matrix, axis=1)
-
     # Pass the coefficient matrix to the appropriate table printer.
     if args.latex:
-        stats.print_latex(matrix, args.file, args.digits)
+        stats.print_latex(matrix, args, group, True)
     else:
-        stats.print_normal(matrix, args.file, args.digits)
+        stats.print_normal(matrix, args, group, True)
 
 
 def main():
