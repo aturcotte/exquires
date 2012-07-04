@@ -29,8 +29,8 @@ def _format_cell(cell, digits):
     try:
         value = float(cell)
         if fabs(value) < 1:
-            return str(cell)[1:digits + 2]
-        return str(cell)[:digits + 1]
+            return str(value)[1:digits + 2]
+        return str(value)[:digits + 1]
     except ValueError:
         # Cell is not a float.
         return cell
@@ -48,15 +48,17 @@ def print_normal(printdata, args, header, matrix=False):
     """
     # Compute the column widths (padding).
     pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
-    pad[1:] = [max(args.digits + 1, len(head)) for head in header[1:]]
 
     # Print the header.
     if matrix:
         index = 0
+        pad = [max((len(head) for head in header))]
         print >> args.file, ''.ljust(pad[0]),
     else:
         index = 1
+        pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
         print >> args.file, header[0].ljust(pad[0]),
+    pad[1:] = [max(args.digits + 1, len(head)) for head in header[index:]]
     for i, heading in enumerate(header[index:], index):
         print >> args.file, heading.rjust(pad[i] + 1),
     print >> args.file
@@ -70,7 +72,7 @@ def print_normal(printdata, args, header, matrix=False):
             print >> args.file, str(row[0]).ljust(pad[0]),
 
         # Print the cells for the remaining columns.
-        for i, cell in enumerate(row[index:], index):
+        for i, cell in enumerate(row[index:], 1):
             print >> args.file, _format_cell(
                     cell, args.digits).rjust(pad[i] + 1),
         print >> args.file
