@@ -47,7 +47,7 @@ def print_normal(printdata, args, header, matrix=False):
 
     """
     # Compute the column widths (padding).
-    pad = [max(len(header[0]), max(len(row[0]) for row in printdata))]
+    pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
     pad[1:] = [max(args.digits + 1, len(head)) for head in header[1:]]
 
     # Print the header.
@@ -67,7 +67,7 @@ def print_normal(printdata, args, header, matrix=False):
         if matrix:
             print >> args.file, header[j].ljust(pad[0]),
         else:
-            print >> args.file, row[0].ljust(pad[0]),
+            print >> args.file, str(row[0]).ljust(pad[0]),
 
         # Print the cells for the remaining columns.
         for i, cell in enumerate(row[index:], index):
