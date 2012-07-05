@@ -24,6 +24,7 @@ from exquires import __version__ as VERSION
 
 # pylint: disable-msg=R0903
 
+
 def _remove_duplicates(input_list):
     """Remove duplicate entries from a list.
 
