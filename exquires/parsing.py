@@ -24,6 +24,16 @@ from exquires import __version__ as VERSION
 
 # pylint: disable-msg=R0903
 
+def _remove_duplicates(input_list):
+    """Remove duplicate entries from a list.
+
+    :param input_list: The list to remove duplicate entries from.
+    :return: The modified list.
+
+    """
+    unique = set()
+    return [x for x in input_list if x not in unique and not unique.add(x)]
+
 
 def _format_doc(docstring):
     """Parse the module docstring and re-format all reST markup.
@@ -360,15 +370,15 @@ class ListAction(argparse.Action):
 
     def __call__(self, parser, args, values, option_string=None):
         value_list = getattr(args, self.dest)
-        matches = set()
+        matches = []
         for value in values:
             results = fnmatch.filter(value_list, value)
             if not results:
                 tup = value, ', '.join([repr(val) for val in value_list])
                 msg = 'invalid choice: %r (choose from %s)' % tup
                 raise argparse.ArgumentError(self, msg)
-            matches.update(results)
-        setattr(args, self.dest, [x for x in value_list if x in matches])
+            matches.extend(results)
+        setattr(args, self.dest, _remove_duplicates(matches))
         setattr(args, '_'.join([self.dest, 'flag']), True)
 
 
