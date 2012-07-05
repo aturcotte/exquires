@@ -31,7 +31,7 @@ def _format_cell(cell, digits):
             return value[1:digits + 2]
         elif value[0] is '-':
             if value[1] is '0':
-                return ''.join('-', value[2:digits + 3])
+                return ''.join(['-', value[2:digits + 3]])
             return value[:digits + 2]
         return value[:digits + 1]
     except ValueError:
