@@ -30,7 +30,9 @@ def _format_cell(cell, digits):
         if value[0] is '0':
             return value[1:digits + 2]
         elif value[0] is '-':
-            return value[:digits + 3]
+            if value[1] is '0':
+                return ''.join('-', value[2:digits + 3])
+            return value[:digits + 2]
         return value[:digits + 1]
     except ValueError:
         # Cell is not a float.
@@ -56,7 +58,7 @@ def print_normal(printdata, args, header, matrix=False):
         index = 1
         pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
         print >> args.file, header[0].ljust(pad[0]),
-    pad[1:] = [max(args.digits + 3, len(head)) for head in header[index:]]
+    pad[1:] = [max(args.digits + 2, len(head)) for head in header[index:]]
     for i, heading in enumerate(header[index:], 1):
         print >> args.file, heading.rjust(pad[i] + 1),
     print >> args.file
