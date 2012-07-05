@@ -11,7 +11,6 @@
 
 """A collection of methods for producing statistical output."""
 
-from math import fabs
 from operator import itemgetter
 from subprocess import check_output
 
@@ -27,10 +26,10 @@ def _format_cell(cell, digits):
 
     """
     try:
-        value = float(cell)
-        if fabs(value) < 1:
-            return str(value)[1:digits + 2]
-        return str(value)[:digits + 1]
+        value = str(float(cell))
+        if value[0] is '0':
+            return value[1:digits + 2]
+        return value[:digits + 1]
     except ValueError:
         # Cell is not a float.
         return cell
@@ -46,9 +45,6 @@ def print_normal(printdata, args, header, matrix=False):
     :param matrix: True if printing a correlation matrix.
 
     """
-    # Compute the column widths (padding).
-    pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
-
     # Print the header.
     if matrix:
         index = 0
@@ -59,7 +55,7 @@ def print_normal(printdata, args, header, matrix=False):
         pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
         print >> args.file, header[0].ljust(pad[0]),
     pad[1:] = [max(args.digits + 1, len(head)) for head in header[index:]]
-    for i, heading in enumerate(header[index:], index):
+    for i, heading in enumerate(header[index:], 1):
         print >> args.file, heading.rjust(pad[i] + 1),
     print >> args.file
 
