@@ -56,7 +56,7 @@ def print_normal(printdata, args, header, matrix=False):
         index = 1
         pad = [max(len(header[0]), max(len(str(row[0])) for row in printdata))]
         print >> args.file, header[0].ljust(pad[0]),
-    pad[1:] = [max(args.digits + 1, len(head)) for head in header[index:]]
+    pad[1:] = [max(args.digits + 3, len(head)) for head in header[index:]]
     for i, heading in enumerate(header[index:], 1):
         print >> args.file, heading.rjust(pad[i] + 1),
     print >> args.file
