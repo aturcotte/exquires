@@ -2,8 +2,7 @@
 EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
 ***************************************************************************
 
-* Copyright: (c) 2012 `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and
-                      `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
+* Copyright: (c) 2012 `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
 * License: BSD 2-Clause License
 * Requires: Python 2.7 or 3
 

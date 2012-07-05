@@ -29,6 +29,8 @@ def _format_cell(cell, digits):
         value = str(float(cell))
         if value[0] is '0':
             return value[1:digits + 2]
+        elif value[0] is '-':
+            return value[:digits + 3]
         return value[:digits + 1]
     except ValueError:
         # Cell is not a float.
