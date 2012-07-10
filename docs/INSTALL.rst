@@ -1,16 +1,32 @@
-.. _setup-label:
+*******************
+Installing EXQUIRES
+*******************
 
-**********************************
+===============================
+Basic Installation Instructions
+===============================
+
+**EXQUIRES** can be installed from `PyPI <http://pypi.python.org/pypi/exquires>`_
+using `pip <http://www.pip-installer.org>`_::
+    
+    pip install -U exquires
+
+Alternatively, download the `source distribution from PyPI
+<http://pypi.python.org/pypi/exquires#downloads>`_, unarchive, and run::
+
+    python setup.py install
+
+==================================
 Detailed Installation Instructions
-**********************************
+==================================
 
 The following instructions are for Debian/Ubuntu/Mint Linux. For other
-platforms, the setup is generally the same, with the exeption of installing
+platforms, the setup is generally the same, with the exception of installing
 system dependencies.
 
-============
+------------
 Requirements
-============
+------------
 
 **EXQUIRES** requires `ImageMagick <http://www.imagemagick.org>`_ **7** from
 May 13, 2012 or later (due to changes to the Kaiser filter),
@@ -19,9 +35,9 @@ May 13, 2012 or later (due to changes to the Kaiser filter),
 `ConfigObj <http://www.voidspace.org.uk/python/configobj.html>`_ and
 `NumPy <http://numpy.scipy.org/>`_.
 
-==========================================
+------------------------------------------
 Installing ImageMagick 7 alpha from source
-==========================================
+------------------------------------------
 
 * Install dependencies on Debian/Ubuntu/Mint:
 
@@ -70,9 +86,9 @@ Installing ImageMagick 7 alpha from source
     $ sudo make install
     $ sudo ldconfig /usr/local/lib
 
-===================
+-------------------
 Installing EXQUIRES
-===================
+-------------------
 
 * Install remaining dependencies:
 
@@ -86,9 +102,11 @@ Installing EXQUIRES
 
     $ sudo pip install -U exquires
 
-===================================================
+---------------------------------------------------
 Installing latest EXQUIRES dev branch from git repo
-===================================================
+---------------------------------------------------
+
+* The latest development version can be installed from the GitHub repository:
 
 .. code-block:: console
 

@@ -1,104 +1,38 @@
-***************************************************************************
-EXQUIRES: Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
-***************************************************************************
+******************************************************************************
+Documentation for EXQUIRES: EXtensible QUantitative Image Re-Enlargement Suite
+******************************************************************************
 
-* Copyright: (c) 2012 `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
-* License: BSD 2-Clause License
-* Requires: Python 2.7 or 3
+.. image:: http://exquires.ca/_images/exquires-logo.png
 
 ----
 
 :Web: `exquires.ca <http://exquires.ca>`_
 :PyPI: `exquires package <http://pypi.python.org/pypi/exquires>`_
 :Dev: `exquires on GitHub <http://github.com/aturcotte/exquires>`_
+:License: `BSD 2-Clause License <http://www.opensource.org/licenses/bsd-license.php>`_
+:Authors: `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
 
 ----
 
-============================
-Documentation & Instructions
-============================
+====================
+Online Documentation
+====================
 
-Please visit: http://exquires.ca
+The documentation for the latest release version of **EXQUIRES** can be
+viewed online at `<http://exquires.ca>`_.
 
-===============================
-Basic Installation Instructions
-===============================
+==========================
+Building the Documentation
+==========================
 
-EXQUIRES can be installed from `PyPI <http://pypi.python.org/pypi/exquires>`_
-using `pip <http://www.pip-installer.org>`_::
-    
-    pip install -U exquires
+The EXQUIRES documentation/website is built using `Sphinx`_.
 
-or download the `source distribution from PyPI <http://pypi.python.org/pypi/exquires#downloads>`_, unarchive, and run::
+.. _Sphinx: http://sphinx.pocoo.org/
 
-    python setup.py install
+To build the documentation you need to perform the following tasks:
 
-==================================
-Detailed Installation Instructions
-==================================
-
-The following instructions are for Debian/Ubuntu/Mint Linux. For other
-platforms, the setup is generally the same, with the exeption of installing
-system dependencies.
-
-------------------------------------------
-Installing ImageMagick 7 alpha from source
-------------------------------------------
-
-* Install dependencies::
-
-    $ sudo apt-get install imagemagick libmagick++-dev
-
-* Download and untar the ImageMagick 7 alpha source::
-
-    $ wget http://www.imagemagick.org/download/alpha/ImageMagick.tar.gz
-    $ tar xvfz ImageMagick.tar.gz
-
-* Configure, compile and install ImageMagick::
-
-    $ cd ImageMagick-7.0.0-0
-    $ ./configure CFLAGS="-fopenmp -fomit-frame-pointer -O2 -Wall -march=native -pthread" \
-                  CXXFLAGS="-O2 -pthread"
-    $ make
-    $ sudo make install
-
-* Configure the dynamic linker run-time bindings::
-
-    $ sudo ldconfig /usr/local/lib
-
-* (Optional) Ensure that the correct version is now installed::
-
-    $ identify -version
-    $ pkg-config --modversion ImageMagick
-
--------------------
-Installing EXQUIRES
--------------------
-
-* Install remaining dependencies::
-
-    $ sudo apt-get install python-pip python-configobj python-dev python-numpy python-vipscc libvips-tools
-    
-* Install EXQUIRES from PyPI using pip::
-
-    $ sudo pip install -U exquires
-
----------------------------------------------------
-Installing latest EXQUIRES dev branch from git repo
----------------------------------------------------
-
-::
-
-    pip install -e git+http://github.com/aturcotte/exquires.git#egg=exquires
-
-==============
-Usage Overview
-==============
-
-* Obtain suitable `16 bit 840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
-* Use ``exquires-new`` to create a new project file
-* Modify the project file to suit your needs
-* Use ``exquires-run`` to compute the image difference data
-* Use ``exquires-update`` to compute only the new data after editing the project file
-* Use ``exquires-report`` to print tables of aggregated data
-* Use ``exquires-correlate`` to produce Spearman's rank cross-correlation matrices
+* Install **EXQUIRES**
+* Install Sphinx (``$ sudo apt-get install python-sphinx``)
+* From the ``docs`` directory, run: ``$ make html``
+* This will produce HTML documentation in the ``_build/html/`` directory
+* Open ``_build/html/index.html`` with your browser

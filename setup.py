@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """
@@ -28,7 +28,7 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup'])
-DESCRIPTION = 'EXQUIRES - Evaluative and eXtensible QUantitative Image Re-Enlargement Suite'
+DESCRIPTION = 'EXQUIRES - EXtensible QUantitative Image Re-Enlargement Suite'
 URL = 'http://exquires.ca'
 LICENSE = 'BSD 2-Clause (http://www.opensource.org/licenses/bsd-license.php)'
 PLATFORM = 'Unix'

@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """Classes and methods used for parsing arguments and formatting help text."""
@@ -190,7 +190,11 @@ class StatsParser(ExquiresParser):
                           type=int, choices=range(1, 16), default=4,
                           help='total number of digits (default: 4)')
 
-        if not correlate:
+        if correlate:
+            self.add_argument('-a', '--anchor', metavar='ANCHOR', type=str,
+                              action=AnchorAction, default=None,
+                              help='order matrix rows/cols around this one')
+        else:
             # Sort option.
             self.add_argument('-s', '--sort', metavar='METRIC', type=str,
                               action=SortAction, default=None,
@@ -221,17 +225,13 @@ class StatsParser(ExquiresParser):
                            type=str, nargs='+', action=ListAction,
                            help='metrics to consider (default: all)')
 
-    def parse_args(self, args=None, namespace=None):
+    def parse_args(self, args=sys.argv[1:], namespace=None):
         """Parse arguments for exquires-report or exquires-correlate.
 
         :param args: The command-line arguments.
         :param namespace: The namespace.
 
         """
-        # Get the raw command-line arguments
-        if args is None:
-            args = sys.argv[1:]
-
         # Deal with the -h/--help  and -v/--version options.
         help_or_version = False
         for arg in args:
@@ -242,19 +242,25 @@ class StatsParser(ExquiresParser):
         if not help_or_version:
             # Deal with the -p/--proj option.
             proj = False
-            for i in range(0, len(args) - 1):
-                if args[i] == '-p' or args[i] == '--proj':
-                    args.insert(0, args.pop(i + 1))
-                    args.insert(0, args.pop(i + 1))
+            for i, arg in enumerate(args, 1):
+                if arg in ('-p', '--proj'):
+                    args.insert(0, args.pop(i))
+                    args.insert(0, args.pop(i))
                     proj = True
                     break
             if not proj:
                 args.insert(0, 'project1')
                 args.insert(0, '--proj')
 
-        # Make --sort the rightmost option.
-        for i in range(2, len(args) - 1):
-            if args[i] == '--sort':
+        # Setup the arguments to be parsed last.
+        if self.correlate:
+            # Make -a/--anchor the rightmost option.
+            flags = ('-a', '--anchor')
+        else:
+            # Make -s/--sort the rightmost option.
+            flags = ('-s', '--sort')
+        for i, arg in enumerate(args):
+            if arg in flags:
                 args.append(args.pop(i))
                 args.append(args.pop(i))
                 break
@@ -347,12 +353,8 @@ class ProjectAction(argparse.Action):
         args.merge = False
         args.rank = False
 
-        # Set the "flags" to False.
-        args.image_flag = False
-        args.down_flag = False
-        args.ratio_flag = False
-        args.metric_flag = False
-        args.up_flag = False
+        # Set the default correlation key in case an anchor is specified.
+        args.key = 'metric'
 
 
 class ListAction(argparse.Action):
@@ -379,8 +381,11 @@ class ListAction(argparse.Action):
                 msg = 'invalid choice: %r (choose from %s)' % tup
                 raise argparse.ArgumentError(self, msg)
             matches.extend(results)
+
+        # Set the argument and possibly set the correlation key.
         setattr(args, self.dest, _remove_duplicates(matches))
-        setattr(args, '_'.join([self.dest, 'flag']), True)
+        if self.dest is not 'up':
+            args.key = self.dest
 
 
 class RatioAction(argparse.Action):
@@ -388,17 +393,16 @@ class RatioAction(argparse.Action):
     """Parser action to deal with ratio ranges."""
 
     def __call__(self, parser, args, values, option_string=None):
-        matches = set()
+        matches = []
         for value in values:
-            # first, figure out if it's a range
-            # if so, replace with ' '.join(range(start, end+1))
+            # Detect range.
             nums = value.split('-')
             if len(nums) == 1:
                 if nums[0] not in args.ratio:
                     tup = value, ', '.join([repr(val) for val in args.ratio])
                     msg = 'invalid choice: %r (choose from %s)' % tup
                     raise argparse.ArgumentError(self, msg)
-                matches.add(int(nums[0]))
+                matches.append(int(nums[0]))
             elif len(nums) == 2:
                 value_range = range(int(nums[0]), int(nums[1]) + 1)
                 for num in value_range:
@@ -408,12 +412,27 @@ class RatioAction(argparse.Action):
                         ])
                         msg = 'invalid choice: %r (choose from %s)' % tup
                         raise argparse.ArgumentError(self, msg)
-                matches.update(value_range)
+                matches.extend(value_range)
             else:
                 msg = 'format error in {}'.format(value)
                 raise argparse.ArgumentError(self, msg)
-        args.ratio = [x for x in args.ratio if int(x) in matches]
-        args.ratio_flag = True
+
+        # Set the argument and correlation key.
+        setattr(args, self.dest, _remove_duplicates(matches))
+        args.key = self.dest
+
+
+class AnchorAction(argparse.Action):
+
+    """Parser action to sort the correlation matrix."""
+
+    def __call__(self, parser, args, value, option_string=None):
+        group = getattr(args, args.key)
+        if value not in group:
+            tup = value, ', '.join([repr(val) for val in group])
+            msg = 'invalid choice: %r (choose from %s)' % tup
+            raise argparse.ArgumentError(self, msg)
+        setattr(args, self.dest, value)
 
 
 class SortAction(argparse.Action):

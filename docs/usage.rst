@@ -1,5 +1,21 @@
 .. _usage-label:
 
+**************
+Using EXQUIRES
+**************
+
+==============
+Usage Overview
+==============
+
+* Obtain suitable `16 bit 840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
+* Use :program:`exquires-new` to create a new project file
+* Modify the project file to suit your needs
+* Use :program:`exquires-run` to compute the image difference data
+* Use :program:`exquires-update` to compute only the new data after editing the project file
+* Use :program:`exquires-report` to produce tables of aggregated data
+* Use :program:`exquires-correlate` to produce Spearman's rank cross-correlation matrices
+
 ******************
 Usage Instructions
 ******************

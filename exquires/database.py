@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """Provides an interface to the sqlite3 image error database."""
@@ -101,9 +101,9 @@ class Database:
     def get_tables(self, args):
         """Return table names for these images, downsamplers, and ratios.
 
-        :param args.images: The list of image names.
-        :param args.downsamplers: The list of downsampler names.
-        :param args.ratios: The list of ratios in string form.
+        :param args.image: The list of image names.
+        :param args.down: The list of downsampler names.
+        :param args.ratio: The list of ratios in string form.
         :return: A list of table names.
 
         """
@@ -117,19 +117,19 @@ class Database:
             query = ''.join([query.rstrip(' OR'), ')'])
 
         # Append the downsampler names.
-        if args.downsamplers:
-            if args.images:
+        if args.down:
+            if args.image:
                 query = ' '.join([query, 'AND ('])
-            for downsampler in args.downsamplers:
+            for downsampler in args.down:
                 downsampler_str = 'downsampler = \'{}\' OR'.format(downsampler)
                 query = ' '.join([query, downsampler_str])
             query = ''.join([query.rstrip(' OR'), ')'])
 
         # Append the ratios.
-        if args.ratios:
-            if (args.images or args.downsamplers):
+        if args.ratio:
+            if (args.image or args.down):
                 query = ' '.join([query, 'AND ('])
-            for ratio in args.ratios:
+            for ratio in args.ratio:
                 query = ' '.join([query, 'ratio = \'{}\' OR'.format(ratio)])
             query = ''.join([query.rstrip(' OR'), ')'])
 

@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """Aggregate a list of values using the selected method.

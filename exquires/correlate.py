@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative and eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """Produce a Spearman's rank cross-correlation matrix for the specified group.
@@ -44,9 +44,7 @@ def _get_group_and_ranks(args):
     :param args.file: The name of the output file.
     :param args.digits: The number of digits to print.
     :param args.latex: If true, print a LaTeX-formatted table.
-    :param args.image_flag: If true, cross-correlate images.
-    :param args.down_flag: If true, cross-correlate downsamplers.
-    :param args.ratio_flag: If true, cross-correlate ratios.
+    :param args.key: The key for the correlation group.
 
     """
     # Create a list of the sorting options for each metric.
@@ -63,28 +61,18 @@ def _get_group_and_ranks(args):
     dbase = database.Database(args.dbase_file)
 
     # Determine which cross-correlation to perform.
+    group = getattr(args, args.key)
     ranks = []
-    table_args = argparse.Namespace()
-    if args.image_flag or args.down_flag or args.ratio_flag:
-        if args.image_flag:
-            key = 'images'
-            group = args.image
-            table_args.downsamplers = None
-            table_args.ratios = None
-        elif args.down_flag:
-            key = 'downsamplers'
-            group = args.down
-            table_args.images = None
-            table_args.ratios = None
-        else:  # args.ratio_flag:
-            key = 'ratios'
-            group = args.ratio
-            table_args.images = None
-            table_args.downsamplers = None
+    if args.key in ('image', 'down', 'ratio'):
+        # Setup table arguments.
+        table_args = argparse.Namespace()
+        table_args.image = None
+        table_args.down = None
+        table_args.ratio = None
 
         for item in group:
             # Setup the tables to access.
-            setattr(table_args, key, [item])
+            setattr(table_args, args.key, [item])
             agg_table = stats.get_aggregate_table(
                 dbase, args.up, args.metrics_d, dbase.get_tables(table_args)
             )
@@ -96,16 +84,10 @@ def _get_group_and_ranks(args):
             else:
                 ranks = stats.get_merged_ranks(agg_table, metrics_desc, 0)
 
-    else:
-        # Setup the tables to access.
-        table_args.images = args.image
-        table_args.downsamplers = args.down
-        table_args.ratios = args.ratio
-        group = args.metric
-
+    else:  # Cross-correlation group is 'metric'
         # Get the rank table.
         agg_table = stats.get_aggregate_table(
-            dbase, args.up, args.metrics_d, dbase.get_tables(table_args)
+            dbase, args.up, args.metrics_d, dbase.get_tables(args)
         )
         ranks = stats.get_ranks(agg_table, metrics_desc, 0)
 
@@ -129,9 +111,8 @@ def _print_matrix(args):
     :param args.file: The name of the output file.
     :param args.digits: The number of digits to print.
     :param args.latex: If true, print a LaTeX-formatted table.
-    :param args.image_flag: If true, cross-correlate images.
-    :param args.down_flag: If true, cross-correlate downsamplers.
-    :param args.ratio_flag: If true, cross-correlate ratios.
+    :param args.key: The key for the correlation group.
+    :param args.anchor: The row/col to order the matrix by.
 
     """
     # Get the correlation group and ranks table.
@@ -140,19 +121,29 @@ def _print_matrix(args):
     # Compute the correlation coefficient matrix.
     matrix = numpy.identity(len(group))
     xbar = (len(args.up) + 1) * 0.5
-    for col1, mrow1 in enumerate(matrix):
-        for col2, mrow2 in enumerate(matrix[col1 + 1:], col1 + 1):
+    for i, mrow1 in enumerate(matrix):
+        for j, mrow2 in enumerate(matrix[i + 1:], i + 1):
             # Compute the numerator and denominator.
             coeff = [0, 0, 0]
             for row in [rank_row[1:] for rank_row in ranks]:
-                coeff[0] += (row[col1] - xbar) * (row[col2] - xbar)
-                coeff[1] += (row[col1] - xbar) ** 2
-                coeff[2] += (row[col2] - xbar) ** 2
+                coeff[0] += (row[i] - xbar) * (row[j] - xbar)
+                coeff[1] += (row[i] - xbar) ** 2
+                coeff[2] += (row[j] - xbar) ** 2
 
             # Compute the correlation coefficient.
-            mrow1[col2] = mrow2[col1] = (
+            mrow1[j] = mrow2[i] = (
                     coeff[0] / ((coeff[1] * coeff[2]) ** 0.5)
             )
+
+    # Deal with -a/--anchor option.
+    if args.anchor:
+        sort_order = matrix[group.index(args.anchor)].argsort()[::-1]
+        group = [group[i] for i in sort_order]
+        matrix_sorted = numpy.identity(len(group))
+        for i, row in enumerate(sort_order):
+            for j, col in enumerate(sort_order):
+                matrix_sorted[i, j] = matrix[row, col]
+        matrix = matrix_sorted
 
     # Pass the coefficient matrix to the appropriate table printer.
     if args.latex:

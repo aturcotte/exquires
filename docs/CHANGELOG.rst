@@ -3,6 +3,14 @@ Changelog
 *********
 
 ===============
+Version 0.9.8.4
+===============
+
+* Added -a/--anchor option to exquires-correlate
+* Improved ratio parsing
+* Reformatted documentation
+
+===============
 Version 0.9.8.3
 ===============
 

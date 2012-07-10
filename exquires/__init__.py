@@ -6,9 +6,9 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of
-#  EXQUIRES | Evaluative eXtensible QUantitative Image Re-Enlargement Suite
+#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
 #
 
 """Package file for EXQUIRES."""
 
-__version__ = '0.9.8.3'
+__version__ = '0.9.8.4'
