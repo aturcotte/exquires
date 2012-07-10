@@ -32,4 +32,3 @@ Resources
     modules
     CHANGELOG
     LICENSE
-    README

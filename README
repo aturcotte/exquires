@@ -1,8 +1,8 @@
-******************************************************************************
-Documentation for EXQUIRES: EXtensible QUantitative Image Re-Enlargement Suite
-******************************************************************************
+************************************************************
+EXQUIRES: EXtensible QUantitative Image Re-Enlargement Suite
+************************************************************
 
-.. image:: http://exquires.ca/_images/exquires-logo.png
+.. image:: _images/exquires-logo.png
 
 ----
 
