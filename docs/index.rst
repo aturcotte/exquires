@@ -6,11 +6,18 @@ EXQUIRES: EXtensible QUantitative Image Re-Enlargement Suite
 
 ----
 
-:Web: `exquires.ca <http://exquires.ca>`_
-:PyPI: `exquires package <http://pypi.python.org/pypi/exquires>`_
-:Dev: `exquires on GitHub <http://github.com/aturcotte/exquires>`_
-:License: `BSD 2-Clause License <http://www.opensource.org/licenses/bsd-license.php>`_
-:Authors: `Adam Turcotte <mailto:adam.turcotte@gmail.com>`_ and `Nicolas Robidoux <mailto:nicolas.robidoux@gmail.com>`_
+:Web: `exquires.ca`_
+:PyPI: `exquires package`_
+:Dev: `exquires on GitHub`_
+:License: `BSD 2-Clause License`_
+:Authors: `Adam Turcotte`_ and `Nicolas Robidoux`_
+
+.. _exquires.ca http://exquires.ca
+.. _exquires package: http://pypi.python.org/pypi/exquires
+.. _exquires on GitHub: http://github.com/aturcotte/exquires
+.. _BSD 2-Clause License: http://www.opensource.org/licenses/bsd-license.php>
+.. _Adam Turcotte: mailto:adam.turcotte@gmail.com
+.. _Nicolas Robidoux: mailto:nicolas.robidoux@gmail.com
 
 ----
 
@@ -19,12 +26,8 @@ upsampling methods. **EXQUIRES** can also be used to compare image difference
 metrics, or to measure the impact of various factors, including test image
 selection and properties, downsampler choice, resizing ratio, etc.
 
-=========
-Resources
-=========
-
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     about
     INSTALL
