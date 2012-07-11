@@ -1,2 +1,11 @@
-Thanks to John Cupitt for his libvips support and to Anthony Thyssen for his
-ImageMagick support.
+******
+Thanks
+******
+
+The authors of **EXQUIRES** would like to thank the following people:
+
+* Thanks to John Cupitt for providing `VIPS`_ support.
+* Thanks to Anthony Thyssen for providing `ImageMagick`_ support.
+
+.. _VIPS: http://www.vips.ecs.soton.ac.uk/
+.. _ImageMagick: http://www.imagemagick.org/

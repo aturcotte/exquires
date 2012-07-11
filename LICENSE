@@ -2,9 +2,9 @@
 License Information
 *******************
 
-EXQUIRES is released under the `BSD 2-Clause License`_ as outlined below::
-
-.. BSD 2-Clause License: http://www.opensource.org/licenses/bsd-license.php
+EXQUIRES is released under the
+`BSD 2-Clause License <http://www.opensource.org/licenses/bsd-license.php>`_
+as outlined below::
 
     Copyright (c) 2012, Adam Turcotte and Nicolas Robidoux
     All rights reserved.
