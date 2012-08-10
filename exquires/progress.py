@@ -5,8 +5,8 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """Display progress information for **exquires-run** and **exquires-update**.
@@ -48,6 +48,14 @@ class Progress(object):
         self.proj = proj
         self.total_ops = total_ops
         self.num_ops = 0
+
+    def __del__(self):
+        """This destructor restores the console."""
+
+        self.scr.keypad(0)
+        curses.echo()
+        curses.nocbreak()
+        curses.endwin()
 
     def __table_top(self, line, label, content):
         """Private method to create the top row of a table.
@@ -191,7 +199,3 @@ class Progress(object):
         self.__table_bottom(8, 'STATUS', 'COMPLETE')
         self.scr.refresh()
         time.sleep(0.5)
-        self.scr.keypad(0)
-        curses.echo()
-        curses.nocbreak()
-        curses.endwin()

@@ -1,4 +1,4 @@
-.. _usage-label:
+.. _usage:
 
 **************
 Using EXQUIRES
@@ -8,44 +8,46 @@ Using EXQUIRES
 Usage Overview
 ==============
 
-* Obtain suitable `16 bit 840x840 test images <http://www.imagemagick.org/download/image-bank/16bit840x840images/>`_
-* Use :program:`exquires-new` to create a new project file
+* Obtain suitable `16 bit 840x840 test images`_
+* Use :ref:`exquires-new` to create a new project file
 * Modify the project file to suit your needs
-* Use :program:`exquires-run` to compute the image difference data
-* Use :program:`exquires-update` to compute only the new data after editing the project file
-* Use :program:`exquires-report` to produce tables of aggregated data
-* Use :program:`exquires-correlate` to produce Spearman's rank cross-correlation matrices
+* Use :ref:`exquires-run` to compute the image difference data
+* Use :ref:`exquires-update` to compute only the new data after editing the project file
+* Use :ref:`exquires-report` to produce tables of aggregated data
+* Use :ref:`exquires-correlate` to produce Spearman's rank cross-correlation matrices
 
-******************
+.. _16 bit 840x840 test images: http://www.imagemagick.org/download/image-bank/16bit840x840images/
+
+==================
 Usage Instructions
-******************
+==================
 
-**EXQUIRES** comes with several programs, each of which include a
-:file:`-h/--help` option to display usage information and a
-:file:`-v/--version` option to display the version number.
+**EXQUIRES** comes with several :ref:`programs`, each of which include a
+:option:`-h`/:option:`--help` option to display usage information and a
+:option:`-v`/:option:`--version` option to display the version number.
 
 These five main programs can be used to create and maintain a project,
 which can be specified with the :file:`-p/--proj` option:
 
-* :program:`exquires-new` (see :ref:`exquires-new-label`)
-* :program:`exquires-run` (see :ref:`exquires-run-label`)
-* :program:`exquires-update` (see :ref:`exquires-update-label`)
-* :program:`exquires-report` (see :ref:`exquires-report-label`)
-* :program:`exquires-correlate` (see :ref:`exquires-correlate-label`)
+* :ref:`exquires-new`
+* :ref:`exquires-run`
+* :ref:`exquires-update`
+* :ref:`exquires-report`
+* :ref:`exquires-correlate`
 
 These two programs are responsible for computing image differences
 and aggregating the results:
 
-* :program:`exquires-compare` (see :ref:`exquires-compare-label`)
-* :program:`exquires-aggregate` (see :ref:`exquires-aggregate-label`)
+* :ref:`exquires-compare`
+* :ref:`exquires-aggregate`
 
 The following sections will explain how to make use of these programs to
 compute data and view aggregated results and cross-correlation matrices.
 
 
-===========================
+---------------------------
 Obtain suitable test images
-===========================
+---------------------------
 
 **EXQUIRES** is designed to use sRGB TIFF images with 16 bits per sample
 (48 bits per pixel) and a width and height of 840 pixels. One image
@@ -65,9 +67,9 @@ The easiest way to obtain a copy of the image bank is as follows:
 
 .. _exquires-new-label:
 
-=========================
+-------------------------
 Create a new project file
-=========================
+-------------------------
 
 A project file is a :file`.ini` file that tells **EXQUIRES** which of the following
 to use:
@@ -118,17 +120,17 @@ collection:
 
     $ exquires-new -p example_proj -I /path/to/16bit840x840images/images/*
 
-==========================
+--------------------------
 Customize the project file
-==========================
+--------------------------
 
 Once a project file has been generated, you can manually edit it to suit your
 needs. For our example project :command:`example_proj`, we have a project file
 :file:`example_proj.ini` and we will look at each section in detail.
 
-------
+++++++
 Images
-------
+++++++
 
 This section lists the paths to the test images that will be used. We will keep
 this example project small by removing all but two of the
@@ -292,7 +294,7 @@ aggregator and a best-to-worst ordering, as seen in the default settings.
     mssim = exquires-compare mssim {0} {1}, exquires-aggregate l_1 {0}, 1
 
 Note that these default metric definitions make use of
-:program:`exquires-compare` and :program:`exquires-aggregate`. Also note that
+:ref:`exquires-compare` and :ref:`exquires-aggregate`. Also note that
 most of the metrics return an error measure, meaning that a lower result is
 better. MSSIM, on the other hand, is a similarity index, meaning that a higher
 result is better.
@@ -330,7 +332,7 @@ or:
 
     $ exquires-run --proj my_project
 
-By default, :program:`exquires-run` displays progress information.
+By default, :ref:`exquires-run` displays progress information.
 You can disable this output using:
 
 .. code-block:: console
@@ -348,7 +350,7 @@ or:
     With large project files, this program can take an *extremely* long time to
     run. For slower machines, it is recommended to start with a small set of
     test images. You can add additional images later and call
-    :program:`exquires-update` to compute the new data.
+    :ref:`exquires-update` to compute the new data.
 
 
 .. _exquires-update-label:
@@ -357,11 +359,11 @@ or:
 Update the image difference data
 ================================
 
-If you make changes to the project file after calling :program:`exquires-run`,
+If you make changes to the project file after calling :ref:`exquires-run`,
 running it again will compute all data, including data for unchanged entries
 in the project file. To compute only the new data rather than recomputing the
-entire data set, use :program:`exquires-update`, which supports the same
-options as :program:`exquires-run`.
+entire data set, use :ref:`exquires-update`, which supports the same
+options as :ref:`exquires-run`.
 
 
 .. _exquires-report-label:
@@ -381,7 +383,7 @@ The basic syntax to print aggregated data is:
     $ exquires-report
 
 which will read a backup of the project file :file:`project1.ini` that was
-created the last time :program:`exquires-run` or :program:`exquires-update` was
+created the last time :ref:`exquires-run` or :ref:`exquires-update` was
 called, select the appropriate values from the database, aggregate the data,
 and print the results in tabular format to standard output.
 
@@ -398,7 +400,7 @@ or:
     $ exquires-report --proj my_project
 
 
-Normally, :program:`exquires-report` prints the data as a plaintext table.
+Normally, :ref:`exquires-report` prints the data as a plaintext table.
 You may wish to include the results in a LaTeX document instead, which can be
 done using:
 
@@ -412,7 +414,7 @@ or:
 
     $ exquires-report --latex
 
-Likewise, :program:`exquires-report` normally shows the aggregated data when it
+Likewise, :ref:`exquires-report` normally shows the aggregated data when it
 prints the table. You can instead show the Spearman (fractional) ranks for each
 upsampling method by using:
 
@@ -456,7 +458,7 @@ or:
 
 where :file:`my_metric` is one of the metrics defined in the project file.
 
-By default, :program:`exquires-report` prints the aggregated data to standard
+By default, :ref:`exquires-report` prints the aggregated data to standard
 output. You can write the aggregated data to a file by using:
 
 .. code-block:: console
@@ -471,7 +473,7 @@ or:
 
 where :file:`my_file` is the file you wish to write the data to.
 
-When producing tables, :program:`exquires-report` will display 4 digits by
+When producing tables, :ref:`exquires-report` will display 4 digits by
 default. You can select any number of digits between 1 and 16. For example, you
 can change the number of digits to to 6 using:
 
@@ -631,7 +633,7 @@ The basic syntax to print a cross-correlation matrix is:
     $ exquires-correlate
 
 which will read a backup of the project file :file:`project1.ini` that was
-created the last time :program:`exquires-run` or :program:`exquires-update` was
+created the last time :ref:`exquires-run` or :ref:`exquires-update` was
 called, select the appropriate values from the database, aggregate the data,
 and print the cross-correlation matrix for all comparison metrics to standard
 output.
@@ -660,7 +662,7 @@ or:
     $ exquires-correlate --proj my_project
 
 
-Normally, :program:`exquires-correlate` prints the cross-correlation matrix as
+Normally, :ref:`exquires-correlate` prints the cross-correlation matrix as
 a plaintext table. You may wish to include the results in a LaTeX document
 instead, which can be done using:
 
@@ -674,7 +676,7 @@ or:
 
     $ exquires-correlate --latex
 
-By default, :program:`exquires-correlate` prints the cross-correlation matrix
+By default, :ref:`exquires-correlate` prints the cross-correlation matrix
 to standard output. You can write the matrix to a file by using:
 
 .. code-block:: console
@@ -689,7 +691,7 @@ or:
 
 where :file:`my_file` is the file you wish to write the data to.
 
-When producing a matrix, :program:`exquires-correlate` will display 4 digits by
+When producing a matrix, :ref:`exquires-correlate` will display 4 digits by
 default. You can select any number of digits between 1 and 16. For example,
 you can change the number of digits to to 6 using:
 
@@ -736,11 +738,11 @@ For example, to only consider data for the upsamplers suffixed with
 Manually comparing images
 =========================
 
-The :program:`exquires-run` and :program:`exquires-update` programs compute
-data to be inserted into the database by calling :program:`exquires-compare`
+The :ref:`exquires-run` and :ref:`exquires-update` programs compute
+data to be inserted into the database by calling :ref:`exquires-compare`
 (see :ref:`compare-module`).
 
-You can call :program:`exquires-compare` directly on any pair of images with the
+You can call :ref:`exquires-compare` directly on any pair of images with the
 same dimensions by using:
 
 .. code-block:: console
@@ -750,7 +752,7 @@ same dimensions by using:
 where :file:`my_image1` and :file:`my_image2` are the images to compare and
 :file:`my_metric` is one of the metrics described in :ref:`compare-module`.
 
-By default, :program:`exquires-compare` expects images with 16 bits per sample:
+By default, :ref:`exquires-compare` expects images with 16 bits per sample:
 each value is between 0 and 65535. You can change the maximum value from 65535
 to anything you like. For example, to support images with 8 bits per sample
 (values between 0 and 255), type:
@@ -772,11 +774,11 @@ or:
 Manually aggregating data
 =========================
 
-The :program:`exquires-report` program aggregates the image comparison data
+The :ref:`exquires-report` program aggregates the image comparison data
 before printing it to standard output or writing it to a file by calling
-:program:`exquires-aggregate` (see :ref:`aggregate-module`).
+:ref:`exquires-aggregate`.
 
-You can call :program:`exquires-aggregate` directly on any list of numbers by
+You can call :ref:`exquires-aggregate` directly on any list of numbers by
 using:
 
 .. code-block:: console

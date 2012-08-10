@@ -5,8 +5,8 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """Compute error data for the entries in the specified project file.

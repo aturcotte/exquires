@@ -1,3 +1,13 @@
+exquires 0.9.9
+--------------
+
+Version 1.0 is on the horizon, which will introduce a new system for updating
+project databases. Version 0.9.9 is the last major release to use the old
+system, and adds superior error handling and ratio parsing. A new option
+(-a/--anchor) has also been added to exquires-correlate that sorts the Spearman
+cross-correlation matrix based on the entries in the specified row/column.
+
+
 exquires 0.9.8
 --------------
 

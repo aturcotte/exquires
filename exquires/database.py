@@ -5,8 +5,8 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """Provides an interface to the sqlite3 image error database."""
@@ -19,14 +19,14 @@ class Database:
     """This class provides an interface to the sqlite3 image error database.
 
     The database is used to store error data computed by :mod:`compute_error`.
+
+    :param dbasefile: database file to connect to
+    :type dbasefile:  path
+
     """
 
     def __init__(self, dbasefile):
-        """This constructor creates a new Database object.
-
-        :param dbasefile: The database file to connect to.
-
-        """
+        """Create a new Database object."""
         self.dbase = sqlite3.connect(dbasefile,
                                      detect_types=sqlite3.PARSE_DECLTYPES)
         self.dbase.row_factory = sqlite3.Row

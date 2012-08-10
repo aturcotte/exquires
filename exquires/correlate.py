@@ -5,22 +5,22 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """Produce a Spearman's rank cross-correlation matrix for the specified group.
 
-By default, the -M/--metric option is selected. You can select one of the
-following cross-correlation groups:
+By default, the :option:`-M`/:option:`--metric` option is selected.
+You can select one of the following cross-correlation groups:
 
- * -I/--image
- * -D/--down
- * -R/--ratio
- * -M/--metric
+ * :option:`-I`/:option:`--image`
+ * :option:`-D`/:option:`--down`
+ * :option:`-R`/:option:`--ratio`
+ * :option:`-M`/:option:`--metric`
 
 You can also select which upsamplers to consider when computing the matrix
-by using the -U/--up option.
+by using the :option:`-U`/:option:`--up` option.
 
 """
 
@@ -153,7 +153,7 @@ def _print_matrix(args):
 
 
 def main():
-    """Run exquires-correlate.
+    """Run :ref:`exquires-correlate`.
 
     Parse the command-line arguments and print the cross-correlation matrix.
 

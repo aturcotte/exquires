@@ -5,8 +5,8 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """A collection of methods to compute image difference data."""
@@ -28,7 +28,6 @@ class Operations(object):
         """This constructor creates a new Operations object.
 
         :param images: A list of Images objects.
-        :param old: Namespace of old database elements.
 
         """
         self.images = images
@@ -54,6 +53,7 @@ class Operations(object):
         :param args.metrics: The dictionary of current metrics.
         :param args.config_file: The current configuration file.
         :param args.config_bak: The previous configuration file.
+        :param old: The namespace of old configuration entries.
 
         """
         # Setup verbose mode.
@@ -63,32 +63,63 @@ class Operations(object):
             cleanup = prg.cleanup
             complete = prg.complete
         else:
+            prg = []
             args.do_op = lambda *a, **k: None
             cleanup = lambda: None
             complete = lambda: None
 
+        # Backup any existing database file.
+        dbase_bak = '.'.join([args.dbase_file, 'bak'])
+        if os.path.isfile(args.dbase_file):
+            shutil.copyfile(args.dbase_file, dbase_bak)
+
         # Open the database connection.
         args.dbase = database.Database(args.dbase_file)
 
-        # Remove old database tables.
-        if old:
-            cleanup()
-            args.dbase.drop_tables(old.images, old.downsamplers, old.ratios)
+        success = True
+        try:
+            # Remove old database tables.
+            if old:
+                cleanup()
+                args.dbase.drop_tables(old.images,
+                                       old.downsamplers, old.ratios)
 
-        # Create the project folder if it does not exist.
-        tools.create_dir(args.proj)
+            # Create the project folder if it does not exist.
+            tools.create_dir(args.proj)
 
-        # Compute for all images.
-        for image in self.images:
-            image.compute(args)
+            # Compute for all images.
+            for image in self.images:
+                image.compute(args)
+        except StandardError as std_err:
+            success = False
+            error = std_err
+        finally:
+            # Remove the project directory and close the database.
+            shutil.rmtree(args.proj, True)
+            args.dbase.close()
 
-        # Remove the project directory and close the database.
-        shutil.rmtree(args.proj, True)
-        args.dbase.close()
+            if success:
+                # Backup the project file.
+                shutil.copyfile(args.config_file, args.config_bak)
 
-        # Backup the project file and indicate completion.
-        shutil.copyfile(args.config_file, args.config_bak)
-        complete()
+                # Delete the database backup.
+                if os.path.isfile(dbase_bak):
+                    os.remove(dbase_bak)
+
+                # Indicate completion and restore the console.
+                complete()
+                del prg
+            else:
+                # Restore the previous database file.
+                os.remove(args.dbase_file)
+                if os.path.isfile(dbase_bak):
+                    shutil.move(dbase_bak, args.dbase_file)
+
+                # Restore the console
+                del prg
+
+                # Print an error message.
+                print error
 
 
 class Images(object):
@@ -130,20 +161,20 @@ class Images(object):
         :param args.do_op: The function to update the displayed progress.
 
         """
-        if len(self):
-            # Compute for all images.
-            for args.image in self.images:
+        # Compute for all images.
+        for args.image in self.images:
+            # Make a copy of the test image.
+            if len(self):
                 args.image_dir = tools.create_dir(args.proj, args.image)
                 args.master = os.path.join(args.image_dir, 'master.tif')
-
-                # Make a copy of the test image.
                 shutil.copyfile(self.images[args.image], args.master)
 
-                # Compute for all downsamplers.
-                for downsampler in self.downsamplers:
-                    downsampler.compute(args, self.same)
+            # Compute for all downsamplers.
+            for downsampler in self.downsamplers:
+                downsampler.compute(args, self.same)
 
-                # Remove the directory for this image.
+            # Remove the directory for this image.
+            if len(self):
                 shutil.rmtree(args.image_dir, True)
 
 
@@ -190,18 +221,21 @@ class Downsamplers(object):
         :param same: True if possibly accessing an existing table.
 
         """
-        if len(self):
-            # Compute for all downsamplers.
-            for args.downsampler in self.downsamplers:
-                # Create a directory for this downsampler if necessary.
+        is_same = self.same and same
+
+        # Compute for all downsamplers.
+        for args.downsampler in self.downsamplers:
+            # Create a directory for this downsampler if necessary.
+            if len(self):
                 args.downsampler_dir = tools.create_dir(args.image_dir,
                                                         args.downsampler)
 
-                # Compute for all ratios.
-                for ratio in self.ratios:
-                    ratio.compute(args, self.downsamplers, self.same and same)
+            # Compute for all ratios.
+            for ratio in self.ratios:
+                ratio.compute(args, self.downsamplers, is_same)
 
-                # Remove the directory for this downsampler.
+            # Remove the directory for this downsampler.
+            if len(self):
                 shutil.rmtree(args.downsampler_dir, True)
 
 
@@ -249,9 +283,11 @@ class Ratios(object):
         :param same: True if possibly accessing an existing table.
 
         """
-        if len(self):
-            # Compute for all ratios.
-            for args.ratio in self.ratios:
+        is_same = self.same and same
+
+        # Compute for all ratios.
+        for args.ratio in self.ratios:
+            if len(self):
                 args.small = os.path.join(args.downsampler_dir,
                                           '.'.join([args.ratio, 'tif']))
 
@@ -271,29 +307,28 @@ class Ratios(object):
                     ).split()
                 )
 
-                is_same = self.same and same
-                if is_same:
-                    # Access the existing database table.
-                    args.table = '_'.join([args.image,
-                                           args.downsampler, args.ratio])
-                    args.table_bak = args.dbase.backup_table(args.table,
-                                                             args.metrics)
+            if is_same:
+                # Access the existing database table.
+                args.table = '_'.join([args.image,
+                                       args.downsampler, args.ratio])
+                args.table_bak = args.dbase.backup_table(args.table,
+                                                         args.metrics)
+            else:
+                # Create a new database table.
+                args.table = args.dbase.add_table(
+                    args.image, args.downsampler, args.ratio, args.metrics)
 
-                else:
-                    # Create a new database table.
-                    args.table = args.dbase.add_table(
-                        args.image, args.downsampler, args.ratio, args.metrics)
+            # Compute for all upsamplers.
+            for upsampler in self.upsamplers:
+                upsampler.compute(args, is_same)
 
-                # Compute for all upsamplers.
-                for upsampler in self.upsamplers:
-                    upsampler.compute(args, is_same)
-
-                # Remove the directory for this ratio.
+            # Remove the directory for this ratio.
+            if len(self):
                 shutil.rmtree(ratio_dir, True)
 
-                # Delete the backup table.
-                if is_same:
-                    args.dbase.drop_backup(args.table_bak)
+            # Delete the backup table.
+            if is_same:
+                args.dbase.drop_backup(args.table_bak)
 
 
 class Upsamplers(object):

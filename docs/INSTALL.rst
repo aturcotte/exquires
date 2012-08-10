@@ -16,9 +16,9 @@ Alternatively, download the `source distribution from PyPI
 
     python setup.py install
 
-==================================
-Detailed Installation Instructions
-==================================
+=============================================
+Detailed Installation Instructions for Debian
+=============================================
 
 The following instructions are for Debian/Ubuntu/Mint Linux. For other
 platforms, the setup is generally the same, with the exception of installing

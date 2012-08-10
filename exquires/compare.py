@@ -5,37 +5,35 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the
+#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
 """Print the result of calling a difference metric on two image files.
 
-    ------------------
-    Difference Metrics
-    ------------------
+    **Difference Metrics:**
 
-    ==========   =====================================================
-     NAME         DESCRIPTION
-    ==========   =====================================================
-     l_1          :math:`\ell_1` norm, aka Average Absolute Error (AAE)
-     l_2          :math:`\ell_2` norm, aka Root Mean Squared Error (RMSE)
-     l_4          :math:`\ell_4` norm
-     l_inf        :math:`\ell_\infty` norm, aka Maximum Absolute Error (MAE)
-     cmc_1        :math:`\ell_1` norm in CMC(1:1) colour space
-     cmc_2        :math:`\ell_2` norm in CMC(1:1) colour space
-     cmc_4        :math:`\ell_4` norm in CMC(1:1) colour space
-     cmc_inf      :math:`\ell_\infty` norm in CMC(1:1) colour space
-     xyz_1        :math:`\ell_1` norm in XYZ colour space
-     xyz_2        :math:`\ell_2` norm in XYZ colour space
-     xyz_4        :math:`\ell_4` norm in XYZ colour space
-     xyz_inf      :math:`\ell_\infty` norm in XYZ colour space
-     blur_1       MSSIM-inspired :math:`\ell_1` norm
-     blur_2       MSSIM-inspired :math:`\ell_2` norm
-     blur_4       MSSIM-inspired :math:`\ell_4` norm
-     blur_inf     MSSIM-inspired :math:`\ell_\infty` norm
-     mssim        Mean Structural Similarity Index (MSSIM)
-    ==========   =====================================================
+    ========= ==========================================================
+    NAME      DESCRIPTION
+    ========= ==========================================================
+    srgb_1    :math:`\ell_1` norm, aka Average Absolute Error (AAE)
+    srgb_2    :math:`\ell_2` norm, aka Root Mean Squared Error (RMSE)
+    srgb_4    :math:`\ell_4` norm
+    srgb_inf  :math:`\ell_\infty` norm, aka Maximum Absolute Error (MAE)
+    cmc_1     :math:`\ell_1` norm in CMC(1:1) colour space
+    cmc_2     :math:`\ell_2` norm in CMC(1:1) colour space
+    cmc_4     :math:`\ell_4` norm in CMC(1:1) colour space
+    cmc_inf   :math:`\ell_\infty` norm in CMC(1:1) colour space
+    xyz_1     :math:`\ell_1` norm in XYZ colour space
+    xyz_2     :math:`\ell_2` norm in XYZ colour space
+    xyz_4     :math:`\ell_4` norm in XYZ colour space
+    xyz_inf   :math:`\ell_\infty` norm in XYZ colour space
+    blur_1    MSSIM-inspired :math:`\ell_1` norm
+    blur_2    MSSIM-inspired :math:`\ell_2` norm
+    blur_4    MSSIM-inspired :math:`\ell_4` norm
+    blur_inf  MSSIM-inspired :math:`\ell_\infty` norm
+    mssim     Mean Structural Similarity Index (MSSIM)
+    ========= ==========================================================
 
 """
 
@@ -63,18 +61,21 @@ class Metrics(object):
     The CMC and XYZ errors can be slightly outside the range [0, 100], but this
     will not occur for most image pairs.
 
+    .. note:
+
+    By default, a Metrics object is configured to operate on 16-bit images.
+
+    :param image1: first image to compare (reference image)
+    :param image2: second image to compare (test image)
+    :param L:      highest possible pixel value (default=65535)
+    :type image1:  image path
+    :type image2:  image path
+    :type L:       integer
+
     """
 
     def __init__(self, image1, image2, maxval=65535):
-        """This constructor creates a new Metrics object.
-
-        By default, a Metrics object is configured to operate on 16-bit images.
-
-        :param image1: The first image to compare (reference image).
-        :param image2: The second image to compare (test image).
-        :param L: The highest possible pixel value (default=65535).
-
-        """
+        """Create a new Metrics object."""
         vipscc = __import__('vipsCC', globals(), locals(),
                            ['VImage', 'VMask'], -1)
         self.vmask = vipscc.VMask
@@ -85,7 +86,7 @@ class Metrics(object):
                                          'sRGB_IEC61966-2-1_black_scaled.icc')
         self.intent = 1    # IM_INTENT_RELATIVE_COLORIMETRIC
 
-    def l_1(self):
+    def srgb_1(self):
         """Compute :math:`\ell_1` error, aka Average Absolute Error (AAE).
 
         The equation for the :math:`\ell_1` error is
@@ -97,12 +98,13 @@ class Metrics(object):
         where :math:`x` and :math:`y` are the images to compare.
 
         :return: :math:`\ell_1` error
+        :rtype:  `float`
 
         """
         diff = self.im1.subtract(self.im2).abs().avg() / self.maxval
         return diff * 100
 
-    def l_2(self):
+    def srgb_2(self):
         """Compute :math:`\ell_2` error, aka Root Mean Squared Error (RMSE).
 
         The equation for the :math:`\ell_2` error is
@@ -114,12 +116,13 @@ class Metrics(object):
         where :math:`x` and :math:`y` are the images to compare.
 
         :return: :math:`\ell_2` error
+        :rtype:  `float`
 
         """
         diff = self.im1.subtract(self.im2).pow(2).avg() ** 0.5 / self.maxval
         return diff * 100
 
-    def l_4(self):
+    def srgb_4(self):
         """Compute :math:`\ell_4` error.
 
         The equation for the :math:`\ell_4` error is
@@ -131,12 +134,13 @@ class Metrics(object):
         where :math:`x` and :math:`y` are the images to compare.
 
         :return: :math:`\ell_4` error
+        :rtype:  `float`
 
         """
         diff = self.im1.subtract(self.im2).pow(4).avg() ** 0.25 / self.maxval
         return diff * 100
 
-    def l_inf(self):
+    def srgb_inf(self):
         """Compute :math:`\ell_\infty` error, aka Maximum Absolute Error (MAE).
 
         The equation for the :math:`\ell_\infty` error is
@@ -148,6 +152,7 @@ class Metrics(object):
         where :math:`x` and :math:`y` are the images to compare.
 
         :return: :math:`\ell_\infty` error
+        :rtype:  `float`
 
         """
         diff = self.im1.subtract(self.im2).abs().max() / self.maxval
@@ -177,7 +182,8 @@ class Metrics(object):
         Wang et. al. because it reduces the number of Gaussian blurs from 5 to
         4.
 
-        :return: Mean SSIM
+        :return: mean SSIM
+        :rtype:  `float`
 
         """
 
@@ -219,7 +225,8 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_1` error of the cropped
         image.
 
-        :return: MSSIM-inspired :math:`\ell_1` error.
+        :return: MSSIM-inspired :math:`\ell_1` error
+        :rtype:  `float`
 
         """
 
@@ -246,7 +253,8 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_2` error of the cropped
         image.
 
-        :return: MSSIM-inspired :math:`\ell_2` error.
+        :return: MSSIM-inspired :math:`\ell_2` error
+        :rtype:  `float`
 
         """
 
@@ -273,7 +281,8 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_4` error of the cropped
         image.
 
-        :return: MSSIM-inspired :math:`\ell_4` error.
+        :return: MSSIM-inspired :math:`\ell_4` error
+        :rtype:  `float`
 
         """
 
@@ -300,7 +309,8 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_\infty` error of the
         cropped image.
 
-        :return: MSSIM-inspired :math:`\ell_\infty` error.
+        :return: MSSIM-inspired :math:`\ell_\infty` error
+        :rtype:  `float`
 
         """
 
@@ -326,7 +336,8 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the average.
 
-        :return: :math:`\ell_1` error in Uniform Colour Space (UCS).
+        :return: :math:`\ell_1` error in Uniform Colour Space (UCS)
+        :rtype:  `float`
 
         """
         lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
@@ -339,7 +350,8 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_2` norm.
 
-        :return: :math:`\ell_2` error in Uniform Colour Space (UCS).
+        :return: :math:`\ell_2` error in Uniform Colour Space (UCS)
+        :rtype:  `float`
 
         """
         lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
@@ -352,7 +364,8 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_4` norm.
 
-        :return: :math:`\ell_4` error in Uniform Colour Space (UCS).
+        :return: :math:`\ell_4` error in Uniform Colour Space (UCS)
+        :rtype:  `float`
 
         """
         lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
@@ -365,7 +378,8 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_\infty` norm.
 
-        :return: :math:`\ell_\infty` error in Uniform Colour Space (UCS).
+        :return: :math:`\ell_\infty` error in Uniform Colour Space (UCS)
+        :rtype:  `float`
 
         """
         lab1 = self.im1.icc_import(self.srgb_profile, self.intent)
@@ -378,7 +392,8 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_1` error.
 
-        :return: :math:`\ell_1` error in XYZ Colour Space.
+        :return: :math:`\ell_1` error in XYZ Colour Space
+        :rtype:  `float`
 
         """
         xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
@@ -391,7 +406,8 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_2` error.
 
-        :return: :math:`\ell_2` error in XYZ Colour Space.
+        :return: :math:`\ell_2` error in XYZ Colour Space
+        :rtype:  `float`
 
         """
         xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
@@ -404,7 +420,8 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_4` error.
 
-        :return: :math:`\ell_4` error in XYZ Colour Space.
+        :return: :math:`\ell_4` error in XYZ Colour Space
+        :rtype:  `float`
 
         """
         xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
@@ -417,7 +434,8 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_\infty` error.
 
-        :return: :math:`\ell_\infty` error in XYZ Colour Space.
+        :return: :math:`\ell_\infty` error in XYZ Colour Space
+        :rtype:  `float`
 
         """
         xyz1 = self.im1.icc_import(self.srgb_profile, self.intent).Lab2XYZ()
@@ -453,7 +471,7 @@ def _get_blurlist():
 
 
 def main():
-    """Run exquires-compare."""
+    """Run :ref:`exquires-compare`."""
 
     # Obtain a list of error metrics that can be called.
     metrics = []
@@ -464,14 +482,14 @@ def main():
     # Define the command-line argument parser.
     parser = parsing.ExquiresParser(description=__doc__)
     parser.add_argument('metric', type=str, metavar='METRIC', choices=metrics,
-                        help='the error metric to use')
+                        help='the difference metric to use')
     parser.add_argument('image1', type=str, metavar='IMAGE_1',
                         help='the first image to compare')
     parser.add_argument('image2', type=str, metavar='IMAGE_2',
                         help='the second image to compare')
     parser.add_argument('-m', '--maxval', type=int, metavar='MAX_LEVEL',
                         default=65535,
-                        help='the maximum pixel value (default=65535)')
+                        help='the maximum pixel value (default: 65535)')
 
     # Attempt to parse the command-line arguments.
     args = parser.parse_args()
