@@ -26,6 +26,18 @@ tt.file {
     font-weight: bold;
 }
 
+tt.py-class {
+    background-color: transparent;
+}
+
+tt.py-func {
+    background-color: transparent;
+}
+
+tt.py-meth {
+    background-color: transparent;
+}
+
 /* -- tables ---------------------------------------------------------------- */
 
 table.docutils {

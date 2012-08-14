@@ -9,7 +9,23 @@
 #  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
-"""A collection of methods to compute image difference data."""
+"""A collection of classes used to compute image difference data.
+
+The hierarchy of classes is as follows:
+
+    * :class:`Operations` encapsulate a list of :class:`Images`
+    * :class:`Images` encapsulate a `dict` of images
+      and a list of :class:`Downsamplers`
+    * :class:`Downsamplers` encapsulate a `dict` of downsamplers
+      and a list of :class:`Ratios`
+    * :class:`Ratios` encapsulate a `dict` of ratios and a list :class:`Images`
+    * :class:`Images` encapsulate a `dict` of images and a `dict` of metrics
+
+These classes work together to downsample the master images, upsample the
+downsampled images, and compare the upsampled images to the master images.
+To perform the operations, call :meth:`Operations.compute`.
+
+"""
 
 import os
 import shutil
@@ -22,22 +38,30 @@ from exquires import database, progress, tools
 
 class Operations(object):
 
-    """This class is responsible for calling all operations."""
+    """A collection of Image objects to compute data with.
+
+    This class is responsible for calling all operations defined in the
+    specified project file when using :ref:`exquires-run` or
+    :ref:`exquires-update`.
+
+    :param images: images to downsample
+    :type images:  list of :class:`Images`
+
+    """
 
     def __init__(self, images):
-        """This constructor creates a new Operations object.
-
-        :param images: A list of Images objects.
-
-        """
+        """Create a new :class:`Operations` object."""
         self.images = images
         self.len = sum(len(image) for image in self.images)
 
     def __len__(self):
-        """Return the length of this Operations object.
+        """Return the length of this :class:`Operations` object.
 
-        The length of an Operations object is the total number of operations
-        (downsampling, upsampling, and comparing) to be performed.
+        The length of an :class:`Operations` object is the total number of
+        operations (downsampling, upsampling, and comparing) to be performed.
+
+        :return: length of this :class:`Operations` object
+        :rtype:  `integer`
 
         """
         return self.len
@@ -45,15 +69,26 @@ class Operations(object):
     def compute(self, args, old=None):
         """Perform all operations.
 
-        :param args.prog: The name of the calling program.
-        :param args.dbase_file: The database file.
-        :param args.proj: The name of the current project.
-        :param args.silent: True if using silent mode, else false.
-        :param args.met_same: The dictionary of unchanged metrics.
-        :param args.metrics: The dictionary of current metrics.
-        :param args.config_file: The current configuration file.
-        :param args.config_bak: The previous configuration file.
-        :param old: The namespace of old configuration entries.
+        :param args:             arguments
+        :param args.prog:        name of the calling program
+        :param args.dbase_file:  database file
+        :param args.proj:        name of the current project
+        :param args.silent:      `True` if using silent mode
+        :param args.met_same:    unchanged metrics
+        :param args.metrics:     current metrics
+        :param args.config_file: current configuration file
+        :param args.config_bak:  previous configuration file
+        :param old:              old configuration entries to be removed
+        :type args:              :class:`argparse.Namespace`
+        :type args.prog:         `string`
+        :type args.dbase_file:   `path`
+        :type args.proj:         `string`
+        :type args.silent:       `boolean`
+        :type args.met_same:     `dict`
+        :type args.metrics:      `dict`
+        :type args.config_file:  `path`
+        :type args.config_bak:   `path`
+        :type old:               :class:`argparse.Namespace`
 
         """
         # Setup verbose mode.
@@ -124,15 +159,19 @@ class Operations(object):
 
 class Images(object):
 
-    """This class calls operations for a particular set of images."""
+    """This class calls operations for a particular set of images.
+
+    :param images:       images to downsample
+    :param downsamplers: downsamplers to use
+    :param same:        `True` if using unchanged images
+    :type images:        `dict`
+    :type downsamplers:  list of :class:`Downsamplers`
+    :type same:          `boolean`
+
+    """
 
     def __init__(self, images, downsamplers, same=False):
-        """This constructor creates a new Images object.
-
-        :param images: A dictionary of images.
-        :param downsamplers: A list of Downsamplers objects.
-
-        """
+        """Create a new :class:`Images` object."""
         self.images = images
         self.downsamplers = downsamplers
         self.same = same
@@ -140,11 +179,14 @@ class Images(object):
                     sum(len(down) + down.ops for down in self.downsamplers))
 
     def __len__(self):
-        """Return the length of this Images object.
+        """Return the length of this :class:`Images` object.
 
-        The length of an Images object is the number of images times
+        The length of an :class:`Images` object is the number of images times
         the sum of the lengths and the number of upsampling and comparison
-        operations of each Downsamplers object.
+        operations of each :class:`Downsamplers` object.
+
+        :return: length of this :class:`Images` object
+        :rtype:  `integer`
 
         """
         return self.len
@@ -152,13 +194,22 @@ class Images(object):
     def compute(self, args):
         """Perform all operations for this set of images.
 
-        :param args.dbase_file: The database file.
-        :param args.dbase: The connected database.
-        :param args.proj: The name of the current project.
-        :param args.silent: True if using silent mode, else false.
-        :param args.met_same: The dictionary of unchanged metrics.
-        :param args.metrics: The dictionary of current metrics.
-        :param args.do_op: The function to update the displayed progress.
+        :param args:            arguments
+        :param args.dbase_file: database file
+        :param args.dbase:      connected database
+        :param args.proj:       name of the current project
+        :param args.silent:     `True` if using silent mode
+        :param args.met_same:   unchanged metrics
+        :param args.metrics:    current metrics
+        :param args.do_op:      updates the displayed progress
+        :type args:             :class:`argparse.Namespace`
+        :type args.dbase_file:  `path`
+        :type args.dbase:       :class:`database.Database`
+        :type args.proj:        `string`
+        :type args.silent:      `boolean`
+        :type args.met_same:    `dict`
+        :type args.metrics:     `dict`
+        :type args.do_op:       `function`
 
         """
         # Compute for all images.
@@ -180,15 +231,19 @@ class Images(object):
 
 class Downsamplers(object):
 
-    """This class calls operations for a particular set of downsamplers."""
+    """This class calls operations for a particular set of downsamplers.
+
+    :param downsamplers: downsamplers to use
+    :param ratios:       ratios to downsample by
+    :param same:         `True` if using unchanged downsamplers
+    :type downsamplers:  `dict`
+    :type ratios:        list of :class:`Ratios`
+    :type same:          `boolean`
+
+    """
 
     def __init__(self, downsamplers, ratios, same=False):
-        """This constructor creates a new Downsamplers object.
-
-        :param downsamplers: A dictionary of downsamplers.
-        :param ratios: A list of Ratios objects.
-
-        """
+        """Create a new :class:`Downsamplers` object."""
         self.downsamplers = downsamplers
         self.ratios = ratios
         self.same = same
@@ -197,10 +252,14 @@ class Downsamplers(object):
                     sum(len(rat) for rat in self.ratios)) if self.ops else 0
 
     def __len__(self):
-        """Return the length of this Downsamplers object.
+        """Return the length of this :class:`Downsamplers` object.
 
-        The length of a Downsamplers object is the number of downsamplers times
-        the sum of the lengths of each Ratios object.
+        The length of a :class:`Downsamplers` object is the number of
+        downsamplers times the sum of the lengths of each :class:`Ratios`
+        object.
+
+        :return: length of this :class:`Downsamplers` object
+        :rtype:  `integer`
 
         """
         return self.len
@@ -208,17 +267,30 @@ class Downsamplers(object):
     def compute(self, args, same):
         """Perform all operations for this set of downsamplers.
 
-        :param args.dbase_file: The database file.
-        :param args.dbase: The connected database.
-        :param args.proj: The name of the current project.
-        :param args.silent: True if using silent mode, else false.
-        :param args.met_same: The dictionary of unchanged metrics.
-        :param args.metrics: The dictionary of current metrics.
-        :param args.do_op: The function to update the displayed progress.
-        :param args.image: The name of the image.
-        :param args.image_dir: The directory to store results for this image.
-        :param args.master: The image to downsample.
-        :param same: True if possibly accessing an existing table.
+        :param args:            arguments
+        :param args.dbase_file: database file
+        :param args.dbase:      connected database
+        :param args.proj:       name of the current project
+        :param args.silent:     `True` if using silent mode
+        :param args.met_same:   unchanged metrics
+        :param args.metrics:    current metrics
+        :param args.do_op:      updates the displayed progress
+        :param args.image:      name of the image
+        :param args.image_dir:  directory to store results for this image
+        :param args.master:     master image to downsample
+        :param same:            `True` if possibly accessing an existing table
+        :type args:             :class:`argparse.Namespace`
+        :type args.dbase_file:  `path`
+        :type args.dbase:       :class:`database.Database`
+        :type args.proj:        `string`
+        :type args.silent:      `boolean`
+        :type args.met_same:    `dict`
+        :type args.metrics:     `dict`
+        :type args.do_op:       `function`
+        :type args.image:       `string`
+        :type args.image_dir:   `path`
+        :type args.master:      `path`
+        :type same:             `boolean`
 
         """
         is_same = self.same and same
@@ -241,15 +313,19 @@ class Downsamplers(object):
 
 class Ratios(object):
 
-    """This class calls operations for a particular set of ratios."""
+    """This class calls operations for a particular set of ratios.
+
+    :param ratios:     ratios to downsample by
+    :param upsamplers: upsamplers to use
+    :param same:       `True` if using unchanged ratios
+    :type ratios:      `dict`
+    :type upsamplers:  list of :class:`Upsamplers`
+    :type same:        `boolean`
+
+    """
 
     def __init__(self, ratios, upsamplers, same=False):
-        """This constructor creates a new Ratios object.
-
-        :param ratios: A dictionary of ratios.
-        :param upsamplers: A list of Upsamplers objects.
-
-        """
+        """Create a new :class:`Ratios` object."""
         self.ratios = ratios
         self.upsamplers = upsamplers
         self.same = same
@@ -257,9 +333,12 @@ class Ratios(object):
         self.len = len(self.ratios) if self.ops else 0
 
     def __len__(self):
-        """Return the length of this Ratios object.
+        """Return the length of this :class:`Ratios` object.
 
-        The length of a Ratios object is the number of ratios.
+        The length of a :class:`Ratios` object is the number of ratios.
+
+        :return: length of this :class:`Ratios` object
+        :rtype:  `integer`
 
         """
         return self.len
@@ -267,20 +346,36 @@ class Ratios(object):
     def compute(self, args, downsamplers, same):
         """Perform all operations for this set of ratios.
 
-        :param args.dbase_file: The database file.
-        :param args.dbase: The connected database.
-        :param args.proj: The name of the current project.
-        :param args.silent: True if using silent mode, else false.
-        :param args.met_same: The dictionary of unchanged metrics.
-        :param args.metrics: The dictionary of current metrics.
-        :param args.do_op: The function to update the displayed progress.
-        :param args.image: The name of the image.
-        :param args.image_dir: The directory to store results for this image.
-        :param args.master: The image to downsample.
-        :param args.downsampler: The name of the downsampler.
-        :param args.downsampler_dir: The directory to store reduced images.
-        :param downsamplers: The dictionary of downsamplers.
-        :param same: True if possibly accessing an existing table.
+        :param args:                 arguments
+        :param args.dbase_file:      database file
+        :param args.dbase:           connected database
+        :param args.proj:            name of the current project
+        :param args.silent:          `True` if using silent mode
+        :param args.met_same:        unchanged metrics
+        :param args.metrics:         current metrics
+        :param args.do_op:           updates the displayed progress
+        :param args.image:           name of the image
+        :param args.image_dir:       directory to store results for this image
+        :param args.master:          master image to downsample
+        :param args.downsampler:     name of the downsampler
+        :param args.downsampler_dir: directory to store dowsampled images
+        :param downsamplers:         downsamplers to use
+        :param same:                 `True` if accessing an existing table
+        :type args:                  :class:`argparse.Namespace`
+        :type args.dbase_file:       `path`
+        :type args.dbase:            :class:`database.Database`
+        :type args.proj:             `string`
+        :type args.silent:           `boolean`
+        :type args.met_same:         `dict`
+        :type args.metrics:          `dict`
+        :type args.do_op:            `function`
+        :type args.image:            `string`
+        :type args.image_dir:        `path`
+        :type args.master:           `path`
+        :type args.downsampler:      `string`
+        :type args.downsampler_dir:  `path`
+        :type downsamplers:          `dict`
+        :type same:                  `boolean`
 
         """
         is_same = self.same and same
@@ -333,15 +428,19 @@ class Ratios(object):
 
 class Upsamplers(object):
 
-    """This class upsamples an image and compares with its master image."""
+    """This class upsamples an image and compares with its master image.
+
+    :param upsamplers: upsamplers to use
+    :param metrics:    metrics to compare with
+    :param same:       `True` if using unchanged upsamplers
+    :type upsamplers:  `dict`
+    :type metrics:     `dict`
+    :type same:        `boolean`
+
+    """
 
     def __init__(self, upsamplers, metrics, same=False):
-        """This constructor creates a new Upsamplers object.
-
-        :param upsamplers: A dictionary of upsamplers.
-        :param metrics: A dictionary of metrics.
-
-        """
+        """Create a new :class:`Upsamplers` object."""
         self.upsamplers = upsamplers
         self.metrics = metrics
         self.same = same
@@ -349,10 +448,13 @@ class Upsamplers(object):
         self.len = len(self.upsamplers) * (ops + 1) if ops else 0
 
     def __len__(self):
-        """Return the length of this Upsamplers object.
+        """Return the length of this :class:`Upsamplers` object.
 
-        The length of an Upsamplers object is the number of upsampling and
-        comparing operations to perform.
+        The length of an :class:`Upsamplers` object is the number of upsampling
+        and comparison operations to perform.
+
+        :return: length of this :class:`Upsamplers` object
+        :rtype:  `integer`
 
         """
         return self.len
@@ -360,22 +462,42 @@ class Upsamplers(object):
     def compute(self, args, same):
         """Perform all operations for this set of ratios.
 
-        :param args.dbase_file: The database file.
-        :param args.dbase: The connected database.
-        :param args.proj: The name of the current project.
-        :param args.silent: True if using silent mode, else false.
-        :param args.metrics: The dictionary of metrics.
-        :param args.do_op: The function to update the displayed progress.
-        :param args.image: The name of the image.
-        :param args.image_dir: The directory to store results for this image.
-        :param args.master: The image to downsample.
-        :param args.downsampler: The name of the downsampler.
-        :param args.downsampler_dir: The directory to store reduced images.
-        :param args.ratio: The ratio.
-        :param args.small: The path of the downsampled image.
-        :param args.table: The name of the table to insert the row.
-        :param args.table_bak: The name of the backup table if it exists.
-        :param same: True if accessing an existing table.
+        :param args:                 arguments
+        :param args.dbase_file:      database file
+        :param args.dbase:           connected database
+        :param args.proj:            name of the current project
+        :param args.silent:          `True` if using silent mode
+        :param args.met_same:        unchanged metrics
+        :param args.metrics:         current metrics
+        :param args.do_op:           updates the displayed progress
+        :param args.image:           name of the image
+        :param args.image_dir:       directory to store results for this image
+        :param args.master:          master image to downsample
+        :param args.downsampler:     name of the downsampler
+        :param args.downsampler_dir: directory to store dowsampled images
+        :param args.ratio:           resampling ratio
+        :param args.small:           downsampled image
+        :param args.table:           name of the table to insert the row into
+        :param args.table_bak:       name of the backup table (if it exists)
+        :param same:                 `True` if accessing an existing table
+        :type args:                  :class:`argparse.Namespace`
+        :type args.dbase_file:       `path`
+        :type args.dbase:            :class:`database.Database`
+        :type args.proj:             `string`
+        :type args.silent:           `boolean`
+        :type args.met_same:         `dict`
+        :type args.metrics:          `dict`
+        :type args.do_op:            `function`
+        :type args.image:            `string`
+        :type args.image_dir:        `path`
+        :type args.master:           `path`
+        :type args.downsampler:      `string`
+        :type args.downsampler_dir:  `path`
+        :type args.ratio:            `string`
+        :type args.small:            `path`
+        :type args.table:            `string`
+        :type args.table_bak:        `string`
+        :type same:                  `boolean`
 
         """
         is_same = self.same and same and args.met_same

@@ -18,9 +18,13 @@ import os
 def prune_metrics(keys, metrics_d):
     """Prune a dictionary of metrics using a list of keys.
 
-    :param keys: A list of keys to retain.
-    :param metrics_d: A dictionary of metric names to prune.
-    :return: The pruned dictionary.
+    :param keys:      keys to retain
+    :param metrics_d: metrics to prune
+    :type keys:       `list of strings`
+    :type metrics_d:  `dict`
+
+    :return:          pruned metrics
+    :rtype:           `dict`
 
     """
     result = OrderedDict()
@@ -32,9 +36,13 @@ def prune_metrics(keys, metrics_d):
 def create_dir(base_dir, relative_dir=''):
     """Create a directory if it doesn't already exist and return it.
 
-    :param base_dir: The base directory within which to create the directory.
-    :param relative_dir: The directory to create inside the base directory.
-    :return: The created directory.
+    :param base_dir:     base directory within which to create the directory
+    :param relative_dir: directory to create inside the base directory
+    :type base_dir:      `path`
+    :type relative_dir:  `path`
+
+    :return:             the created directory
+    :rtype:              `path`
 
     """
     directory = os.path.join(base_dir, relative_dir)

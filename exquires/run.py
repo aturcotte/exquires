@@ -22,9 +22,9 @@ be compared to the original images using each of the metrics and the results
 will be stored in the database file.
 
 If you make changes to the project file and wish to only compute data for these
-changes rather than recomputing everything, use **exquires-update**.
+changes rather than recomputing everything, use :ref:`exquires-update`.
 
-To view aggregated error data, use **exquires-report**.
+To view aggregated error data, use :ref:`exquires-report`.
 
 """
 
@@ -34,23 +34,21 @@ from exquires import operations, parsing
 
 
 def _run(args):
-    """Create a new project database.
+    """Create a new project database and populate it with computed data.
 
-    :param args.config_file: The current configuration file.
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param args:             arguments
+    :param args.config_file: current configuration file
+    :type args:              :class:`argparse.Namespace`
+    :type args.config_file:  `path`
 
     """
     # Read the configuration file.
     config = ConfigObj(args.config_file)
     args.metrics = config['Metrics']
-
-    # Define operations.
-    operations.Operations(
-        [operations.Images(config['Images'],
-            [operations.Downsamplers(config['Downsamplers'],
-                [operations.Ratios(config['Ratios'],
-                    [operations.Upsamplers(config['Upsamplers'],
-                        args.metrics)])])])]
-    )
 
     # Perform operations.
     operations.Operations(
@@ -62,9 +60,13 @@ def _run(args):
 
 
 def main():
-    """Run exquires-run.
+    """Run :ref:`exquires-run`.
 
-    Create a project database based on the project file.
+    Create a database for the specified project file.
+
+    .. warning::
+
+        If a database already exists for this project, it will be overwritten.
 
     """
     _run(parsing.OperationsParser(__doc__).parse_args())

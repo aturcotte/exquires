@@ -1,6 +1,6 @@
-********************************************************
-EXQUIRES: EXtensible QUantitative Image RESampling suite
-********************************************************
+*************************************************************
+**EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
+*************************************************************
 
 .. image:: _images/exquires-logo.png
 
@@ -27,6 +27,7 @@ selection and properties, downsampler choice, resizing ratio, etc.
     :maxdepth: 2
 
     ABOUT
+    README
     INSTALL
     USAGE
     PROGRAMS
@@ -34,11 +35,3 @@ selection and properties, downsampler choice, resizing ratio, etc.
     LICENSE
     CHANGELOG
     TODO
-
-==================
-Indices and Tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

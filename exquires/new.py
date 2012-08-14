@@ -9,7 +9,7 @@
 #  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
-"""Generate a new project file to use with **exquires-run**.
+"""Generate a new project file to use with :ref:`exquires-run`.
 
 For the specified project name and list of images, a default project file will
 be created with the name $PROJECT.ini. Manually edit this file to customize
@@ -17,11 +17,11 @@ your project.
 
 The project file is used to specify the following components of the suite:
 
- * Images ( sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels )
- * Downsamplers
- * Resampling Ratios
- * Upsamplers
- * Difference Metrics
+    * Images ( sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels )
+    * Downsamplers
+    * Resampling Ratios
+    * Upsamplers
+    * Difference Metrics
 
 """
 
@@ -35,13 +35,30 @@ from exquires import parsing
 def _magick(method, **kwargs):
     """Return an ImageMagick resize command as a string.
 
-    :param method: The method to use with -resize or -distort Resize.
-    :param lin: True if using a linear method.
-    :param dist: True if using a -distort Resize method.
-    :param lobes: Number of lobes.
-    :param blur: Blur value.
-    :param beta: Beta value for Kaiser method.
-    :return: The command string.
+    .. note::
+
+        This is a private function called by :func:`_add_default_downsamplers`,
+        :func:`_std_int_lin_tensor_mtds_1`, :func:`_std_int_lin_tensor_mtds_2`,
+        :func:`_novel_int_lin_flt_mtds`, :func:`_std_nonint_lin_tensor_mtds`,
+        :func:`_std_int_ewa_lin_flt_mtds`,
+        :func:`_std_nonint_ewa_lin_flt_mtds`, and
+        :func:`_novel_nonint_ewa_lin_flt_mtds`.
+
+    :param method: method to use with `-resize` or `-distort Resize`
+    :param lin:    `True` if using a linear method
+    :param dist:   `True` if using a `-distort Resize` method
+    :param lobes:  number of lobes
+    :param blur:   blur value
+    :param beta:   beta value for Kaiser method
+    :type method:  `string`
+    :type lin:     `boolean`
+    :type dist:    `boolean`
+    :type lobes:   `integer`
+    :type blur:    `float`
+    :type beta:    `float`
+
+    :return:       the ImageMagick command
+    :rtype:        `string`
 
     """
 
@@ -79,10 +96,19 @@ def _magick(method, **kwargs):
 def _metric(method, aggregator, sort):
     """Return 3-element list defining a metric, an aggregator and a sort order.
 
-    :param method: The exquires-compare image comparison metric.
-    :param aggregator: The exquires-aggregate data aggregator.
-    :param sort: Best-to-worst ordering: 0 if ascending, 1 if descending.
-    :return: A 3-element list.
+    .. note::
+
+        This is a private function called by :func:`_add_default_metrics`.
+
+    :param method:     image comparison metric (see :ref:`exquires-compare`)
+    :param aggregator: data aggregator (see :ref:`exquires-aggregate`)
+    :param sort:       best-to-worst order (`0`: ascending, `1`: descending)
+    :type method:      `string`
+    :type aggregator:  `string`
+    :type sort:        `integer`
+
+    :return:           metric, aggregator, and sort order
+    :rtype:            `list`
 
     """
 
@@ -91,9 +117,14 @@ def _metric(method, aggregator, sort):
 
 
 def _add_default_images(ini, image):
-    """Add the default images to the specified ini file.
+    """Add the default images to the specified :file:`.ini` file.
 
-    :param ini: The ini file to modify
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param ini: the :file:`.ini` file to modify
+    :type ini:  :class:`configobj.ConfigObj`
 
     """
     # Define the list of images to be resampled.
@@ -109,9 +140,14 @@ def _add_default_images(ini, image):
 
 
 def _add_default_ratios(ini):
-    """Add the default ratios to the specified ini file.
+    """Add the default ratios to the specified :file:`.ini` file.
 
-    :param ini: The ini file to modify
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param ini: the :file:`.ini` file to modify
+    :type ini:  :class:`configobj.ConfigObj`
 
     """
     # Define the list of resampling ratios to use.
@@ -132,9 +168,14 @@ def _add_default_ratios(ini):
 
 
 def _add_default_downsamplers(ini):
-    """Add the default downsamplers to the specified ini file.
+    """Add the default downsamplers to the specified :file:`.ini` file.
 
-    :param ini: The ini file to modify
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param ini: the :file:`.ini` file to modify
+    :type ini:  :class:`configobj.ConfigObj`
 
     """
     # Define the list of downsamplers to use.
@@ -166,7 +207,12 @@ def _add_default_downsamplers(ini):
 def _std_int_lin_tensor_mtds_1(ini_ups):
     """Add the 1st part of the standard interpolatory linear tensor methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['nearest_srgb'] = _magick('Point')
@@ -206,7 +252,12 @@ def _std_int_lin_tensor_mtds_1(ini_ups):
 def _std_int_lin_tensor_mtds_2(ini_ups):
     """Add the 2nd part of the standard interpolatory linear tensor methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['cosine2_srgb'] = _magick('Cosine', lobes=2)
@@ -227,12 +278,12 @@ def _std_int_lin_tensor_mtds_2(ini_ups):
     ini_ups['parzen3_linear'] = _magick('Parzen', lobes=3, lin=True)
     ini_ups['parzen4_srgb'] = _magick('Parzen')
     ini_ups['parzen4_linear'] = _magick('Parzen', lin=True)
-    ini_ups['welsh2_srgb'] = _magick('Welsh', lobes=2)
-    ini_ups['welsh2_linear'] = _magick('Welsh', lobes=2, lin=True)
-    ini_ups['welsh3_srgb'] = _magick('Welsh', lobes=3)
-    ini_ups['welsh3_linear'] = _magick('Welsh', lobes=3, lin=True)
-    ini_ups['welsh4_srgb'] = _magick('Welsh')
-    ini_ups['welsh4_linear'] = _magick('Welsh', lin=True)
+    ini_ups['welch2_srgb'] = _magick('Welsh', lobes=2)
+    ini_ups['welch2_linear'] = _magick('Welsh', lobes=2, lin=True)
+    ini_ups['welch3_srgb'] = _magick('Welsh', lobes=3)
+    ini_ups['welch3_linear'] = _magick('Welsh', lobes=3, lin=True)
+    ini_ups['welch4_srgb'] = _magick('Welsh')
+    ini_ups['welch4_linear'] = _magick('Welsh', lin=True)
     ini_ups['hann2_srgb'] = _magick('Hanning', lobes=2)
     ini_ups['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
     ini_ups['hann3_srgb'] = _magick('Hanning', lobes=3)
@@ -244,7 +295,12 @@ def _std_int_lin_tensor_mtds_2(ini_ups):
 def _novel_int_lin_flt_mtds(ini_ups):
     """Add the novel interpolatory linear filtering methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
@@ -282,7 +338,12 @@ def _novel_int_lin_flt_mtds(ini_ups):
 def _std_nonint_lin_tensor_mtds(ini_ups):
     """Add the standard non-interpolatory linear tensor methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['quadratic_b_spline_srgb'] = _magick('Quadratic')
@@ -296,7 +357,12 @@ def _std_nonint_lin_tensor_mtds(ini_ups):
 def _std_int_ewa_lin_flt_mtds(ini_ups):
     """Add the standard interpolatory EWA linear filtering methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['ewa_teepee_srgb'] = _magick('Triangle', dist=True)
@@ -308,7 +374,12 @@ def _std_int_ewa_lin_flt_mtds(ini_ups):
 def _std_nonint_ewa_lin_flt_mtds(ini_ups):
     """Add the standard non-interpolatory EWA linear filtering methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
@@ -329,7 +400,12 @@ def _std_nonint_ewa_lin_flt_mtds(ini_ups):
 def _novel_nonint_ewa_lin_flt_mtds(ini_ups):
     """Add the novel non-interpolatory EWA linear filtering methods.
 
-    :param ini_ups: The upsamplers dictionary for the specified ini file.
+    .. note::
+
+        This is a private function called by :func:`_add_default_upsamplers`.
+
+    :param ini_ups: upsamplers for the specified :file:`.ini` file
+    :type ini_ups:  `dict`
 
     """
     ini_ups['ewa_robidoux_srgb'] = _magick(None, dist=True)
@@ -337,25 +413,25 @@ def _novel_nonint_ewa_lin_flt_mtds(ini_ups):
     ini_ups['ewa_mitchell_netravali_srgb'] = _magick('Mitchell', dist=True)
     ini_ups['ewa_mitchell_netravali_linear'] = _magick('Mitchell', dist=True,
                                                        lin=True)
-    ini_ups['ewa_robidoux_sharp_srgb'] = _magick('RobidouxSharp', dist=True)
-    ini_ups['ewa_robidoux_sharp_linear'] = _magick('RobidouxSharp', dist=True,
+    ini_ups['ewa_robidouxsharp_srgb'] = _magick('RobidouxSharp', dist=True)
+    ini_ups['ewa_robidouxsharp_linear'] = _magick('RobidouxSharp', dist=True,
                                                    lin=True)
     ini_ups['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
     ini_ups['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
-    ini_ups['ewa_lanczos_radius2_srgb'] = _magick('Lanczos2', dist=True,
+    ini_ups['ewa_lanczosradius2_srgb'] = _magick('Lanczos2', dist=True,
                                                   blur=.8956036897402793)
-    ini_ups['ewa_lanczos_radius2_linear'] = _magick('Lanczos2', dist=True,
+    ini_ups['ewa_lanczosradius2_linear'] = _magick('Lanczos2', dist=True,
                                                     blur=.8956036897402793,
                                                     lin=True)
-    ini_ups['ewa_lanczos_radius3_srgb'] = _magick('Lanczos', dist=True,
+    ini_ups['ewa_lanczosradius3_srgb'] = _magick('Lanczos', dist=True,
                                                   blur=.9264075766146068)
-    ini_ups['ewa_lanczos_radius3_linear'] = _magick('Lanczos', dist=True,
+    ini_ups['ewa_lanczosradius3_linear'] = _magick('Lanczos', dist=True,
                                                     blur=.9264075766146068,
                                                     lin=True)
-    ini_ups['ewa_lanczos_radius4_srgb'] = _magick('Lanczos', lobes=4,
+    ini_ups['ewa_lanczosradius4_srgb'] = _magick('Lanczos', lobes=4,
                                                   dist=True,
                                                   blur=.9431597994328477)
-    ini_ups['ewa_lanczos_radius4_linear'] = _magick('Lanczos', lobes=4,
+    ini_ups['ewa_lanczosradius4_linear'] = _magick('Lanczos', lobes=4,
                                                     dist=True, lin=True,
                                                     blur=.9431597994328477)
     ini_ups['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
@@ -392,9 +468,14 @@ def _novel_nonint_ewa_lin_flt_mtds(ini_ups):
 
 
 def _add_default_upsamplers(ini):
-    """Add the default upsamplers to the specified ini file.
+    """Add the default upsamplers to the specified :file:`.ini` file.
 
-    :param ini: The ini file to modify
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param ini: the :file:`.ini` file to modify
+    :type ini:  :class:`configobj.ConfigObj`
 
     """
     # Define the list of upsamplers to use.
@@ -420,9 +501,14 @@ def _add_default_upsamplers(ini):
 
 
 def _add_default_metrics(ini):
-    """Add the default metrics to the specified ini file.
+    """Add the default metrics to the specified :file:`.ini` file.
 
-    :param ini: The ini file to modify
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param ini: the :file:`.ini` file to modify
+    :type ini:  :class:`configobj.ConfigObj`
 
     """
     # Define the list of error metrics to use.
@@ -461,7 +547,12 @@ def _add_default_metrics(ini):
 
 
 def main():
-    """Run exquires-new."""
+    """Run :ref:`exquires-new`.
+
+    Create a project file to use with :ref:`exquires-run` and
+    :ref:`exquires-update`.
+
+    """
 
     # Construct the path to the default test image.
     this_dir = path.abspath(path.dirname(__file__))

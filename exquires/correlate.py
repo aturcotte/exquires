@@ -14,10 +14,10 @@
 By default, the :option:`-M`/:option:`--metric` option is selected.
 You can select one of the following cross-correlation groups:
 
- * :option:`-I`/:option:`--image`
- * :option:`-D`/:option:`--down`
- * :option:`-R`/:option:`--ratio`
- * :option:`-M`/:option:`--metric`
+    * :option:`-I`/:option:`--image`
+    * :option:`-D`/:option:`--down`
+    * :option:`-R`/:option:`--ratio`
+    * :option:`-M`/:option:`--metric`
 
 You can also select which upsamplers to consider when computing the matrix
 by using the :option:`-U`/:option:`--up` option.
@@ -32,19 +32,39 @@ from exquires import database, parsing, stats
 
 
 def _get_group_and_ranks(args):
-    """Private method to get the group and ranks.
+    """Return the correlation group and ranks.
 
-    :param args.dbase_file: The database file.
-    :param args.image: The list of selected image names.
-    :param args.down: The list of selected downsampler names.
-    :param args.ratio: The list of selected ratios in string form.
-    :param args.up: The list of selected upsampler names.
-    :param args.metric: The list of selected metric names.
-    :param args.metrics_d: The dictionary of all metrics.
-    :param args.file: The name of the output file.
-    :param args.digits: The number of digits to print.
-    :param args.latex: If true, print a LaTeX-formatted table.
-    :param args.key: The key for the correlation group.
+    .. note::
+
+        This is a private function called by :func:`_print_matrix`.
+
+    :param args:            arguments
+    :param args.dbase_file: database file
+    :param args.image:      selected image names
+    :param args.down:       selected downsampler names
+    :param args.ratio:      selected ratios
+    :param args.up:         selected upsampler names
+    :param args.metric:     selected metric names
+    :param args.metrics_d:  all metric names
+    :param args.file:       output file
+    :param args.digits:     number of digits to print
+    :param args.latex:      `True` if printing a LaTeX-formatted table
+    :param args.key:        key for the correlation group
+    :type args:             :class:`argparse.Namespace`
+    :type args.dbase_file:  `path`
+    :type args.image:       `list of strings`
+    :type args.down:        `list of strings`
+    :type args.ratio:       `list of strings`
+    :type args.up:          `list of strings`
+    :type args.metric:      `list of strings`
+    :type args.metrics_d:   `dict`
+    :type args.file:        `path`
+    :type args.digits:      `integer`
+    :type args.latex:       `boolean`
+    :type args.key:         `string`
+
+    :return:                the group and ranks
+    :rtype:                 `string`, `list of lists`
 
     """
     # Create a list of the sorting options for each metric.
@@ -101,18 +121,36 @@ def _get_group_and_ranks(args):
 def _print_matrix(args):
     """Print a cross-correlation matrix from aggregate image comparison data.
 
-    :param args.dbase_file: The database file.
-    :param args.image: The list of selected image names.
-    :param args.down: The list of selected downsampler names.
-    :param args.ratio: The list of selected ratios in string form.
-    :param args.up: The list of selected upsampler names.
-    :param args.metric: The list of selected metric names.
-    :param args.metrics_d: The dictionary of all metrics.
-    :param args.file: The name of the output file.
-    :param args.digits: The number of digits to print.
-    :param args.latex: If true, print a LaTeX-formatted table.
-    :param args.key: The key for the correlation group.
-    :param args.anchor: The row/col to order the matrix by.
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param args:            arguments
+    :param args.dbase_file: database file
+    :param args.image:      selected image names
+    :param args.down:       selected downsampler names
+    :param args.ratio:      selected ratios
+    :param args.up:         selected upsampler names
+    :param args.metric:     selected metric names
+    :param args.metrics_d:  all metric names
+    :param args.file:       output file
+    :param args.digits:     number of digits to print
+    :param args.latex:      `True` if printing a LaTeX-formatted table
+    :param args.key:        key for the correlation group
+    :param args.anchor:     row/column to order the matrix by
+    :type args:             :class:`argparse.Namespace`
+    :type args.dbase_file:  `path`
+    :type args.image:       `list of strings`
+    :type args.down:        `list of strings`
+    :type args.ratio:       `list of strings`
+    :type args.up:          `list of strings`
+    :type args.metric:      `list of strings`
+    :type args.metrics_d:   `dict`
+    :type args.file:        `path`
+    :type args.digits:      `integer`
+    :type args.latex:       `boolean`
+    :type args.key:         `string`
+    :type args.anchor:      `string`
 
     """
     # Get the correlation group and ranks table.

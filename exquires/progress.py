@@ -9,11 +9,11 @@
 #  EXQUIRES (EXtensible QUantitative Image RESampling) suite
 #
 
-"""Display progress information for **exquires-run** and **exquires-update**.
+"""Display progress info for :ref:`exquires-run` and :ref:`exquires-update`.
 
-When the '-s/--silent' option is not selected in **exquires-run** or
-**exquires-update**, the Progress class is used to display the appropriate
-information.
+When the :option:`-s`/:option:`--silent` option is not selected in
+:ref:`exquires-run` or :ref:`exquires-update`, the Progress class is used to
+display the appropriate information.
 
 """
 
@@ -26,20 +26,21 @@ class Progress(object):
 
     """This class contains methods for displaying progress in exquires.
 
-    When **exquires-run** and **exquires-update** are used without silent
+    When :ref:`exquires-run` and :ref:`exquires-update` are used without silent
     mode enabled, this class is responsible for displaying information about
     the downsampling, upsampling, and comparison steps and the total progress.
+
+    :param program:   name of the program that is running
+    :param proj:      name of the project being used
+    :param total_ops: total number of operations
+    :type program:    `string`
+    :type proj:       `string`
+    :type total_ops:  `integer`
 
     """
 
     def __init__(self, program, proj, total_ops):
-        """This constructor creates a new Progress object.
-
-        :param program: The name of the program that is running.
-        :param proj: The name of the project being used.
-        :param total_ops: The total number of operations.
-
-        """
+        """Create a new Progress object."""
         self.scr = curses.initscr()
         curses.cbreak()
         curses.noecho()
@@ -50,19 +51,35 @@ class Progress(object):
         self.num_ops = 0
 
     def __del__(self):
-        """This destructor restores the console."""
-
+        """Destruct this Progress object and restore the console."""
         self.scr.keypad(0)
         curses.echo()
         curses.nocbreak()
         curses.endwin()
 
     def __table_top(self, line, label, content):
-        """Private method to create the top row of a table.
+        """Draw the top row of the progress table.
 
-        :param line: The line number to start drawing.
-        :param label: The label for this table entry.
-        :param content: The content for this table entry.
+        This method draws the first row of the progress table, which
+        displays the project name. Three lines are used to draw this section
+        of the table.
+
+        .. note::
+
+            This is a private method called by
+            :meth:`cleanup`, :meth:`complete`, and :meth:`do_op`.
+
+        .. warning::
+
+            To display the updated progress table, the screen must be
+            refreshed by calling `self.scr.refresh()`.
+
+        :param line:    line number to start drawing at
+        :param label:   label for this table entry
+        :param content: content for this table entry
+        :type line:     `integer`
+        :type label:    `string`
+        :type content:  `string`
 
         """
         # Top line.
@@ -91,11 +108,27 @@ class Progress(object):
         self.scr.addch(line + 2, 56, curses.ACS_RTEE)
 
     def __table_middle(self, line, label, content):
-        """Private method to create the middle row of a table.
+        """Draw one of the middle rows of the progress table.
 
-        :param line: The line number to start drawing.
-        :param label: The label for this table entry.
-        :param content: The content for this table entry.
+        This method draws one of the middle rows of the progress table.
+        Two lines are used to draw this section of the table.
+
+        .. note::
+
+            This is a private method called by
+            :meth:`cleanup`, :meth:`complete`, and :meth:`do_op`.
+
+        .. warning::
+
+            To display the updated progress table, the screen must be
+            refreshed by calling `self.scr.refresh()`.
+
+        :param line:    line number to start drawing at
+        :param label:   label for this table entry
+        :param content: content for this table entry
+        :type line:     `integer`
+        :type label:    `string`
+        :type content:  `string`
 
         """
         # Content line.
@@ -115,11 +148,27 @@ class Progress(object):
         self.scr.addch(line + 1, 56, curses.ACS_RTEE)
 
     def __table_bottom(self, line, label, content):
-        """Private method to create the bottom row of a table.
+        """Draw the bottom row of the progress table.
 
-        :param line: The line number to start drawing.
-        :param label: The label for this table entry.
-        :param content: The content for this table entry.
+        This method draws one of the middle rows of the progress table.
+        Two lines are used to draw this section of the table.
+
+        .. note::
+
+            This is a private method called by
+            :meth:`cleanup`, :meth:`complete`, and :meth:`do_op`.
+
+        .. warning::
+
+            To display the updated progress table, the screen must be
+            refreshed by calling `self.scr.refresh()`.
+
+        :param line:    line number to start drawing at
+        :param label:   label for this table entry
+        :param content: content for this table entry
+        :type line:     `integer`
+        :type label:    `string`
+        :type content:  `string`
 
         """
         # Content line.
@@ -129,7 +178,7 @@ class Progress(object):
         self.scr.addstr(line, 16, content)
         self.scr.addch(line, 56, curses.ACS_VLINE)
 
-        #Bottom line.
+        # Bottom line.
         self.scr.addch(line + 1, 1, curses.ACS_LLCORNER)
         for column in range(2, 14):
             self.scr.addch(line + 1, column, curses.ACS_HLINE)
@@ -154,11 +203,18 @@ class Progress(object):
         If an upsampler is specified, but no metric, operation=upsampling.
         If an upsampler and metric are specified, operation=comparing.
 
-        :param args.image: The image being processed.
-        :param args.downsampler: The downsampler being used.
-        :param args.ratio: The resampling ratio being used.
-        :param upsampler: The upsampler being used.
-        :param metric: The metric being used.
+        :param args:             arguments
+        :param args.image:       image being processed
+        :param args.downsampler: downsampler being used
+        :param args.ratio:       resampling ratio being used
+        :param upsampler:        upsampler being used
+        :param metric:           metric being used
+        :type args:              :class:`argparse.Namespace`
+        :type args.image:        `string`
+        :type args.downsampler:  `string`
+        :type args.ratio:        `string`
+        :type upsampler:         `string`
+        :type metric:            `string`
 
         """
         percent = int(self.num_ops * 100 / self.total_ops)
@@ -191,7 +247,22 @@ class Progress(object):
         self.scr.refresh()
 
     def complete(self):
-        """Complete the progress indicator."""
+        """Complete the progress indicator.
+
+        Call this method to indicate success once all operations have been
+        performed.
+
+        .. note::
+
+            The completion screen is displayed for a half second.
+
+        .. warning::
+
+            To restore the terminal after completion, destruct the
+            :class:`Progress` object by calling `del prg`
+            (where `prg` is the :class:`Progress` object to destruct).
+
+        """
         self.scr.clear()
         self.scr.addstr(1, 1, self.program, curses.A_BOLD)
         self.__table_top(3, 'PROJECT', self.proj)

@@ -28,8 +28,16 @@ from exquires import __version__ as VERSION
 def _remove_duplicates(input_list):
     """Remove duplicate entries from a list.
 
-    :param input_list: The list to remove duplicate entries from.
-    :return: The modified list.
+    .. note::
+
+        This is a private function called by :meth:`ListAction.__call__`
+        and :meth:`RatioAction.__call__`.
+
+    :param input_list: list to remove duplicate entries from
+    :type input_list:  `list of values`
+
+    :return:           list with duplicate entries removed
+    :rtype:            `list of values`
 
     """
     unique = set()
@@ -37,17 +45,26 @@ def _remove_duplicates(input_list):
 
 
 def _format_doc(docstring):
-    """Parse the module docstring and re-format all reST markup.
+    """Parse the module docstring and re-format all `reST` markup.
 
-    :param docstring: The module docstring to format.
+    .. note::
+
+        This is a private function called when creating a new
+        :class:`ExquiresParser` object.
+
+    :param docstring: docstring to format
+    :type docstring:  `string`
+
+    :return:          formatted docstring
+    :rtype:           `string`
 
     """
-    # Deal with LaTeX math symbols.
+    # Deal with directives and LaTeX math symbols.
     latex1 = re.sub('`', '', re.sub(r':\S+:', '', docstring))
     latex2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', latex1))
 
     # Deal with list items.
-    item1 = re.sub(r' \* ', u' \u2022 ', latex2)
+    item1 = re.sub(r'    \* ', u'    \u2022 ', latex2)
 
     # Deal with Sphinx bold formatting.
     bold1 = re.sub(r' \*{2}', r' \033[1m', item1)
@@ -65,14 +82,15 @@ def _format_doc(docstring):
 
 class ExquiresParser(argparse.ArgumentParser):
 
-    """Generic EXQUIRES parser."""
+    """Generic **EXQUIRES** parser.
+
+    :param description: docstring from the calling program
+    :type description:  `string`
+
+    """
 
     def __init__(self, description):
-        """This constructor creates a new ExquiresParser object.
-
-        :param description: The docstring from the calling program.
-
-        """
+        """Create a new ExquiresParser object."""
         super(ExquiresParser, self).__init__(
             version=VERSION, description=_format_doc(description),
             formatter_class=lambda prog: ExquiresHelp(prog,
@@ -82,8 +100,13 @@ class ExquiresParser(argparse.ArgumentParser):
     def parse_args(self, args=None, namespace=None):
         """Parse command-line arguments.
 
-        :param args: The command-line arguments.
-        :param namespace: The namespace.
+        :param args:      the command-line arguments
+        :param namespace: the namespace
+        :type args:       `string`
+        :type namespace:  :class:`argparse.Namespace`
+
+        :return:          the parsed arguments
+        :rtype:           :class:`argparse.Namespace`
 
         """
         # Get the raw command-line arguments
@@ -102,14 +125,17 @@ class ExquiresParser(argparse.ArgumentParser):
 
 class OperationsParser(ExquiresParser):
 
-    """Parser for exquires-run and exquires-update."""
+    """Parser used by :ref:`exquires-run` and :ref:`exquires-update`.
+
+    :param description: docstring from the calling program
+    :param update:      `True` if called by :ref:`exquires-update`
+    :type description:  `string`
+    :type update:       `boolean`
+
+    """
 
     def __init__(self, description, update=False):
-        """This constructor creates a new OperationsParser object.
-
-        :param description: The docstring from the calling program.
-
-        """
+        """Create a new OperationsParser object."""
         super(OperationsParser, self).__init__(description)
         self.add_argument('-s', '--silent', action='store_true',
                           help='do not display progress information')
@@ -119,10 +145,18 @@ class OperationsParser(ExquiresParser):
         self.update = update
 
     def parse_args(self, args=None, namespace=None):
-        """Parse arguments for exquires-run or exquires-update.
+        """Parse the received arguments.
 
-        :param args: The command-line arguments.
-        :param namespace: The namespace.
+        This method parses the arguments received by  :ref:`exquires-run` or
+        :ref`exquires-update`.
+
+        :param args:      the command-line arguments
+        :param namespace: the namespace
+        :type args:       `string`
+        :type namespace:  :class:`argparse.Namespace`
+
+        :return:          the parsed arguments
+        :rtype:           :class:`argparse.Namespace`
 
         """
         # Get the raw command-line arguments
@@ -158,14 +192,17 @@ class OperationsParser(ExquiresParser):
 
 class StatsParser(ExquiresParser):
 
-    """Parser for exquires-report and exquires-correlate."""
+    """Parser used by :ref:`exquires-report` and :ref:`exquires-correlate`.
+
+    :param description: docstring from the calling program
+    :param correlate:   `True` if using :ref:`exquires-correlate`
+    :type description:  `string`
+    :type correlate:    `boolean`
+
+    """
 
     def __init__(self, description, correlate=False):
-        """This constructor creates a new StatsParser object.
-
-        :param description: The docstring from the calling program.
-
-        """
+        """Create a new StatsParser object."""
         super(StatsParser, self).__init__(description)
         self.correlate = correlate
 
@@ -191,6 +228,7 @@ class StatsParser(ExquiresParser):
                           help='total number of digits (default: 4)')
 
         if correlate:
+            # Anchor option (sorting for exquires-correlate).
             self.add_argument('-a', '--anchor', metavar='ANCHOR', type=str,
                               action=AnchorAction, default=None,
                               help='order matrix rows/cols around this one')
@@ -226,10 +264,18 @@ class StatsParser(ExquiresParser):
                            help='metrics to consider (default: all)')
 
     def parse_args(self, args=sys.argv[1:], namespace=None):
-        """Parse arguments for exquires-report or exquires-correlate.
+        """Parse the received arguments.
 
-        :param args: The command-line arguments.
-        :param namespace: The namespace.
+        This method parses the arguments received by :ref:`exquires-report` or
+        :ref:`exquires-correlate`.
+
+        :param args:      the command-line arguments
+        :param namespace: the namespace
+        :type args:       `string`
+        :type namespace:  :class:`argparse.Namespace`
+
+        :return:          the parsed arguments
+        :rtype:           :class:`argparse.Namespace`
 
         """
         # Deal with the -h/--help  and -v/--version options.
@@ -297,6 +343,15 @@ class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
     """
 
     def _format_action_invocation(self, action):
+        """Format the string describing the invocation of the specified action.
+
+        :param action: the parsing action
+        :type action:  :class:`argparse.Action`
+
+        :return:       the formatted action invocation
+        :rtype:        `string`
+
+        """
         if not action.option_strings:
             metavar, = self._metavar_formatter(action, action.dest)(1)
             return metavar
@@ -320,6 +375,19 @@ class ExquiresHelp(argparse.RawDescriptionHelpFormatter):
             return ', '.join(parts)
 
     def _fill_text(self, text, width, indent):
+        """Fill action text with whitespace.
+
+        :param text:   the text to display
+        :param width:  line width
+        :param indent: indentation printed before the text
+        :type text:    `string`
+        :type width:   `integer`
+        :type indent:  `string`
+
+        :return:       the formatted text
+        :rtype:        `string`
+
+        """
         return ''.join([indent + line for line in text.splitlines(True)])
 
 
@@ -328,6 +396,20 @@ class ProjectAction(argparse.Action):
     """Parser action to read a project file based on the specified name."""
 
     def __call__(self, parser, args, value, option_string=None):
+        """Parse the :option:`-p`/:option:`--project` option.
+
+        :param parser:        the parser calling this action
+        :param args:          arguments
+        :param values:        values
+        :param option_string: command-line option string
+        :type parser:         :class:`ExquiresParser`
+        :type args:           :class:`argparse.Namespace`
+        :type values:         `list of values`
+        :type option_string:  `string`
+
+        :raises:              :class:`argparse.ArgumentError`
+
+        """
         # Construct the path to the configuation and database files.
         proj_file = '.'.join([value, 'ini', 'bak'])
         db_file = '.'.join([value, 'db'])
@@ -372,6 +454,20 @@ class ListAction(argparse.Action):
     """
 
     def __call__(self, parser, args, values, option_string=None):
+        """Parse any option that supports lists with wildcard characters.
+
+        :param parser:        the parser calling this action
+        :param args:          arguments
+        :param values:        values
+        :param option_string: command-line option string
+        :type parser:         :class:`ExquiresParser`
+        :type args:           :class:`argparse.Namespace`
+        :type values:         `list of values`
+        :type option_string:  `string`
+
+        :raises:              :class:`argparse.ArgumentError`
+
+        """
         value_list = getattr(args, self.dest)
         matches = []
         for value in values:
@@ -393,6 +489,20 @@ class RatioAction(argparse.Action):
     """Parser action to deal with ratio ranges."""
 
     def __call__(self, parser, args, values, option_string=None):
+        """Parse the :option:`-r`/:option:`--ratio` option.
+
+        :param parser:        the parser calling this action
+        :param args:          arguments
+        :param values:        values
+        :param option_string: command-line option string
+        :type parser:         :class:`ExquiresParser`
+        :type args:           :class:`argparse.Namespace`
+        :type values:         `list of values`
+        :type option_string:  `string`
+
+        :raises:              :class:`argparse.ArgumentError`
+
+        """
         matches = []
         for value in values:
             # Detect range.
@@ -427,6 +537,20 @@ class AnchorAction(argparse.Action):
     """Parser action to sort the correlation matrix."""
 
     def __call__(self, parser, args, value, option_string=None):
+        """Parse the :option:`-a`/:option:`--anchor` option.
+
+        :param parser:        the parser calling this action
+        :param args:          arguments
+        :param values:        values
+        :param option_string: command-line option string
+        :type parser:         :class:`ExquiresParser`
+        :type args:           :class:`argparse.Namespace`
+        :type values:         `list of values`
+        :type option_string:  `string`
+
+        :raises:              :class:`argparse.ArgumentError`
+
+        """
         group = getattr(args, args.key)
         if value not in group:
             tup = value, ', '.join([repr(val) for val in group])
@@ -440,6 +564,20 @@ class SortAction(argparse.Action):
     """Parser action to sort the data by the appropriate metric."""
 
     def __call__(self, parser, args, value, option_string=None):
+        """Parse the :option:`-s`/:option:`--sort` option.
+
+        :param parser:        the parser calling this action
+        :param args:          arguments
+        :param values:        values
+        :param option_string: command-line option string
+        :type parser:         :class:`ExquiresParser`
+        :type args:           :class:`argparse.Namespace`
+        :type values:         `list of values`
+        :type option_string:  `string`
+
+        :raises:              :class:`argparse.ArgumentError`
+
+        """
         if value not in args.metrics:
             tup = value, ', '.join([repr(val) for val in args.metrics])
             msg = 'invalid choice: %r (choose from %s)' % tup

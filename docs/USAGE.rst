@@ -71,8 +71,8 @@ The easiest way to obtain a copy of the image bank is as follows:
 Create a new project file
 -------------------------
 
-A project file is a :file`.ini` file that tells **EXQUIRES** which of the following
-to use:
+A project file is a :file:`.ini` file that tells **EXQUIRES** which of the
+following to use:
 
 * Images
 * Resampling Ratios

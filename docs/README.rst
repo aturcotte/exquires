@@ -1,8 +1,8 @@
-**********************
-EXQUIRES Documentation
-**********************
+**************************
+**EXQUIRES** Documentation
+**************************
 
-:Name: EXQUIRES: EXtensible QUantitative Image RESampling suite
+:Name: **EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
 :Website: `<http://exquires.ca>`_
 :PyPI:    `<http://pypi.python.org/pypi/exquires>`_
 :GitHub:  `<http://github.com/aturcotte/exquires>`_

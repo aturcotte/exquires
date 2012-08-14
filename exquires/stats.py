@@ -20,9 +20,18 @@ import numpy
 def _format_cell(cell, digits):
     """Return a formatted version of this cell of the data table.
 
-    :param cell: The cell to format.
-    :param digits: The number of digits to display.
-    :return: The formatted cell.
+    .. note::
+
+        This is a private function called by :func:`print_normal`
+        and :func:`print_latex`.
+
+    :param cell:   cell to format
+    :param digits: maximum number of digits to display
+    :type cell:    `string`
+    :type digits:  `integer`
+
+    :return:       the formatted cell
+    :rtype:        `string`
 
     """
     try:
@@ -42,11 +51,18 @@ def _format_cell(cell, digits):
 def print_normal(printdata, args, header, matrix=False):
     """Print the processed data table with normal formatting.
 
-    :param printdata: A list of lists, defining the table to print.
-    :param args.file: The path to write the aggregated error table.
-    :param args.digits: The maximum number of digits to display.
-    :param header: A list of table headings.
-    :param matrix: True if printing a correlation matrix.
+    :param printdata:   table of data to print
+    :param args:        arguments
+    :param args.file:   path to write the aggregated error table
+    :param args.digits: maximum number of digits to display
+    :param header:      table headings
+    :param matrix:      `True` if printing a correlation matrix
+    :type printdata:    `list of lists`
+    :type args:         :class:`argparse.Namespace`
+    :type args.file:    `path`
+    :type args.digits:  `integer`
+    :type header:       `list of strings`
+    :type matrix:       `boolean`
 
     """
     # Print the header.
@@ -81,10 +97,18 @@ def print_normal(printdata, args, header, matrix=False):
 def print_latex(printdata, args, header, matrix=False):
     """Print the processed data table with LaTeX formatting.
 
-    :param printdata: A list of lists, defining the table to print.
-    :param args.file: The path to write the aggregated data table.
-    :param args.digits: The number of digits to display.
-    :param header: A list of table headings.
+    :param printdata:   table of data to print
+    :param args:        arguments
+    :param args.file:   path to write the aggregated error table
+    :param args.digits: maximum number of digits to display
+    :param header:      table headings
+    :param matrix:      `True` if printing a correlation matrix
+    :type printdata:    `list of lists`
+    :type args:         :class:`argparse.Namespace`
+    :type args.file:    `path`
+    :type args.digits:  `integer`
+    :type header:       `list of strings`
+    :type matrix:       `boolean`
 
     """
     # No padding is necessary since this is a LaTeX table.
@@ -132,10 +156,15 @@ def print_latex(printdata, args, header, matrix=False):
 def get_ranks(printdata, metrics_desc, sort_index):
     """Return a table of Spearman (Fractional) ranks based on a data table.
 
-    :param printdata: A list of lists, defining the table to print.
-    :param metrics_desc: A list of 0s and 1s (where 1 is 'descending').
-    :param sort_index: Index of the column to sort by.
-    :return: A table of ranks.
+    :param printdata:    table of data to print
+    :param metrics_desc: list of 0s and 1s (where 1 is 'descending')
+    :param sort_index:   index of the column to sort by
+    :type printdata:     `list of lists`
+    :type metrics_desc:  `list of integers`
+    :type sort_index:    `integer`
+
+    :return:             table of ranks
+    :rtype:              `list of lists`
 
     """
     data = [x[:] for x in printdata]
@@ -165,10 +194,15 @@ def get_ranks(printdata, metrics_desc, sort_index):
 def get_merged_ranks(printdata, metrics_desc, sort_index):
     """Return a table of merged Spearman ranks based on a data table.
 
-    :param printdata: A list of lists, defining the table to print.
-    :param metrics_desc: A list of 0s and 1s (where 1 is 'descending').
-    :param sort_index: Index of the column to sort by (0 or 1).
-    :return: A table of ranks.
+    :param printdata:    table of data to print
+    :param metrics_desc: list of 0s and 1s (where 1 is 'descending')
+    :param sort_index:   index of the column to sort by
+    :type printdata:     `list of lists`
+    :type metrics_desc:  `list of integers`
+    :type sort_index:    `integer`
+
+    :return:             table of merged ranks
+    :rtype:              `list of lists`
 
     """
     # Get the Spearman (Fractional) ranks.
@@ -185,10 +219,17 @@ def get_merged_ranks(printdata, metrics_desc, sort_index):
 def get_aggregate_table(dbase, upsamplers, metrics_d, tables):
     """Return a table of aggregate image difference data.
 
-    :param upsamplers: The upsamplers (rows) of the table.
-    :param metrics_d: The metrics (columns) of the table in dictionary form.
-    :param tables: The database tables to aggregate across.
-    :return: The table of aggregate image difference data.
+    :param dbase:      connected database
+    :param upsamplers: upsamplers (rows) of the table
+    :param metrics_d:  metrics (columns) of the table in dictionary form
+    :param tables:     names of database tables to aggregate across
+    :type dbase:       :class:`database.Database`
+    :type upsamplers:  `list of strings`
+    :type metrics_d:   `dict`
+    :type tables:      `list of strings`
+
+    :return:           table of aggregate image difference data
+    :rtype:            `list of lists`
 
     """
     metrics = metrics_d.keys()

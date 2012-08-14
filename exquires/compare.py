@@ -11,7 +11,7 @@
 
 """Print the result of calling a difference metric on two image files.
 
-    **Difference Metrics:**
+  **Difference Metrics:**
 
     ========= ==========================================================
     NAME      DESCRIPTION
@@ -61,21 +61,22 @@ class Metrics(object):
     The CMC and XYZ errors can be slightly outside the range [0, 100], but this
     will not occur for most image pairs.
 
-    .. note:
+    .. note::
 
-    By default, a Metrics object is configured to operate on 16-bit images.
+        By default, a :class:`Metrics` object is configured to operate on
+        16-bit images.
 
     :param image1: first image to compare (reference image)
     :param image2: second image to compare (test image)
     :param L:      highest possible pixel value (default=65535)
-    :type image1:  image path
-    :type image2:  image path
-    :type L:       integer
+    :type image1:  `path`
+    :type image2:  `path`
+    :type L:       `integer`
 
     """
 
     def __init__(self, image1, image2, maxval=65535):
-        """Create a new Metrics object."""
+        """Create a new :class:`Metrics` object."""
         vipscc = __import__('vipsCC', globals(), locals(),
                            ['VImage', 'VMask'], -1)
         self.vmask = vipscc.VMask
@@ -444,7 +445,15 @@ class Metrics(object):
 
 
 def _get_blurlist():
-    """Private method to return a Gaussian blur mask."""
+    """Private method to return a Gaussian blur mask.
+
+    .. note::
+
+        This is a private function called by :meth:`~Metrics.blur_1`,
+        :meth:`~Metrics.blur_2`, :meth:`~Metrics.blur_4`,
+        :meth:`~Metrics.blur_inf`, and :meth:`~Metrics.mssim`.
+
+    """
 
     # Compute the raw Gaussian blur coefficients.
     blur_sigma = 1.5

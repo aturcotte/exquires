@@ -18,9 +18,9 @@ and added to the database file. If no changes have been made to the project
 file, the database will not be updated.
 
 If you wish to recompute all data based on your project file rather than simply
-updating it with the changes, use **exquires-run**.
+updating it with the changes, use :ref:`exquires-run`.
 
-To view aggregated error data, use **exquires-report**.
+To view aggregated error data, use :ref:`exquires-report`.
 
 """
 
@@ -33,11 +33,22 @@ import exquires.parsing as parsing
 
 
 def _subtract(dict1, dict2):
-    """Private method to subtract dictionary dict2 from dict1.
+    """Subtract dictionary `dict2` from `dict1` and return the difference.
 
-    :param dict1: The dictionary to subtract from.
-    :param dict2: The dictionary to subtract.
-    :return: The resulting dictionary.
+    This function creates a new `dict`, then iterates over `dict1` and adds
+    all entries that are not found in `dict2`.
+
+    .. note::
+
+        This is a private function called by :func:`_get_namespaces`.
+
+    :param dict1: dictionary to subtract from
+    :param dict2: dictionary to subtract
+    :type dict1:  `dict`
+    :type dict2:  `dict`
+
+    :return:      dict1 - dict2
+    :rtype:       `dict`
 
     """
     result = {}
@@ -48,11 +59,28 @@ def _subtract(dict1, dict2):
 
 
 def _get_namespaces(config_file, config_bak):
-    """Private method to get all necessary configuration namespaces.
+    """Return all necessary configuration namespaces.
 
-    :param config_file: The current configuration file.
-    :param config_bak: The previous configuration file.
-    :return: The current, new, old, and same namespaces.
+    This function returns four namespaces that specify which images,
+    downsamplers, ratios, upsamplers, and metrics to use when creating
+    or updating a project database:
+
+    * `current` -- all entries in current project file
+    * `new` -- entries only in currenty project file
+    * `old` -- entries only in previous project file
+    * `same` -- entries common to both project files
+
+    .. note::
+
+        This is a private function called by :func:`_update`.
+
+    :param config_file: current configuration file
+    :param config_bak:  previous configuration file
+    :type config_file:  `path`
+    :type config_bak:   `path`
+
+    :return:            the current, new, old, and same namespaces
+    :rtype:             :class:`argparse.Namespace`
 
     """
 
@@ -99,8 +127,16 @@ def _get_namespaces(config_file, config_bak):
 def _update(args):
     """Update the database.
 
-    :param args.config_file: The current configuration file.
-    :param args.config_bak: The previous configuration file.
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param args:             arguments
+    :param args.config_file: current project file
+    :param args.config_bak:  previous project file
+    :type args:              :class:`argparse.Namespace`
+    :type args.config_file:  `path`
+    :type args.config_bak:   `path`
 
     """
     # Get the various namespaces for this project update.
@@ -129,9 +165,13 @@ def _update(args):
 
 
 def main():
-    """Run exquires-update.
+    """Run :ref:`exquires-update`.
 
     Update the project database based on changes to the project file.
+
+    .. note::
+
+        If the update fails, the previous database will be restored.
 
     """
     _update(parsing.OperationsParser(__doc__, True).parse_args())

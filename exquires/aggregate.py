@@ -11,10 +11,10 @@
 
 """Aggregate a list of numbers using the specified method.
 
-    **Aggregators:**
+  **Aggregators:**
 
     ====== ==============================================
-    NAME    DESCRIPTION
+    NAME   DESCRIPTION
     ====== ==============================================
     l_1    return the average
     l_2    average the squares and return the square root
@@ -36,12 +36,12 @@ class Aggregate(object):
     """This class provide various ways of aggregating error data.
 
     :param values: numbers to aggregate
-    :type values:  list of numbers
+    :type values:  `list of numbers`
 
     """
 
     def __init__(self, values):
-        """Create a new Aggregate object."""
+        """Create a new :class:`Aggregate` object."""
         self.values = values
 
     def l_1(self):

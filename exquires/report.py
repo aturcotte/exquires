@@ -17,14 +17,16 @@ represents a difference metric. By default, the data across all rows and
 columns of all tables is aggregated. Use the appropriate option flags to
 aggregate across a subset of the database.
 
---------
-Features
---------
+  **Features:**
 
- * -R/--ratio supports hyphenated ranges (ex. '1-3 5' gives '1 2 3 5')
- * -U/--up, -I/--image, -D/--down and -M/--metric support wildcards
+    * :option:`-R`/:option`--ratio` supports hyphenated ranges
+      (for example, '1-3 5' gives '1 2 3 5')
+    * :option:`-U`/:option:`--up`, :option:`-I`/:option:`--image`,
+      :option:`-D`/:option:`--down` and :option:`-M`/:option:`--metric`
+      support wildcard characters
 
 """
+
 import argparse
 
 from operator import itemgetter
@@ -40,20 +42,40 @@ def _print_table(args):
     which of these to consider. This method aggregates the data for each
     relevant column in the appropriate tables.
 
-    :param args.dbase_file: The database file.
-    :param args.image: The list of selected image names.
-    :param args.down: The list of selected downsampler names.
-    :param args.ratio: The list of selected ratios in string form.
-    :param args.up: The list of selected upsampler names.
-    :param args.metric: The list of selected metric names.
-    :param args.metrics_d: The dictionary of all metrics.
-    :param args.file: The name of the output file.
-    :param args.digits: The number of digits to print.
-    :param args.latex: If true, print a LaTeX-formatted table.
-    :param args.rank: If true, print fractional ranks instead of data.
-    :param args.merge: If true, print merged Spearman ranks instead of data.
-    :param args.sort: The metric to sort by.
-    :param args.show_sort: True if the sort column should be displayed.
+    .. note::
+
+        This is a private function called by :func:`main`.
+
+    :param args:            arguments
+    :param args.dbase_file: database file
+    :param args.image:      selected image names
+    :param args.down:       selected downsampler names
+    :param args.ratio:      selected ratios
+    :param args.up:         selected upsampler names
+    :param args.metric:     selected metric names
+    :param args.metrics_d:  all metric names
+    :param args.file:       output file
+    :param args.digits:     number of digits to print
+    :param args.latex:      `True` if printing a LaTeX-formatted table
+    :param args.rank:       `True` if printing Spearman (fractional) ranks
+    :param args.merge:      `True` if printing merged Spearman ranks
+    :param args.sort:       metric to sort by
+    :param args.show_sort:  `True` if the sort column should be displayed
+    :type args:             :class:`argparse.Namespace`
+    :type args.dbase_file:  `path`
+    :type args.image:       `list of strings`
+    :type args.down:        `list of strings`
+    :type args.ratio:       `list of strings`
+    :type args.up:          `list of strings`
+    :type args.metric:      `list of strings`
+    :type args.metrics_d:   `dict`
+    :type args.file:        `path`
+    :type args.digits:      `integer`
+    :type args.latex:       `boolean`
+    :type args.rank:        `boolean`
+    :type args.merge:       `boolean`
+    :type args.sort:        `string`
+    :type args.show_sort:   `boolean`
 
     """
     # Create a list of the sorting options for each metric.
@@ -120,7 +142,7 @@ def _print_table(args):
 
 
 def main():
-    """Run exquires-report.
+    """Run :ref:`exquires-report`.
 
     Parse the command-line arguments and print the aggregate data table.
 

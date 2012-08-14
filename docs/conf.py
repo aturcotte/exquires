@@ -63,7 +63,7 @@ release = '0.9.9'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-today = 'August 6, 2012'
+today = 'August 13, 2012'
 # Else, today_fmt is used as the format for a strftime call.
 #today_fmt = '%B %d, %Y'
 
@@ -198,14 +198,14 @@ htmlhelp_basename = 'exquiresdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'exquires.tex',
-   u'EXQUIRES: EXtensible QUantitative Image RESampling suite',
+  ('index_latex', 'exquires.tex',
+   u'EXQUIRES (EXtensible QUantitative Image RESampling) Suite',
    u'Adam Turcotte and Nicolas Robidoux', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+latex_logo = '_images/exquires-logo.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -218,7 +218,7 @@ latex_show_pagerefs = True
 #latex_show_urls = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+latex_preamble = '\setcounter{tocdepth}{2}'
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
@@ -233,6 +233,6 @@ latex_show_pagerefs = True
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'exquires',
-     u'EXQUIRES: EXtensible QUantitative Image RESampling suite',
+     u'EXQUIRES (EXtensible QUantitative Image RESampling) Suite',
      [u'Adam Turcotte and Nicolas Robidoux'], 1)
 ]
