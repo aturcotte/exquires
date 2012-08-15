@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
 #
 
 """Display progress info for :ref:`exquires-run` and :ref:`exquires-update`.
@@ -72,7 +72,7 @@ class Progress(object):
         .. warning::
 
             To display the updated progress table, the screen must be
-            refreshed by calling `self.scr.refresh()`.
+            refreshed by calling :meth:`self.scr.refresh`.
 
         :param line:    line number to start drawing at
         :param label:   label for this table entry
@@ -121,7 +121,7 @@ class Progress(object):
         .. warning::
 
             To display the updated progress table, the screen must be
-            refreshed by calling `self.scr.refresh()`.
+            refreshed by calling :meth:`self.scr.refresh`.
 
         :param line:    line number to start drawing at
         :param label:   label for this table entry
@@ -161,7 +161,7 @@ class Progress(object):
         .. warning::
 
             To display the updated progress table, the screen must be
-            refreshed by calling `self.scr.refresh()`.
+            refreshed by calling :meth:`self.scr.refresh`.
 
         :param line:    line number to start drawing at
         :param label:   label for this table entry
@@ -199,9 +199,9 @@ class Progress(object):
     def do_op(self, args, upsampler=None, metric=None):
         """Update the progress indicator.
 
-        If no upsampler is specified, operation=downsampling.
-        If an upsampler is specified, but no metric, operation=upsampling.
-        If an upsampler and metric are specified, operation=comparing.
+        * If no upsampler is specified, `operation=downsampling`
+        * If an upsampler is specified, but no metric, `operation=upsampling`
+        * If an upsampler and metric are specified, `operation=comparing`
 
         :param args:             arguments
         :param args.image:       image being processed
@@ -260,7 +260,7 @@ class Progress(object):
 
             To restore the terminal after completion, destruct the
             :class:`Progress` object by calling `del prg`
-            (where `prg` is the :class:`Progress` object to destruct).
+            (where `prg` is the object to destruct).
 
         """
         self.scr.clear()

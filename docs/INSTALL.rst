@@ -1,6 +1,6 @@
-*******************
-Installing EXQUIRES
-*******************
+***********************
+Installing **EXQUIRES**
+***********************
 
 ===============================
 Basic Installation Instructions
@@ -86,9 +86,9 @@ Installing ImageMagick 7 alpha from source
     $ sudo make install
     $ sudo ldconfig /usr/local/lib
 
--------------------
-Installing EXQUIRES
--------------------
+-----------------------
+Installing **EXQUIRES**
+-----------------------
 
 * Install remaining dependencies:
 
@@ -102,9 +102,9 @@ Installing EXQUIRES
 
     $ sudo pip install -U exquires
 
----------------------------------------------------
-Installing latest EXQUIRES dev branch from git repo
----------------------------------------------------
+-------------------------------------------------
+Installing latest **EXQUIRES** development branch
+-------------------------------------------------
 
 * The latest development version can be installed from the GitHub repository:
 

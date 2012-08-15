@@ -1,16 +1,13 @@
-************************************************************
-EXQUIRES: EXtensible QUantitative Image Re-Enlargement Suite
-************************************************************
+*************************************************************
+**EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
+*************************************************************
 
-:Web: `exquires.ca`_
-:PyPI: `exquires package`_
-:Dev: `exquires on GitHub`_
+:Website: `<http://exquires.ca>`_
+:PyPI:    `<http://pypi.python.org/pypi/exquires>`_
+:GitHub:  `<http://github.com/aturcotte/exquires>`_
 :License: `BSD 2-Clause License`_
 :Authors: `Adam Turcotte`_ and `Nicolas Robidoux`_
 
-.. _exquires.ca: http://exquires.ca/
-.. _exquires package: http://pypi.python.org/pypi/exquires
-.. _exquires on GitHub: http://github.com/aturcotte/exquires
 .. _BSD 2-Clause License: http://www.opensource.org/licenses/bsd-license.php
 .. _Adam Turcotte: mailto:adam.turcotte@gmail.com
 .. _Nicolas Robidoux: mailto:nicolas.robidoux@gmail.com

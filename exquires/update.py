@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
 #
 
 """Compute new error data for changes to the user-specified project file.

@@ -6,34 +6,34 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
 #
 
 """Print the result of calling a difference metric on two image files.
 
   **Difference Metrics:**
 
-    ========= ==========================================================
-    NAME      DESCRIPTION
-    ========= ==========================================================
-    srgb_1    :math:`\ell_1` norm, aka Average Absolute Error (AAE)
-    srgb_2    :math:`\ell_2` norm, aka Root Mean Squared Error (RMSE)
-    srgb_4    :math:`\ell_4` norm
-    srgb_inf  :math:`\ell_\infty` norm, aka Maximum Absolute Error (MAE)
-    cmc_1     :math:`\ell_1` norm in CMC(1:1) colour space
-    cmc_2     :math:`\ell_2` norm in CMC(1:1) colour space
-    cmc_4     :math:`\ell_4` norm in CMC(1:1) colour space
-    cmc_inf   :math:`\ell_\infty` norm in CMC(1:1) colour space
-    xyz_1     :math:`\ell_1` norm in XYZ colour space
-    xyz_2     :math:`\ell_2` norm in XYZ colour space
-    xyz_4     :math:`\ell_4` norm in XYZ colour space
-    xyz_inf   :math:`\ell_\infty` norm in XYZ colour space
-    blur_1    MSSIM-inspired :math:`\ell_1` norm
-    blur_2    MSSIM-inspired :math:`\ell_2` norm
-    blur_4    MSSIM-inspired :math:`\ell_4` norm
-    blur_inf  MSSIM-inspired :math:`\ell_\infty` norm
-    mssim     Mean Structural Similarity Index (MSSIM)
-    ========= ==========================================================
+    =========== =================================================
+    NAME        DESCRIPTION
+    =========== =================================================
+    srgb_1      :math:`\ell_1` norm in sRGB colour space
+    srgb_2      :math:`\ell_2` norm in sRGB colour space
+    srgb_4      :math:`\ell_4` norm in sRGB colour space
+    srgb_inf    :math:`\ell_\infty` norm in sRGB colour space
+    cmc_1       :math:`\ell_1` norm using the CMC(1:1) colour difference
+    cmc_2       :math:`\ell_2` norm using the CMC(1:1) colour difference
+    cmc_4       :math:`\ell_4` norm using the CMC(1:1) colour difference
+    cmc_inf     :math:`\ell_\infty` norm using the CMC(1:1) colour difference
+    xyz_1       :math:`\ell_1` norm in XYZ colour space
+    xyz_2       :math:`\ell_2` norm in XYZ colour space
+    xyz_4       :math:`\ell_4` norm in XYZ colour space
+    xyz_inf     :math:`\ell_\infty` norm in XYZ colour space
+    blur_1      MSSIM-inspired :math:`\ell_1` norm
+    blur_2      MSSIM-inspired :math:`\ell_2` norm
+    blur_4      MSSIM-inspired :math:`\ell_4` norm
+    blur_inf    MSSIM-inspired :math:`\ell_\infty` norm
+    mssim       Mean Structural Similarity Index (MSSIM)
+    =========== =================================================
 
 """
 
@@ -88,15 +88,18 @@ class Metrics(object):
         self.intent = 1    # IM_INTENT_RELATIVE_COLORIMETRIC
 
     def srgb_1(self):
-        """Compute :math:`\ell_1` error, aka Average Absolute Error (AAE).
+        """Compute :math:`\ell_1` error in sRGB colour space.
 
-        The equation for the :math:`\ell_1` error is
+        The equation for the :math:`\ell_1` error, aka Average Absolute Error
+        (AAE), is
 
         .. math::
+            :label: l_1
 
-            AAE(x,y) = \\frac{1}{N} \sum_{i=1}^{N} |x_i - y_i|
+            \ell_1(x,y) = \\frac{1}{N} \sum_{i=1}^{N} |x_i - y_i|
 
-        where :math:`x` and :math:`y` are the images to compare.
+        where :math:`x` and :math:`y` are the images to compare, each
+        consisting of :math:`N` pixels.
 
         :return: :math:`\ell_1` error
         :rtype:  `float`
@@ -106,15 +109,18 @@ class Metrics(object):
         return diff * 100
 
     def srgb_2(self):
-        """Compute :math:`\ell_2` error, aka Root Mean Squared Error (RMSE).
+        """Compute :math:`\ell_2` error in sRGB colour space.
 
-        The equation for the :math:`\ell_2` error is
+        The equation for the :math:`\ell_2` error, aka Root Mean Squared Error
+        (RMSE), is
 
         .. math::
+            :label: l_2
 
-            RMSE(x,y) = \sqrt{\\frac{1}{N} \sum_{i=1}^{N} (x_i - y_i)^2}
+            \ell_2(x,y) = \sqrt{\\frac{1}{N} \sum_{i=1}^{N} (x_i - y_i)^2}
 
-        where :math:`x` and :math:`y` are the images to compare.
+        where :math:`x` and :math:`y` are the images to compare, each
+        consisting of :math:`N` pixels.
 
         :return: :math:`\ell_2` error
         :rtype:  `float`
@@ -124,15 +130,17 @@ class Metrics(object):
         return diff * 100
 
     def srgb_4(self):
-        """Compute :math:`\ell_4` error.
+        """Compute :math:`\ell_4` error in sRGB colour space.
 
         The equation for the :math:`\ell_4` error is
 
         .. math::
+            :label: l_4
 
             \ell_4(x,y) = \sqrt[4]{\\frac{1}{N} \sum_{i=1}^{N} (x_i - y_i)^4}
 
-        where :math:`x` and :math:`y` are the images to compare.
+        where :math:`x` and :math:`y` are the images to compare, each
+        consisting of :math:`N` pixels.
 
         :return: :math:`\ell_4` error
         :rtype:  `float`
@@ -142,15 +150,18 @@ class Metrics(object):
         return diff * 100
 
     def srgb_inf(self):
-        """Compute :math:`\ell_\infty` error, aka Maximum Absolute Error (MAE).
+        """Compute :math:`\ell_\infty` error in sRGB colour space.
 
-        The equation for the :math:`\ell_\infty` error is
+        The equation for the :math:`\ell_\infty` error, aka Maximum Absolute
+        Error (MAE), is
 
         .. math::
+            :label: l_inf
 
-            MAE(x,y) = \max_{1 \le i \le N} |x_i - y_i|
+            \ell_\infty(x,y) = \max_{1 \le i \le N} |x_i - y_i|
 
-        where :math:`x` and :math:`y` are the images to compare.
+        where :math:`x` and :math:`y` are the images to compare, each
+        consisting of :math:`N` pixels.
 
         :return: :math:`\ell_\infty` error
         :rtype:  `float`
@@ -165,6 +176,7 @@ class Metrics(object):
         The equation for SSIM is
 
         .. math::
+            :label: ssim
 
             SSIM(x,y) = \\frac{(2\mu_x\mu_y + C_1)(2\sigma_{xy} + C_2)}
                     {(\mu_x^2 + \mu_y^2 + C_1)(\sigma_x^2 + \sigma_y^2 + C_2)}
@@ -174,8 +186,6 @@ class Metrics(object):
         :math:`\sigma_{xy}` is the correlation coefficient between images
         :math:`x` and :math:`y`.
 
-        Note that the image is converted to grayscale. ELABORATE.
-
         Once the SSIM map is computed, the border is trimmed by 5 pixels and
         the mean is returned.
 
@@ -183,11 +193,16 @@ class Metrics(object):
         Wang et. al. because it reduces the number of Gaussian blurs from 5 to
         4.
 
+        .. note::
+
+            The images are converted to grayscale before applying
+            Gaussian blur. The grayscale conversion is equivalent to taking
+            the Y channel in YIQ colour space.
+
         :return: mean SSIM
         :rtype:  `float`
 
         """
-
         # Compute the SSIM constants from the highest possible pixel value.
         const1 = (0.01 * self.maxval) ** 2
         const_sum = const1 + (0.03 * self.maxval) ** 2
@@ -226,6 +241,14 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_1` error of the cropped
         image.
 
+        See :eq:`l_1` for details on how the blurred images are compared.
+
+        .. note::
+
+            The images are converted to grayscale before applying
+            Gaussian blur. The grayscale conversion is equivalent to taking
+            the Y channel in YIQ colour space.
+
         :return: MSSIM-inspired :math:`\ell_1` error
         :rtype:  `float`
 
@@ -253,6 +276,14 @@ class Metrics(object):
         This method performs the same greyscale conversion, Gaussian blur, and
         cropping as MSSIM, but returns the :math:`\ell_2` error of the cropped
         image.
+
+        See :eq:`l_2` for details on how the blurred images are compared.
+
+        .. note::
+
+            The images are converted to grayscale before applying
+            Gaussian blur. The grayscale conversion is equivalent to taking
+            the Y channel in YIQ colour space.
 
         :return: MSSIM-inspired :math:`\ell_2` error
         :rtype:  `float`
@@ -282,6 +313,14 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_4` error of the cropped
         image.
 
+        See :eq:`l_4` for details on how the blurred images are compared.
+
+        .. note::
+
+            The images are converted to grayscale before applying
+            Gaussian blur. The grayscale conversion is equivalent to taking
+            the Y channel in YIQ colour space.
+
         :return: MSSIM-inspired :math:`\ell_4` error
         :rtype:  `float`
 
@@ -310,6 +349,14 @@ class Metrics(object):
         cropping as MSSIM, but returns the :math:`\ell_\infty` error of the
         cropped image.
 
+        See :eq:`l_inf` for details on how the blurred images are compared.
+
+        .. note::
+
+            The images are converted to grayscale before applying
+            Gaussian blur. The grayscale conversion is equivalent to taking
+            the Y channel in YIQ colour space.
+
         :return: MSSIM-inspired :math:`\ell_\infty` error
         :rtype:  `float`
 
@@ -337,6 +384,9 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the average.
 
+        See :eq:`l_1` for details on how the standard :math:`\ell_1` norm is
+        computed.
+
         :return: :math:`\ell_1` error in Uniform Colour Space (UCS)
         :rtype:  `float`
 
@@ -350,6 +400,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_2` norm.
+
+        See :eq:`l_2` for details on how the standard :math:`\ell_2` norm is
+        computed.
 
         :return: :math:`\ell_2` error in Uniform Colour Space (UCS)
         :rtype:  `float`
@@ -365,6 +418,9 @@ class Metrics(object):
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_4` norm.
 
+        See :eq:`l_4` for details on how the standard :math:`\ell_4` norm is
+        computed.
+
         :return: :math:`\ell_4` error in Uniform Colour Space (UCS)
         :rtype:  `float`
 
@@ -378,6 +434,9 @@ class Metrics(object):
 
         This method imports the images into Lab colour space, then calculates
         delta-E CMC(1:1) and returns the :math:`\ell_\infty` norm.
+
+        See :eq:`l_inf` for details on how the standard :math:`\ell_\infty`
+        norm is computed.
 
         :return: :math:`\ell_\infty` error in Uniform Colour Space (UCS)
         :rtype:  `float`
@@ -393,6 +452,9 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_1` error.
 
+        See :eq:`l_1` for details on how the standard :math:`\ell_1` norm is
+        computed.
+
         :return: :math:`\ell_1` error in XYZ Colour Space
         :rtype:  `float`
 
@@ -406,6 +468,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_2` error.
+
+        See :eq:`l_2` for details on how the standard :math:`\ell_2` norm is
+        computed.
 
         :return: :math:`\ell_2` error in XYZ Colour Space
         :rtype:  `float`
@@ -421,6 +486,9 @@ class Metrics(object):
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_4` error.
 
+        See :eq:`l_4` for details on how the standard :math:`\ell_4` norm is
+        computed.
+
         :return: :math:`\ell_4` error in XYZ Colour Space
         :rtype:  `float`
 
@@ -434,6 +502,9 @@ class Metrics(object):
 
         This method imports the images into XYZ colour space, then calculates
         the :math:`\ell_\infty` error.
+
+        See :eq:`l_inf` for details on how the standard :math:`\ell_\infty`
+        norm is computed.
 
         :return: :math:`\ell_\infty` error in XYZ Colour Space
         :rtype:  `float`

@@ -2,17 +2,6 @@
 **EXQUIRES** Documentation
 **************************
 
-:Name: **EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
-:Website: `<http://exquires.ca>`_
-:PyPI:    `<http://pypi.python.org/pypi/exquires>`_
-:GitHub:  `<http://github.com/aturcotte/exquires>`_
-:License: `BSD 2-Clause License`_
-:Authors: `Adam Turcotte`_ and `Nicolas Robidoux`_
-
-.. _BSD 2-Clause License: http://www.opensource.org/licenses/bsd-license.php
-.. _Adam Turcotte: mailto:adam.turcotte@gmail.com
-.. _Nicolas Robidoux: mailto:nicolas.robidoux@gmail.com
-
 ====================
 Online Documentation
 ====================

@@ -24,7 +24,7 @@ metrics, or to measure the impact of various factors, including test image
 selection and properties, downsampler choice, resizing ratio, etc.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     ABOUT
     README

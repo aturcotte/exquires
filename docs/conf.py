@@ -63,7 +63,7 @@ release = '0.9.9'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-today = 'August 13, 2012'
+today = 'August 15, 2012'
 # Else, today_fmt is used as the format for a strftime call.
 #today_fmt = '%B %d, %Y'
 
@@ -218,7 +218,26 @@ latex_show_pagerefs = True
 #latex_show_urls = False
 
 # Additional stuff for the LaTeX preamble.
-latex_preamble = '\setcounter{tocdepth}{2}'
+latex_preamble = r'''
+\setcounter{tocdepth}{2}
+\renewcommand{\Verbatim}[1][1]{%
+  % list starts new par, but we don't want it to be set apart vertically
+  \bgroup\parskip=0pt%
+  \smallskip%
+  % The list environement is needed to control perfectly the vertical
+  % space.
+  \list{}{%
+  \setlength\parskip{0pt}%
+  \setlength\itemsep{0ex}%
+  \setlength\topsep{0ex}%
+  \setlength\partopsep{0pt}%
+  \setlength\leftmargin{0pt}%
+  }%
+  \item\MakeFramed {\FrameRestore}%
+     \footnotesize%
+    \OriginalVerbatim[#1]%
+}
+'''
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

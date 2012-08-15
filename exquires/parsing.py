@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
 #
 
 """Classes and methods used for parsing arguments and formatting help text."""
@@ -231,7 +231,7 @@ class StatsParser(ExquiresParser):
             # Anchor option (sorting for exquires-correlate).
             self.add_argument('-a', '--anchor', metavar='ANCHOR', type=str,
                               action=AnchorAction, default=None,
-                              help='order matrix rows/cols around this one')
+                              help='sort using this anchor (default: none)')
         else:
             # Sort option.
             self.add_argument('-s', '--sort', metavar='METRIC', type=str,

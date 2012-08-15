@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
 #
 
 """Generate a new project file to use with :ref:`exquires-run`.
@@ -527,10 +527,10 @@ def _add_default_metrics(ini):
         '        0 = ascending',
         '        1 = descending'
     ]
-    ini[metrics]['l_1'] = _metric('l_1', 'l_1', 0)
-    ini[metrics]['l_2'] = _metric('l_2', 'l_2', 0)
-    ini[metrics]['l_4'] = _metric('l_4', 'l_4', 0)
-    ini[metrics]['l_inf'] = _metric('l_inf', 'l_inf', 0)
+    ini[metrics]['srgb_1'] = _metric('srgb_1', 'l_1', 0)
+    ini[metrics]['srgb_2'] = _metric('srgb_2', 'l_2', 0)
+    ini[metrics]['srgb_4'] = _metric('srgb_4', 'l_4', 0)
+    ini[metrics]['srgb_inf'] = _metric('srgb_inf', 'l_inf', 0)
     ini[metrics]['cmc_1'] = _metric('cmc_1', 'l_1', 0)
     ini[metrics]['cmc_2'] = _metric('cmc_2', 'l_2', 0)
     ini[metrics]['cmc_4'] = _metric('cmc_4', 'l_4', 0)

@@ -10,6 +10,8 @@ The :mod:`aggregate` Module
 
 .. automodule:: aggregate
 
+.. autofunction:: aggregate.main
+
 ----------------------------
 The :class:`Aggregate` Class
 ----------------------------
@@ -18,8 +20,6 @@ The :class:`Aggregate` Class
   :members:
   :private-members:
   :show-inheritance:
-
-.. autofunction:: aggregate.main
 
 .. _compare-module:
 
@@ -30,6 +30,7 @@ The :mod:`compare` Module
 .. automodule:: compare
 
 .. autofunction:: compare._get_blurlist
+.. autofunction:: compare.main
 
 --------------------------
 The :class:`Metrics` Class
