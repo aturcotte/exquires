@@ -65,6 +65,7 @@ params = dict(
     packages=PACKAGES,
     install_requires=REQUIREMENTS,
     package_data={'exquires': DATA_FILES},
+    exclude_package_data={'exquires': ['*.pyc']},
 
     # Metadata for PyPI.
     author=AUTHOR,
