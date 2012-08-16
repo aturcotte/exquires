@@ -139,8 +139,8 @@ class Database:
         query = 'SELECT name FROM TABLEDATA WHERE ('
 
         # Append the image names.
-        if args.images:
-            for image in args.images:
+        if args.image:
+            for image in args.image:
                 query = ' '.join([query, 'image = \'{}\' OR'.format(image)])
             query = ''.join([query.rstrip(' OR'), ')'])
 

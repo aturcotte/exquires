@@ -27,8 +27,6 @@ aggregate across a subset of the database.
 
 """
 
-import argparse
-
 from operator import itemgetter
 
 from exquires import database, parsing, stats
@@ -96,11 +94,7 @@ def _print_table(args):
     dbase = database.Database(args.dbase_file)
 
     # Get a list of table names to aggregate across.
-    table_args = argparse.Namespace()
-    table_args.images = args.image
-    table_args.downsamplers = args.down
-    table_args.ratios = args.ratio
-    tables = dbase.get_tables(table_args)
+    tables = dbase.get_tables(args)
 
     # Get the table (list of lists) of aggregate image difference data.
     printdata = stats.get_aggregate_table(dbase, args.up,
