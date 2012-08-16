@@ -1,6 +1,6 @@
-*************************************************************
-**EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
-*************************************************************
+******************************************************************
+**EXQUIRES** (EXtensible QUantitative Image RESampling) test suite
+******************************************************************
 
 :Website: `<http://exquires.ca>`_
 :PyPI:    `<http://pypi.python.org/pypi/exquires>`_

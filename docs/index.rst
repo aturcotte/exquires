@@ -1,6 +1,6 @@
-*************************************************************
-**EXQUIRES** (EXtensible QUantitative Image RESampling) Suite
-*************************************************************
+**********************************************************************
+The **EXQUIRES** (EXtensible QUantitative Image RESampling) Test Suite
+**********************************************************************
 
 .. image:: _images/exquires-logo.png
 
@@ -18,10 +18,11 @@
 
 ----
 
-**EXQUIRES** is an open source framework for assessing the accuracy of image
-upsampling methods. **EXQUIRES** can also be used to compare image difference
-metrics, or to measure the impact of various factors, including test image
-selection and properties, downsampler choice, resizing ratio, etc.
+The **EXQUIRES** test suite is an open source framework for assessing the
+accuracy of image upsampling methods. **EXQUIRES** can also be used to compare
+image difference metrics, or to measure the impact of various factors,
+including test image selection and properties, downsampler choice, resizing
+ratio, etc.
 
 .. toctree::
     :maxdepth: 3

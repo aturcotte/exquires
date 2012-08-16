@@ -5,8 +5,8 @@
 #                      Nicolas Robidoux (nicolas.robidoux@gmail.com)
 #  License: BSD 2-Clause License
 #
-#  This file is part of
-#  EXQUIRES | EXtensible QUantitative Image Re-Enlargement Suite
+#  This file is part of the 
+#  EXQUIRES (EXtensible QUantitative Image RESampling) test suite
 #
 
 """
@@ -28,7 +28,7 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'exquires'
 PACKAGES = find_packages(exclude=['ez_setup'])
-DESCRIPTION = 'EXQUIRES (EXtensible QUantitative Image RESampling) Suite'
+DESCRIPTION = 'EXQUIRES (EXtensible QUantitative Image RESampling) test suite'
 URL = 'http://exquires.ca'
 LICENSE = 'BSD 2-Clause (http://www.opensource.org/licenses/bsd-license.php)'
 LONG_DESCRIPTION = open(os.path.join(this_dir, 'README.rst')).read()

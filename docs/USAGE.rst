@@ -570,8 +570,8 @@ Generating a Spearman's rank cross-correlation matrix
 In addition to using :ref:`exquires-report` with the
 :option:`-r`/:option:`--rank` or :option:`-m`/:option:`--merge` options, which
 produce tables of Spearman (fractional) ranks, you can use
-:ref:`exquires-correlate`compute Spearman's rank cross-correlation matrices for
-several different groups.
+:ref:`exquires-correlate` to compute Spearman's rank cross-correlation matrices
+for several different groups.
 
 The basic syntax to print a cross-correlation matrix using
 :ref:`exquires-correlate` is:

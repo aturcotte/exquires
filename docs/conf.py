@@ -199,7 +199,7 @@ htmlhelp_basename = 'exquiresdoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index_latex', 'exquires.tex',
-   u'EXQUIRES (EXtensible QUantitative Image RESampling) Suite',
+   u'The EXQUIRES (EXtensible QUantitative Image RESampling) Test Suite',
    u'Adam Turcotte and Nicolas Robidoux', 'manual'),
 ]
 
@@ -252,6 +252,6 @@ latex_preamble = r'''
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'exquires',
-     u'EXQUIRES (EXtensible QUantitative Image RESampling) Suite',
+     u'The EXQUIRES (EXtensible QUantitative Image RESampling) Test Suite',
      [u'Adam Turcotte and Nicolas Robidoux'], 1)
 ]

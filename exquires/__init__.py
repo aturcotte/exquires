@@ -6,7 +6,7 @@
 #  License: BSD 2-Clause License
 #
 #  This file is part of the
-#  EXQUIRES (EXtensible QUantitative Image RESampling) Suite
+#  EXQUIRES (EXtensible QUantitative Image RESampling) test suite
 #
 
 """Package file for **EXQUIRES**."""

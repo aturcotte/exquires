@@ -1,6 +1,6 @@
-******************
-About **EXQUIRES**
-******************
+*********************************
+About the **EXQUIRES** Test Suite
+*********************************
 
 .. image:: _images/exquires-logo.png
 
@@ -22,11 +22,11 @@ About **EXQUIRES**
 What is **EXQUIRES**?
 =====================
 
-The **EXQUIRES** suite (hereby referred to as **EXQUIRES**) is an open source
-framework for assessing the accuracy of image upsampling methods. **EXQUIRES**
-can also be used to compare image difference metrics, or to measure the impact
-of various factors, including test image selection and properties, downsampler
-choice, resizing ratio, etc.
+The **EXQUIRES** test suite (hereby referred to as **EXQUIRES**) is an open
+source framework for assessing the accuracy of image upsampling methods.
+**EXQUIRES** can also be used to compare image difference metrics, or to
+measure the impact of various factors, including test image selection and
+properties, downsampler choice, resizing ratio, etc.
 
 An upsampler's performance is based on its ability to reconstruct test images
 from various reduced versions. The downsampler used to reduce the images has an

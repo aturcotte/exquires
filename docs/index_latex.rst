@@ -1,6 +1,6 @@
-*********************************************************
-EXQUIRES (EXtensible QUantitative Image RESampling) Suite
-*********************************************************
+******************************************************************
+The EXQUIRES (EXtensible QUantitative Image RESampling) Test Suite
+******************************************************************
 
 .. toctree::
     :maxdepth: 2
