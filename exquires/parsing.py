@@ -59,9 +59,6 @@ def _format_doc(docstring):
     :rtype:           `string`
 
     """
-    # Deal with directives.
-    file1 = re.sub(':file:`', r
-
     # Deal with directives and LaTeX math symbols.
     dir1 = re.sub(r':file:`', r'\033[4m', docstring)
     dir2 = re.sub(r':\S+:`', r'\033[1m', dir1)
