@@ -11,10 +11,6 @@
 
 """Generate a new project file to use with :ref:`exquires-run`.
 
-For the specified project name and list of images, a default project file will
-be created with the name $PROJECT.ini. Manually edit this file to customize
-your project.
-
 The project file is used to specify the following components of the suite:
 
     * Images ( sRGB TIFF | 16 bits/sample (48/pixel) | 840x840 pixels )
@@ -22,6 +18,19 @@ The project file is used to specify the following components of the suite:
     * Resampling Ratios
     * Upsamplers
     * Difference Metrics
+
+For the specified project name and list of images, a default project file will
+be created with the name :file:`PROJECT.ini`, where :file:`PROJECT` is a name
+specified using the :option:`-p`\:option:`--proj` option. If a name is not
+specified, the default name is :file:`project1`.
+
+Use the :option:`-I`\:option:`--image` option to provide a list of images to
+include in the project file. If no images are specified, a default image
+(:file:`wave.tif`) is included in the project file.
+
+Manually edit this file to customize your project.
+
+This is *wave.tif* with emphasis.
 
 """
 

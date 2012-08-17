@@ -215,29 +215,19 @@ latex_logo = '_images/exquires-logo.png'
 latex_show_pagerefs = True
 
 # If true, show URL addresses after external links.
-#latex_show_urls = False
+#latex_show_urls = 'footnote'
 
 # Additional stuff for the LaTeX preamble.
-latex_preamble = r'''
-\setcounter{tocdepth}{2}
-\renewcommand{\Verbatim}[1][1]{%
-  % list starts new par, but we don't want it to be set apart vertically
-  \bgroup\parskip=0pt%
-  \smallskip%
-  % The list environement is needed to control perfectly the vertical
-  % space.
-  \list{}{%
-  \setlength\parskip{0pt}%
-  \setlength\itemsep{0ex}%
-  \setlength\topsep{0ex}%
-  \setlength\partopsep{0pt}%
-  \setlength\leftmargin{0pt}%
-  }%
-  \item\MakeFramed {\FrameRestore}%
-     \footnotesize%
-    \OriginalVerbatim[#1]%
-}
-'''
+latex_elements = {'papersize':'landscape',
+                  'preamble':'\\setcounter{tocdepth}{2}'}
+
+#\usepackage{pdflscape}
+#\setlength {\topmargin}{-0.0125in}
+#\setlength {\textheight}{\paperheight-2.35in}
+#\setlength {\oddsidemargin}{0.5in}
+#\setlength {\evensidemargin}{0.0in}
+#\setlength {\textwidth}{\paperwidth-2.5in}
+#\setlength {\footskip}{.35in}
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

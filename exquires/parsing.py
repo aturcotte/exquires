@@ -60,24 +60,19 @@ def _format_doc(docstring):
 
     """
     # Deal with directives and LaTeX math symbols.
-    latex1 = re.sub('`', '', re.sub(r':\S+:', '', docstring))
+    latex1 = re.sub('`', r'\033[1m', re.sub(r':\S+:`', r'\033[4m', docstring))
     latex2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', latex1))
 
     # Deal with list items.
     item1 = re.sub(r'    \* ', u'    \u2022 ', latex2)
 
-    # Deal with Sphinx bold formatting.
+    # Deal with bold formatting.
     bold1 = re.sub(r' \*{2}', r' \033[1m', item1)
     bold2 = re.sub(r'^\*{2}', r'^\033[1m', bold1)
     bold3 = re.sub(r'\*{2} ', r'\033[0m ', bold2)
     bold4 = re.sub(r'\*{2},', r'\033[0m,', bold3)
     bold5 = re.sub(r'\*{2}.', r'\033[0m.', bold4)
-    bold6 = re.sub(r'\*{2}$', r'\033[0m$', bold5)
-
-    # Deal with Sphinx emphasis formatting.
-    emph1 = re.sub(r'^\*', r'^\033[4m', re.sub(r' \*', r' \033[4m', bold6))
-    emph2 = re.sub(r'\*,', r'\033[0m,', re.sub(r'\* ', r'\033[0m ', emph1))
-    return re.sub(r'\*$', r'\033[0m$', re.sub(r'\*.', r'\033[0m.', emph2))
+    return re.sub(r'\*{2}$', r'\033[0m$', bold5)
 
 
 class ExquiresParser(argparse.ArgumentParser):
