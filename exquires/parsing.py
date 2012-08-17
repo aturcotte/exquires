@@ -60,7 +60,7 @@ def _format_doc(docstring):
 
     """
     # Deal with directives and LaTeX math symbols.
-    latex1 = re.sub('`', r'\033[1m', re.sub(r':\S+:`', r'\033[4m', docstring))
+    latex1 = re.sub('`', r'\033[0m', re.sub(r':\S+:`', r'\033[1m', docstring))
     latex2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', latex1))
 
     # Deal with list items.
