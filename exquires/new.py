@@ -30,8 +30,6 @@ include in the project file. If no images are specified, a default image
 
 Manually edit this file to customize your project.
 
-This is *wave.tif* with emphasis.
-
 """
 
 from os import path

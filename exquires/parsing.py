@@ -59,12 +59,17 @@ def _format_doc(docstring):
     :rtype:           `string`
 
     """
+    # Deal with directives.
+    file1 = re.sub(':file:`', r
+
     # Deal with directives and LaTeX math symbols.
-    latex1 = re.sub('`', r'\033[0m', re.sub(r':\S+:`', r'\033[1m', docstring))
-    latex2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', latex1))
+    dir1 = re.sub(r':file:`', r'\033[4m', docstring)
+    dir2 = re.sub(r':\S+:`', r'\033[1m', dir1)
+    dir3 = re.sub('`', r'\033[0m', dir2)
+    dir4 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', dir3))
 
     # Deal with list items.
-    item1 = re.sub(r'    \* ', u'    \u2022 ', latex2)
+    item1 = re.sub(r'    \* ', u'    \u2022 ', dir4)
 
     # Deal with bold formatting.
     bold1 = re.sub(r' \*{2}', r' \033[1m', item1)
