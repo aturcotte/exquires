@@ -42,6 +42,8 @@ from exquires import parsing
 def _magick(method, **kwargs):
     """Return an ImageMagick resize command as a string.
 
+    Blur and Kaiser beta values are passed as strings to avoid truncation.
+
     .. note::
 
         This is a private function called by :func:`_add_default_downsamplers`,
@@ -61,8 +63,8 @@ def _magick(method, **kwargs):
     :type lin:     `boolean`
     :type dist:    `boolean`
     :type lobes:   `integer`
-    :type blur:    `float`
-    :type beta:    `float`
+    :type blur:    `string`
+    :type beta:    `string`
 
     :return:       the ImageMagick command
     :rtype:        `string`
@@ -74,8 +76,8 @@ def _magick(method, **kwargs):
     dist = kwargs.get('dist', False)
     interp = kwargs.get('interp', False)
     lobes = kwargs.get('lobes', 0)
-    blur = kwargs.get('blur', 0)
-    beta = kwargs.get('beta', 0)
+    blur = kwargs.get('blur', None)
+    beta = kwargs.get('beta', None)
 
     # Create and return command string.
     cmd = 'magick {0}'
@@ -86,9 +88,9 @@ def _magick(method, **kwargs):
     if lobes:
         cmd = ''.join([cmd, ' -define filter:lobes=', str(lobes)])
     if blur:
-        cmd = ''.join([cmd, ' -define filter:blur=', str(blur)])
+        cmd = ''.join([cmd, ' -define filter:blur=', blur])
     if beta:
-        cmd = ''.join([cmd, ' -define filter:kaiser-beta=', str(beta)])
+        cmd = ''.join([cmd, ' -define filter:kaiser-beta=', beta])
     if interp:
         cmd = ' '.join([cmd, '-interpolative-resize {3}x{3}'])
     elif dist:
@@ -206,9 +208,8 @@ def _add_default_downsamplers(ini):
     ini[downs]['ewa_lanczos3_linear'] = _magick('Lanczos', dist=True, lin=True)
     ini[downs]['lanczos3_srgb'] = _magick('Lanczos')
     ini[downs]['lanczos3_linear'] = _magick('Lanczos', lin=True)
-    ini[downs]['nearest_srgb'] = _magick('Triangle', interp=True, blur=0)
-    ini[downs]['nearest_linear'] = _magick('Triangle', interp=True, blur=0,
-                                           lin=True)
+    ini[downs]['nearest_srgb'] = _magick('Triangle', interp=True)
+    ini[downs]['nearest_linear'] = _magick('Triangle', interp=True, lin=True)
 
 
 def _std_int_lin_tensor_mtds_1(ini_ups):
@@ -310,36 +311,36 @@ def _novel_int_lin_flt_mtds(ini_ups):
     :type ini_ups:  `dict`
 
     """
-    ini_ups['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta=5.36)
-    ini_ups['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta=5.36,
+    ini_ups['kaiser2_srgb'] = _magick('Kaiser', lobes=2, beta='5.36')
+    ini_ups['kaiser2_linear'] = _magick('Kaiser', lobes=2, beta='5.36',
                                          lin=True)
-    ini_ups['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta=8.93)
-    ini_ups['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta=8.93,
+    ini_ups['kaiser3_srgb'] = _magick('Kaiser', lobes=3, beta='8.93')
+    ini_ups['kaiser3_linear'] = _magick('Kaiser', lobes=3, beta='8.93',
                                          lin=True)
-    ini_ups['kaiser4_srgb'] = _magick('Kaiser', beta=12.15)
-    ini_ups['kaiser4_linear'] = _magick('Kaiser', beta=12.15, lin=True)
-    ini_ups['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
-                                          beta=4.7123889803846899)
-    ini_ups['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                            beta=4.7123889803846899)
-    ini_ups['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
-                                          beta=7.853981633974483)
-    ini_ups['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                            beta=7.853981633974483)
-    ini_ups['kaisersoft4_srgb'] = _magick('Kaiser', beta=10.995574287564276)
-    ini_ups['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
-                                            beta=10.995574287564276)
+    ini_ups['kaiser4_srgb'] = _magick('Kaiser', beta='12.15')
+    ini_ups['kaiser4_linear'] = _magick('Kaiser', beta='12.15', lin=True)
     ini_ups['kaisersharp2_srgb'] = _magick('Kaiser', lobes=2,
-                                           beta=6.2831853071795865)
+                                          beta='4.7123889803846899')
     ini_ups['kaisersharp2_linear'] = _magick('Kaiser', lobes=2, lin=True,
-                                             beta=6.2831853071795865)
+                                            beta='4.7123889803846899')
     ini_ups['kaisersharp3_srgb'] = _magick('Kaiser', lobes=3,
-                                           beta=9.4247779607693797)
+                                          beta='7.853981633974483')
     ini_ups['kaisersharp3_linear'] = _magick('Kaiser', lobes=3, lin=True,
-                                             beta=9.4247779607693797)
-    ini_ups['kaisersharp4_srgb'] = _magick('Kaiser', beta=12.566370614359173)
+                                            beta='7.853981633974483')
+    ini_ups['kaisersharp4_srgb'] = _magick('Kaiser', beta='10.995574287564276')
     ini_ups['kaisersharp4_linear'] = _magick('Kaiser', lin=True,
-                                             beta=12.566370614359173)
+                                            beta='10.995574287564276')
+    ini_ups['kaisersoft2_srgb'] = _magick('Kaiser', lobes=2,
+                                           beta='6.2831853071795865')
+    ini_ups['kaisersoft2_linear'] = _magick('Kaiser', lobes=2, lin=True,
+                                             beta='6.2831853071795865')
+    ini_ups['kaisersoft3_srgb'] = _magick('Kaiser', lobes=3,
+                                           beta='9.4247779607693797')
+    ini_ups['kaisersoft3_linear'] = _magick('Kaiser', lobes=3, lin=True,
+                                             beta='9.4247779607693797')
+    ini_ups['kaisersoft4_srgb'] = _magick('Kaiser', beta='12.566370614359173')
+    ini_ups['kaisersoft4_linear'] = _magick('Kaiser', lin=True,
+                                             beta='12.566370614359173')
 
 
 def _std_nonint_lin_tensor_mtds(ini_ups):
@@ -392,8 +393,8 @@ def _std_nonint_ewa_lin_flt_mtds(ini_ups):
     ini_ups['ewa_quadratic_b_spline_srgb'] = _magick('Quadratic', dist=True)
     ini_ups['ewa_quadratic_b_spline_linear'] = _magick('Quadratic', dist=True,
                                                        lin=True)
-    ini_ups['ewa_cubic_b_spline_srgb'] = _magick('Cubic', dist=True)
-    ini_ups['ewa_cubic_b_spline_linear'] = _magick('Cubic', dist=True,
+    ini_ups['ewa_cubic_b_spline_srgb'] = _magick('Spline', dist=True)
+    ini_ups['ewa_cubic_b_spline_linear'] = _magick('Spline', dist=True,
                                                    lin=True)
     ini_ups['ewa_lanczos2_srgb'] = _magick('Lanczos2', dist=True)
     ini_ups['ewa_lanczos2_linear'] = _magick('Lanczos2', dist=True, lin=True)
@@ -425,53 +426,49 @@ def _novel_nonint_ewa_lin_flt_mtds(ini_ups):
                                                    lin=True)
     ini_ups['ewa_catmull_rom_srgb'] = _magick('Catrom', dist=True)
     ini_ups['ewa_catmull_rom_linear'] = _magick('Catrom', dist=True, lin=True)
-    ini_ups['ewa_lanczosradius2_srgb'] = _magick('Lanczos2', dist=True,
-                                                  blur=.8956036897402793)
-    ini_ups['ewa_lanczosradius2_linear'] = _magick('Lanczos2', dist=True,
-                                                    blur=.8956036897402793,
+    ini_ups['ewa_lanczosradius2_srgb'] = _magick('LanczosRadius', dist=True,
+                                                  lobes=2)
+    ini_ups['ewa_lanczosradius2_linear'] = _magick('LanczosRadius', dist=True,
+                                                    lobes=2,
                                                     lin=True)
-    ini_ups['ewa_lanczosradius3_srgb'] = _magick('Lanczos', dist=True,
-                                                  blur=.9264075766146068)
-    ini_ups['ewa_lanczosradius3_linear'] = _magick('Lanczos', dist=True,
-                                                    blur=.9264075766146068,
+    ini_ups['ewa_lanczosradius3_srgb'] = _magick('LanczosRadius', dist=True)
+    ini_ups['ewa_lanczosradius3_linear'] = _magick('LanczosRadius', dist=True,
                                                     lin=True)
-    ini_ups['ewa_lanczosradius4_srgb'] = _magick('Lanczos', lobes=4,
-                                                  dist=True,
-                                                  blur=.9431597994328477)
-    ini_ups['ewa_lanczosradius4_linear'] = _magick('Lanczos', lobes=4,
-                                                    dist=True, lin=True,
-                                                    blur=.9431597994328477)
+    ini_ups['ewa_lanczosradius4_srgb'] = _magick('LanczosRadius', lobes=4,
+                                                  dist=True)
+    ini_ups['ewa_lanczosradius4_linear'] = _magick('LanczosRadius', lobes=4,
+                                                    dist=True, lin=True)
     ini_ups['ewa_lanczos2sharp_srgb'] = _magick('Lanczos2', dist=True,
-                                                blur=.9580278036312191)
+                                                blur='.9580278036312191')
     ini_ups['ewa_lanczos2sharp_linear'] = _magick('Lanczos2', dist=True,
-                                                  blur=.9580278036312191,
+                                                  blur='.9580278036312191',
                                                   lin=True)
     ini_ups['ewa_lanczos3sharp_srgb'] = _magick('Lanczos', dist=True,
-                                                blur=.9891028367558475)
+                                                blur='.9891028367558475')
     ini_ups['ewa_lanczos3sharp_linear'] = _magick('Lanczos', dist=True,
-                                                  blur=.9891028367558475,
+                                                  blur='.9891028367558475',
                                                   lin=True)
     ini_ups['ewa_lanczos4sharp_srgb'] = _magick('Lanczos', lobes=4, dist=True,
-                                                blur=.9870395083298263)
+                                                blur='.9870395083298263')
     ini_ups['ewa_lanczos4sharp_linear'] = _magick('Lanczos', lobes=4,
                                                   dist=True, lin=True,
-                                                  blur=.9870395083298263)
+                                                  blur='.9870395083298263')
     ini_ups['ewa_lanczos2sharpest_srgb'] = _magick('Lanczos2', dist=True,
-                                                   blur=.88826421508540347)
+                                                   blur='.88826421508540347')
     ini_ups['ewa_lanczos2sharpest_linear'] = _magick('Lanczos2', dist=True,
-                                                     blur=.88826421508540347,
+                                                     blur='.88826421508540347',
                                                      lin=True)
     ini_ups['ewa_lanczos3sharpest_srgb'] = _magick('Lanczos', dist=True,
-                                                   blur=.88549061701764)
+                                                   blur='.88549061701764')
     ini_ups['ewa_lanczos3sharpest_linear'] = _magick('Lanczos', dist=True,
-                                                     blur=.88549061701764,
+                                                     blur='.88549061701764',
                                                      lin=True)
     ini_ups['ewa_lanczos4sharpest_srgb'] = _magick('Lanczos', lobes=4,
                                                    dist=True,
-                                                   blur=.88451002338585141)
+                                                   blur='.88451002338585141')
     ini_ups['ewa_lanczos4sharpest_linear'] = _magick('Lanczos', lobes=4,
                                                      dist=True, lin=True,
-                                                     blur=.88451002338585141)
+                                                     blur='.88451002338585141')
 
 
 def _add_default_upsamplers(ini):

@@ -11,4 +11,4 @@
 
 """Package file for **EXQUIRES**."""
 
-__version__ = '0.9.9'
+__version__ = '0.9.9.1'
