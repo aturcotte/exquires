@@ -588,6 +588,10 @@ scale_up (FILE *inputfile,
        */
       input_row_p = input_row;
 
+      /*
+       * Note that the bytes are swapped since standard PPM is big endian
+       * while Intel is little endian
+       */
       c = channels;
       do {
         val = *input_row_p++;
@@ -1053,6 +1057,10 @@ scale_up (FILE *inputfile,
 
     /* write output_row */
     p = (uchar *) output_row;
+
+    /* Swap bytes again, since standard PPM is big endian
+     * while Intel is little endian
+     */
     for (index = 0; index < nn; index++) {
       temp = *p; *p = *(p+1); *(p+1) = temp; p += 2;
       temp = *p; *p = *(p+1); *(p+1) = temp; p += 2;
