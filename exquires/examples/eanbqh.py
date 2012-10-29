@@ -55,12 +55,12 @@ def main():
         call(['magick', args.image_in, temp_in])
 
     # Perform upsampling with EANBQH.
-    call(['eanbqh16', temp_in, temp_out, str(args.size)])
+    call(['eanbqh', temp_in, temp_out, str(args.size)])
 
     # Convert the PPM result back to TIF.
     if args.linear:
-        call(['magick', temp_out, '-set', 'colorspace', 'sRGB',
-              '-colorspace', 'RGB', args.image_out])
+        call(['magick', temp_out, '-set', 'colorspace', 'RGB',
+              '-colorspace', 'sRGB', args.image_out])
     else:
         call(['magick', temp_out, args.image_out])
 

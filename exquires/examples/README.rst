@@ -22,13 +22,9 @@ Lecture Notes in Computer Science 5112, Springer 2008, ISBN 978-3-540-69811-1.
 Compilation
 ===========
 
-* For the version that supports PPM files with 8-bit samples, type::
+* To compile the EANBQH image resampler, type::
 
-     gcc -o eanbqh8 eanbqh8.c -fomit-frame-pointer -O2 -Wall -march=native -lm
-
-* For the version that supports PPM files with 16-bit samples, type::
-
-     gcc -o eanbqh16 eanbqh16.c -fomit-frame-pointer -O2 -Wall -march=native -lm
+     gcc -o eanbqh eanbqh.c -fomit-frame-pointer -O2 -Wall -march=native -lm
 
 
 =====
@@ -37,28 +33,23 @@ Usage
 
 1. Specify output width::
 
-    eanbqh8  input.ppm output.ppm width
-    eanbqh16 input.ppm output.ppm width
+    eanbqh input.ppm output.ppm width
 
 2. Specify output height::
 
-    eanbqh8  input.ppm output.ppm -h height
-    eanbqh16 input.ppm output.ppm -h height
+    eanbqh input.ppm output.ppm -h height
 
 3. Specify output dimensions::
 
-    eanbqh8  input.ppm output.ppm -d width height
-    eanbqh16 input.ppm output.ppm -d width height
+    eanbqh input.ppm output.ppm -d width height
 
 4. Specify the scaling factor::
 
-    eanbqh8  input.ppm output.ppm -s scale
-    eanbqh16 input.ppm output.ppm -s scale
+    eanbqh input.ppm output.ppm -s scale
 
 5. Specify the scaling factor as a percentage::
 
-    eanbqh8  input.ppm output.ppm -p percentage
-    eanbqh16 input.ppm output.ppm -p percentage
+    eanbqh input.ppm output.ppm -p percentage
 
 
 =======================
@@ -66,7 +57,7 @@ EXQUIRES Python Wrapper
 =======================
 
 EXQUIRES is designed to work with sRGB TIFF images with 16 bits per sample
-(48 bits per pixel) and a width and height of 840 pixels. The eanbqh16 program
+(48 bits per pixel) and a width and height of 840 pixels. The eanbqh program
 is designed to work with binary PPM images with 16 bits per sample
 (maxval=65535).
 
