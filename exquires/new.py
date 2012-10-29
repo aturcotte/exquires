@@ -80,7 +80,7 @@ def _magick(method, **kwargs):
     beta = kwargs.get('beta', None)
 
     # Create and return command string.
-    cmd = 'magick {0}'
+    cmd = 'convert {0}'
     if lin:
         cmd = ' '.join([cmd, '-colorspace RGB'])
     if method:
@@ -270,10 +270,10 @@ def _std_int_lin_tensor_mtds_2(ini_ups):
     """
     ini_ups['cosine2_srgb'] = _magick('Cosine', lobes=2)
     ini_ups['cosine2_linear'] = _magick('Cosine', lobes=2, lin=True)
-    ini_ups['cosine3_srgb'] = _magick('Cosine', lobes=3)
-    ini_ups['cosine3_linear'] = _magick('Cosine', lobes=3, lin=True)
-    ini_ups['cosine4_srgb'] = _magick('Cosine')
-    ini_ups['cosine4_linear'] = _magick('Cosine', lin=True)
+    ini_ups['cosine3_srgb'] = _magick('Cosine')
+    ini_ups['cosine3_linear'] = _magick('Cosine', lin=True)
+    ini_ups['cosine4_srgb'] = _magick('Cosine', lobes=4)
+    ini_ups['cosine4_linear'] = _magick('Cosine', lobes=4, lin=True)
     ini_ups['hamming2_srgb'] = _magick('Hamming', lobes=2)
     ini_ups['hamming2_linear'] = _magick('Hamming', lobes=2, lin=True)
     ini_ups['hamming3_srgb'] = _magick('Hamming', lobes=3)
@@ -288,10 +288,10 @@ def _std_int_lin_tensor_mtds_2(ini_ups):
     ini_ups['parzen4_linear'] = _magick('Parzen', lin=True)
     ini_ups['welch2_srgb'] = _magick('Welsh', lobes=2)
     ini_ups['welch2_linear'] = _magick('Welsh', lobes=2, lin=True)
-    ini_ups['welch3_srgb'] = _magick('Welsh', lobes=3)
-    ini_ups['welch3_linear'] = _magick('Welsh', lobes=3, lin=True)
-    ini_ups['welch4_srgb'] = _magick('Welsh')
-    ini_ups['welch4_linear'] = _magick('Welsh', lin=True)
+    ini_ups['welch3_srgb'] = _magick('Welsh')
+    ini_ups['welch3_linear'] = _magick('Welsh'lin=True)
+    ini_ups['welch4_srgb'] = _magick('Welsh', lobes=4)
+    ini_ups['welch4_linear'] = _magick('Welsh', lobes=4, lin=True)
     ini_ups['hann2_srgb'] = _magick('Hanning', lobes=2)
     ini_ups['hann2_linear'] = _magick('Hanning', lobes=2, lin=True)
     ini_ups['hann3_srgb'] = _magick('Hanning', lobes=3)
