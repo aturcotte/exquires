@@ -169,7 +169,7 @@ def _add_default_ratios(ini):
     ]
     ini[ratios]['2'] = '420'
     ini[ratios]['3'] = '280'
-    ini[ratios]['4'] = '240'
+    ini[ratios]['4'] = '210'
     ini[ratios]['5'] = '168'
     ini[ratios]['6'] = '140'
     ini[ratios]['7'] = '120'

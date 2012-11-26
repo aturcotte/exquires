@@ -49,20 +49,20 @@ def main():
 
     # Convert the TIF input to PPM.
     if args.linear:
-        call(['magick', args.image_in, '-set', 'colorspace', 'sRGB',
+        call(['convert', args.image_in, '-set', 'colorspace', 'sRGB',
               '-colorspace', 'RGB', temp_in])
     else:
-        call(['magick', args.image_in, temp_in])
+        call(['convert', args.image_in, temp_in])
 
     # Perform upsampling with EANBQH.
     call(['eanbqh', temp_in, temp_out, str(args.size)])
 
     # Convert the PPM result back to TIF.
     if args.linear:
-        call(['magick', temp_out, '-set', 'colorspace', 'RGB',
+        call(['convert', temp_out, '-set', 'colorspace', 'RGB',
               '-colorspace', 'sRGB', args.image_out])
     else:
-        call(['magick', temp_out, args.image_out])
+        call(['convert', temp_out, args.image_out])
 
     # Delete the temporary PPM files.
     os.remove(temp_in)
