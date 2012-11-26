@@ -169,7 +169,7 @@ height of the downsampled image for each ratio. Here are the default ratios:
     [Ratios]
     2 = 420
     3 = 280
-    4 = 240
+    4 = 210
     5 = 168
     6 = 140
     7 = 120
