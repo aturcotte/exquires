@@ -194,10 +194,11 @@ def _add_default_downsamplers(ini):
         '', 'DOWNSAMPLING COMMANDS',
         'To add a downsampler, provide the command to execute it.',
         'The command can make use of the following replacement fields:',
-        '    {0} = input image',
-        '    {1} = output image',
-        '    {2} = downsampling ratio',
-        '    {3} = downsampled size (width or height)',
+        '{0} = input image',
+        '{1} = output image',
+        '{2} = downsampling ratio',
+        '{3} = downsampled size (width or height)',
+        '',
         'WARNING: Be sure to use a unique name for each downsampler.'
     ]
     ini[downs]['box_srgb'] = _magick('Box')
@@ -489,10 +490,10 @@ def _add_default_upsamplers(ini):
         '', 'UPSAMPLING COMMANDS',
         'To add an upsampler, provide the command to execute it.',
         'The command can make use of the following replacement fields:',
-        '    {0} = input image',
-        '    {1} = output image',
-        '    {2} = upsampling ratio',
-        '    {3} = upsampled size (always 840)'
+        '{0} = input image',
+        '{1} = output image',
+        '{2} = upsampling ratio',
+        '{3} = upsampled size (always 840)'
     ]
 
     _std_int_lin_tensor_mtds_1(ini[ups])
@@ -522,14 +523,17 @@ def _add_default_metrics(ini):
         '', 'IMAGE DIFFERENCE METRICS AND AGGREGATORS',
         'Each metric must be associated with a data aggregation method.',
         'To add a metric, you must provide the following three items:',
-        '    1. Error metric command, using the following replacement fields:',
-        '        {0} = reference image',
-        '        {1} = test image',
-        '    2. Aggregator command, using the following replacement field:',
-        '        {0} = list of error data to aggregate',
-        '    3. Best-to-worst ordering, given as a 0 or 1:',
-        '        0 = ascending',
-        '        1 = descending'
+        '',
+        '1. Error metric command, using the following replacement fields:',
+        '{0} = reference image',
+        '{1} = test image',
+        '',
+        '2. Aggregator command, using the following replacement field:',
+        '{0} = list of error data to aggregate',
+        '',
+        '3. Best-to-worst ordering, given as a 0 or 1:',
+        '0 = ascending',
+        '1 = descending'
     ]
     ini[metrics]['srgb_1'] = _metric('srgb_1', 'l_1', 0)
     ini[metrics]['srgb_2'] = _metric('srgb_2', 'l_2', 0)
