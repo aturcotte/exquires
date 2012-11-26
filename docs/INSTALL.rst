@@ -28,16 +28,15 @@ system dependencies.
 Requirements
 ------------
 
-**EXQUIRES** requires `ImageMagick <http://www.imagemagick.org>`_ **7** from
-May 13, 2012 or later (due to changes to the Kaiser filter),
-`VIPS <http://www.vips.ecs.soton.ac.uk/>`_ **7.24** or newer,
-`Python <http://python.org>`_ **2.7**, and the Python packages
+**EXQUIRES** requires `ImageMagick <http://www.imagemagick.org>`_ 6.8.0-2 or
+newer, `VIPS <http://www.vips.ecs.soton.ac.uk/>`_ 7.24 or newer,
+`Python <http://python.org>`_ 2.7, and the Python packages
 `ConfigObj <http://www.voidspace.org.uk/python/configobj.html>`_ and
 `NumPy <http://numpy.scipy.org/>`_.
 
-------------------------------------------
-Installing ImageMagick 7 alpha from source
-------------------------------------------
+----------------------------------
+Installing ImageMagick from source
+----------------------------------
 
 * Install dependencies on Debian/Ubuntu/Mint:
 
@@ -45,17 +44,18 @@ Installing ImageMagick 7 alpha from source
 
     $ sudo apt-get install imagemagick libmagick++-dev subversion
 
-* Download the ImageMagick 7 development source:
+* Download and extract the ImageMagick source:
 
 .. code-block:: console
 
-    $ svn co https://subversion.imagemagick.org/subversion/ImageMagick-Windows/trunk/ ImageMagick
+    $ wget http://www.imagemagick.org/download/ImageMagick.tar.gz
+    $ tar -zxvf ImageMagick.tar.gz
 
 * Configure, compile and install ImageMagick:
 
 .. code-block:: console
 
-    $ cd ImageMagick/ImageMagick
+    $ cd ImageMagick-6.8.X-X
     $ CFLAGS="-march=native -O2" CXXFLAGS="-march=native -O2" ./configure --enable-hdri
     $ make
     $ sudo make install
@@ -77,7 +77,7 @@ Installing ImageMagick 7 alpha from source
 
 .. code-block:: console
 
-    $ cd ImageMagick/ImageMagick
+    $ cd ImageMagick-6.8.X-X
     $ sudo make uninstall
     $ make clean
     $ svn update
