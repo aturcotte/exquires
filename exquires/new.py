@@ -289,7 +289,7 @@ def _std_int_lin_tensor_mtds_2(ini_ups):
     ini_ups['welch2_srgb'] = _magick('Welsh', lobes=2)
     ini_ups['welch2_linear'] = _magick('Welsh', lobes=2, lin=True)
     ini_ups['welch3_srgb'] = _magick('Welsh')
-    ini_ups['welch3_linear'] = _magick('Welsh'lin=True)
+    ini_ups['welch3_linear'] = _magick('Welsh', lin=True)
     ini_ups['welch4_srgb'] = _magick('Welsh', lobes=4)
     ini_ups['welch4_linear'] = _magick('Welsh', lobes=4, lin=True)
     ini_ups['hann2_srgb'] = _magick('Hanning', lobes=2)

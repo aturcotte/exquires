@@ -27,12 +27,12 @@ ratio, etc.
 .. toctree::
     :maxdepth: 3
 
-    ABOUT
+    about
     README
-    INSTALL
-    USAGE
-    PROGRAMS
-    MODULES
-    LICENSE
-    CHANGELOG
-    TODO
+    install
+    usage
+    programs
+    modules
+    license
+    changelog
+    todo

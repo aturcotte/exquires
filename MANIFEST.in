@@ -3,8 +3,6 @@ include AUTHORS CHANGELOG FAQ INSTALL LICENSE MANIFEST.in
 include NEWS README.rst THANKS TODO
 
 recursive-include docs *
-recursive-include exquires *.py *.icc *.tif *.h *.c *.rst
-
-global-exclude *.pyc
+recursive-include exquires *.py *.icc *.tif *.c *.rst
 
 prune docs/_build
