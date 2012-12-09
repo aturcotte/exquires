@@ -2,8 +2,8 @@
  * (locally bounded bicubic) interpolation resampler
  *
  * This program is a wrapper around the Nohalo implementation found in VIPS.
- * Unfortunately, VIPS does not conform to the pixel convention used in the
- * EXQUIRES test suite. In order to alleviate this problem, the leftmost
+ * Unfortunately, VIPS does not conform to the pixel alignment convention used in
+ * the EXQUIRES test suite. In order to alleviate this problem, the leftmost
  * column of the image is duplicated and the topmost row of the resulting image is
  * duplicated before performing the resampling step.
  *
@@ -11,7 +11,7 @@
  *
  * Code written by Adam Turcotte with contributions by Nicolas Robidoux
  *
- * Published December 6, 2012
+ * Published December 9, 2012
  */
 
 #include <vips/vips>

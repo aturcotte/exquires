@@ -5,6 +5,7 @@ Using **EXQUIRES**
 ******************
 
 .. _ImageMagick: http://www.imagemagick.org
+.. _VIPS: http://www.vips.ecs.soton.ac.uk
 
 ==============
 Usage Overview
@@ -231,9 +232,8 @@ the Downsamplers section.
 
 Since the purpose of **EXQUIRES** is to assess the accuracy of upsampling
 methods, you may wish to add your own method to see how it ranks alongside
-pre-existing methods. For example, we can compare our own implementation of
-the EANBQH (Exact Area image upsizing with Natural BiQuadratic Histosplines)
-method with several Lanczos variations.
+pre-existing methods. For example, we can compare the Nohalo method with
+several Lanczos variations.
 
 .. code-block:: ini
 
@@ -249,15 +249,14 @@ method with several Lanczos variations.
     lanczos2_linear = magick {0} -colorspace RGB -filter Lanczos2 -resize {3}x{3} -colorspace sRGB -strip {1}
     lanczos3_srgb = magick {0} -filter Lanczos -resize {3}x{3} -strip {1}
     lanczos3_linear = magick {0} -colorspace RGB -filter Lanczos -resize {3}x{3} -colorspace sRGB -strip {1}
-    eanbqh_srgb = python eanbqh.py {0} {1} {3}
-    eanbqh_linear = python eanbqh.py --linear {0} {1} {3}
+    nohalo_srgb = nohalo {0} {1} {2} 0
+    nohalo_linear = nohalo {0} {1} {2} 1
 
-Your upsampling program may not be equipped to handle the TIFF formatted images
-used by **EXQUIRES**. Likewise, the :program:`eanbqh16` program is only
-compatible with binary-mode PPM images. An example of bridging this gap is
-found in :download:`eanbqh.py <../exquires/examples/eanbqh.py>`,
-which uses `ImageMagick`_ to manage the conversions between the two image
-formats.
+The :program:`nohalo` program is found in
+:download:`nohalo.cpp <../exquires/examples/nohalo.cpp>`,
+which uses `VIPS`_ to resample the image (using a trick to produce a result
+that conforms to the proper pixel alignment convention). For more information
+on this method, see :ref:`example`.
 
 ^^^^^^^
 Metrics
