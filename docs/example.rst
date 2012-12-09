@@ -40,7 +40,7 @@ Configuration
 =============
 
 The Nohalo program relies on an external sRGB profile. A valid profile is
-included with the **EXQUIRES** test suite. Before compiling :file:`nohalo.cpp`
+included with the **EXQUIRES** test suite. Before compiling `nohalo.cpp`
 you must configure the `profile` variable to point to a valid sRGB profile. If
 you have installed **EXQUIRES** for Python 2.7, you should find a valid profile
 here::
