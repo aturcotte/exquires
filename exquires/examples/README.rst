@@ -35,6 +35,43 @@ instead of LBB), see:
     `<http://doi.acm.org/10.1145/1557626.1557657>`_.
 
 
+===========================
+Installing VIPS from source
+===========================
+
+This program requires VIPS 7.30 or later, which is not available through a 
+package manager as of this writing. Follow these instructions to install VIPS
+from source.
+
+* Install dependencies on Debian/Ubuntu/Mint:
+
+.. code-block:: console
+
+    $ sudo apt-get install gobject-introspection gtk-doc-tools libvips-dev swig
+
+* Download and extract the VIPS source:
+
+.. code-block:: console
+
+    $ wget http://www.vips.ecs.soton.ac.uk/supported/current/vips-7.30.6.tar.gz
+    $ tar xvfz vips-7.30.6.tar.gz
+
+* Configure, compile and install VIPS:
+
+.. code-block:: console
+
+    $ cd vips-7.30.6.tar.gz
+    $ ./configure
+    $ make
+    $ sudo make install
+
+* Configure the dynamic linker run-time bindings:
+
+.. code-block:: console
+
+    $ sudo ldconfig /usr/local/lib
+
+
 =============
 Configuration
 =============
@@ -55,16 +92,16 @@ Nohalo program, and can move on to compilation.
 Compilation
 ===========
 
-* The basic syntax to compile the Nohalo image resampler against VIPS 7.28 is::
+* The basic syntax to compile the Nohalo image resampler is::
 
-     g++ -Wall -o nohalo -g nohalo.cpp `pkg-config vipsCC-7.28 --cflags --libs`
+     g++ -Wall -o nohalo -g nohalo.cpp `pkg-config vipsCC --cflags --libs`
 
 * If you have installed **EXQUIRES** for Python 2.7 and wish to install
   Nohalo system-wide for use in the test suite, type::
 
     sudo g++ -Wall -o /usr/local/bin/nohalo -g \
     /usr/local/lib/python2.7/dist-packages/exquires/examples/nohalo.cpp \
-    `pkg-config vipsCC-7.28 --cflags --libs`
+    `pkg-config vipsCC --cflags --libs`
 
 
 =====
@@ -72,7 +109,7 @@ Usage
 =====
 
 ---------------------
-From the Command Line
+From the command line
 ---------------------
 
 * To use the Nohalo image resampler with the sRGB colour space, type::
@@ -85,7 +122,7 @@ From the Command Line
 
 
 ---------------------------------
-Adding to an **EXQUIRES** Project
+Adding to an **EXQUIRES** project
 ---------------------------------
 
 * In order to add the sRGB version to an EXQUIRES project file, add the

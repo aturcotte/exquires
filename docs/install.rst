@@ -49,7 +49,7 @@ Installing ImageMagick from source
 .. code-block:: console
 
     $ wget http://www.imagemagick.org/download/ImageMagick.tar.gz
-    $ tar -zxvf ImageMagick.tar.gz
+    $ tar xvfz ImageMagick.tar.gz
 
 * Configure, compile and install ImageMagick:
 
