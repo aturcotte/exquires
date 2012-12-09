@@ -2,6 +2,19 @@
 Changelog
 *********
 
+===============
+Version 0.9.9.2
+===============
+
+* Replaced EANBQH example with Nohalo-LBB (Locally Bounded Bicubic)
+
+===============
+Version 0.9.9.1
+===============
+
+* Switched from ImageMagick 7 alpha to ImageMagick 6.8.0-2 (or newer)
+* Improved EANBQH example
+
 =============
 Version 0.9.9
 =============

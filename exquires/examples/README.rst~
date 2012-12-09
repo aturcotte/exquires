@@ -81,7 +81,7 @@ From the Command Line
 
 * To use the Nohalo image resampler with the linear XYZ colour space, type::
 
-    nohalo input.tif output.tif enlargement_factor 1
+    nohalo input.tif output.tif enlargement_factor size 1
 
 
 ---------------------------------

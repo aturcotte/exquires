@@ -33,6 +33,7 @@ ratio, etc.
     usage
     programs
     modules
+    example
     license
     changelog
     todo
