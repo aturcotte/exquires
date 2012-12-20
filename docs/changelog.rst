@@ -3,6 +3,13 @@ Changelog
 *********
 
 ===============
+Version 0.9.9.3
+===============
+
+* Fixed a bug in exquires-correlate
+* Fixed docstring formatting for help messages
+
+===============
 Version 0.9.9.2
 ===============
 

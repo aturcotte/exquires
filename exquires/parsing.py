@@ -41,7 +41,8 @@ def _remove_duplicates(input_list):
 
     """
     unique = set()
-    return [x for x in input_list if x not in unique and not unique.add(x)]
+    return [str(x) for x in
+            input_list if x not in unique and not unique.add(x)]
 
 
 def _format_doc(docstring):
@@ -60,21 +61,11 @@ def _format_doc(docstring):
 
     """
     # Deal with directives and LaTeX math symbols.
-    dir1 = re.sub(r':file:`', r'\033[4m', docstring)
-    dir2 = re.sub(r':\S+:`', r'\033[1m', dir1)
-    dir3 = re.sub('`', r'\033[0m', dir2)
-    dir4 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', dir3))
+    dir1 = re.sub('`', '', re.sub(r':\S+?:`', '', docstring))
+    dir2 = re.sub(r'\\infty', 'infinity', re.sub(r'\\ell', 'L', dir1))
 
-    # Deal with list items.
-    item1 = re.sub(r'    \* ', u'    \u2022 ', dir4)
-
-    # Deal with bold formatting.
-    bold1 = re.sub(r' \*{2}', r' \033[1m', item1)
-    bold2 = re.sub(r'^\*{2}', r'^\033[1m', bold1)
-    bold3 = re.sub(r'\*{2} ', r'\033[0m ', bold2)
-    bold4 = re.sub(r'\*{2},', r'\033[0m,', bold3)
-    bold5 = re.sub(r'\*{2}.', r'\033[0m.', bold4)
-    return re.sub(r'\*{2}$', r'\033[0m$', bold5)
+    # Deal with list items and bold formatting.
+    return re.sub(r'\*{2}', '', re.sub(r'    \* ', u'    \u2022 ', dir2))
 
 
 class ExquiresParser(argparse.ArgumentParser):
