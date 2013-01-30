@@ -130,10 +130,10 @@ Adding to an **EXQUIRES** project
 * In order to add the sRGB version to an EXQUIRES project file, add the
   following to the `[Upsamplers]` section::
 
-    nohalo {0} {1} [2} 0
+    nohalo {0} {1} {2} 0
 
 * In order to add the linear version to an EXQUIRES project file,, add the
   following to the `[Upsamplers]` section::
 
-    nohalo {0} {1} [2} 1
+    nohalo {0} {1} {2} 1
 

@@ -207,19 +207,19 @@ your own downsampling method, you must use :command:`{0}` and :command:`{1}`
 to specify the input and output images, and either :command:`{2}` or
 :command:`{3}` (or both) to specify the size of the reduced image.
 
-Also note that the methods suffixed with :command:`_srgb` do not apply
-gamma correction, meaning that the sRGB images are downsampled using linear
-averaging even though sRGB is a non-linear colour space.
-The methods suffixed with :command:`_linear` convert the input image to linear
-RGB with sRGB primaries before downsampling, then convert the result back to
-sRGB, using the `ImageMagick`_ command :command:`-colorspace`. Such suffixes
-are useful because they allow one to separately aggregate the results of only
-downsampling or upsampling using the two main "tracks" without having to list
-the methods individually. In the same spirit if, for example, you were to
-program downsamplers or upsamplers that convert into and out of sRGB using ICC
-profiles, we would suggest that you use something like the :command:`_icc`
-suffix; if you were to go through the XYZ colourspace, we would suggest
-:command:`_xyz`.
+Also note that the methods suffixed with :command:`_srgb` do not perform any
+colour space conversion within the resize operations, meaning that the sRGB
+images are downsampled using linear averaging even though sRGB is a non-linear
+colour space. The methods suffixed with :command:`_linear` convert the input
+image to linear RGB with sRGB primaries before downsampling, then convert the
+result back to sRGB, using the `ImageMagick`_ command :command:`-colorspace`.
+Such suffixes are useful because they allow one to separately aggregate the
+results of only downsampling or upsampling using the two main "tracks" without
+having to list the methods individually. In the same spirit if, for example,
+you were to program downsamplers or upsamplers that convert into and out of
+sRGB using ICC profiles, we would suggest that you use something like the
+:command:`_icc` suffix; if you were to go through the XYZ colourspace, we would
+suggest :command:`_xyz`.
 
 
 ^^^^^^^^^^

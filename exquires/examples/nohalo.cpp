@@ -28,13 +28,15 @@ main (int argc, char **argv)
 {
     // Check for correct number of command-line arguments
     if (argc != 5) {
-        cout << "usage: nohalo image_in image_out enlargement_factor (0: sRGB | 1: linear)" << endl;
+        cout << "usage: nohalo image_in image_out enlargement_factor "
+                "(0: sRGB | 1: linear)" << endl;
         return (1);
     }
 
     try {
         // Define sRGB profile path and method name
-        char profile[] = "/usr/local/lib/python2.7/dist-packages/exquires/sRGB_IEC61966-2-1_black_scaled.icc";
+        char profile[] = "/usr/local/lib/python2.7/dist-packages"
+                         "/exquires/sRGB_IEC61966-2-1_black_scaled.icc";
         char method[] = "nohalo";
 
         // Read input image
@@ -57,7 +59,8 @@ main (int argc, char **argv)
         VImage padded = row.tbjoin (added_col);
 
         // Prepare the output image
-        VImage image_out = padded.affinei (method, ratio, 0, 0, ratio, dx, dx, 0, 0, size, size);
+        VImage image_out = padded.affinei (method, ratio, 0, 0,ratio,
+                                           dx, dx, 0, 0, size, size);
 
         // Export from XYZ to sRGB if linear option selected
         if (linear)
